@@ -4,7 +4,12 @@ import static mirrg.minecraft.regioneditor.gui.SwingUtils.*;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FileDialog;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.WindowConstants;
@@ -66,7 +71,26 @@ public class FrameRegionEditor
 					flowPanel(
 
 						button("地図", e -> {
+							FileDialog fileDialog = new FileDialog(frame, "地図を開く", FileDialog.LOAD);
+							fileDialog.setDirectory(".");
+							fileDialog.setVisible(true);
+							if (fileDialog.getFile() == null) return;
+							File file = new File(fileDialog.getDirectory(), fileDialog.getFile());
 
+							BufferedImage image;
+							try {
+								image = ImageIO.read(file);
+							} catch (IOException e1) {
+								e1.printStackTrace();
+								return;
+							}
+
+							if (image == null) {
+								System.err.println("画像の読み込みに失敗しました。");
+								return;
+							}
+
+							canvasMap.setMap(image);
 						}),
 
 						button("B", e -> {
