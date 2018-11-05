@@ -3,10 +3,9 @@ package mirrg.minecraft.regioneditor.gui;
 import static mirrg.minecraft.regioneditor.gui.SwingUtils.*;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.WindowConstants;
 
@@ -14,6 +13,7 @@ public class FrameRegionEditor
 {
 
 	private JFrame frame;
+	private CanvasMap canvasMap;
 
 	public FrameRegionEditor()
 	{
@@ -25,45 +25,61 @@ public class FrameRegionEditor
 
 			frame.add(splitPaneHorizontal(0.7,
 
+				// 左ペイン：地図側
 				borderPanelUp(
 
-					new JButton("↑"),
+					button("↑", e -> scroll(0, -4)),
 
 					borderPanelDown(
 
 						borderPanelLeft(
 
-							new JButton("←"),
+							button("←", e -> scroll(-4, 0)),
 
 							borderPanelRight(
 
-								new JLabel("地図"),
+								// 地図
+								canvasMap = get(new CanvasMap(), canvasMap -> {
+									canvasMap.setMinimumSize(new Dimension(100, 100));
+									canvasMap.setPreferredSize(new Dimension(600, 600));
+								}),
 
-								new JButton("→")
+								button("→", e -> scroll(4, 0))
 
 							)
 
 						),
 
-						new JButton("↓")
+						button("↓", e -> scroll(0, 4))
 
 					)
 
 				),
 
+				// 右ペイン：領地リストとか操作ボタンとか
 				borderPanelDown(
 
+					// 領地一覧
 					scrollPane(new JTable()),
 
+					// 操作ボタン
 					flowPanel(
 
-						new JButton("A"),
+						button("地図", e -> {
 
-						new JButton("B"),
+						}),
 
-						new JButton("C"),
+						button("B", e -> {
 
-						new JButton("D")
+						}),
+
+						button("C", e -> {
+
+						}),
+
+						button("D", e -> {
+
+						})
 
 					)
 
@@ -75,6 +91,11 @@ public class FrameRegionEditor
 		frame.setSize(600, 600);
 		frame.setLocationByPlatform(true);
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+	}
+
+	private void scroll(int x, int z)
+	{
+
 	}
 
 	public void show()

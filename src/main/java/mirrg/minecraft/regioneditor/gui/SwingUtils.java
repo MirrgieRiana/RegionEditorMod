@@ -3,13 +3,22 @@ package mirrg.minecraft.regioneditor.gui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.event.ActionListener;
+import java.util.function.Consumer;
 
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
 public class SwingUtils
 {
+
+	public static <T> T get(T t, Consumer<T> consumer)
+	{
+		consumer.accept(t);
+		return t;
+	}
 
 	public static JSplitPane splitPaneHorizontal(double resizeWeight, Component left, Component right)
 	{
@@ -62,6 +71,13 @@ public class SwingUtils
 			panel.add(component);
 		}
 		return panel;
+	}
+
+	public static JButton button(String text, ActionListener listener)
+	{
+		JButton button = new JButton(text);
+		button.addActionListener(listener);
+		return button;
 	}
 
 }
