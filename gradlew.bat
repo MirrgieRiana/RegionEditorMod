@@ -1,4 +1,3 @@
-set JAVA_HOME=C:\Users\Heavy\OneDrive\デスクトップ\pleiades\java\8
 @if "%DEBUG%" == "" @echo off
 @rem ##########################################################################
 @rem
