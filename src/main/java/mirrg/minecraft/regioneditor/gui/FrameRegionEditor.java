@@ -4,6 +4,10 @@ import static mirrg.minecraft.regioneditor.gui.SwingUtils.*;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FileDialog;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
