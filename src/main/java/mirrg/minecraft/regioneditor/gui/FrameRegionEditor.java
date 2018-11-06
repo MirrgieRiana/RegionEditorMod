@@ -213,7 +213,7 @@ public class FrameRegionEditor
 
 	private void scroll(int x, int z)
 	{
-
+		canvasMap.setPosition(canvasMap.getPositionX() + x, canvasMap.getPositionZ() + z);
 	}
 
 	public void show()
