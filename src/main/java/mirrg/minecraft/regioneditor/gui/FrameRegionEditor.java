@@ -193,17 +193,7 @@ public class FrameRegionEditor
 							
 							for(int i = 0;i < input.length;i++) {
 								for(int j = 0;j < input[i].length(); j++) {
-									if(input[i].toCharArray()[j] == '1') System.out.println(i + "," + j);;
-								"001110",
-								"011010",
-								"010110",
-								"011100",
-							};
-
-							for (int i = 0; i < input.length; i++) {
-								for (int j = 0; j < input[i].length(); j++) {
-									if (input[i].toCharArray()[j] == '1') System.out.println(i + "," + j);
-									;
+									if(input[i].toCharArray()[j] == '1') System.out.println(i + "," + j);
 								}
 							}
 							
