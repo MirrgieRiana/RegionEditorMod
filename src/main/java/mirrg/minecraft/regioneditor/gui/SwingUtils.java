@@ -2,6 +2,7 @@ package mirrg.minecraft.regioneditor.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.util.function.Consumer;
@@ -62,6 +63,13 @@ public class SwingUtils
 	public static JScrollPane scrollPane(Component component)
 	{
 		return new JScrollPane(component);
+	}
+
+	public static JScrollPane scrollPane(Component component, int width, int height)
+	{
+		JScrollPane scrollPane = new JScrollPane(component);
+		scrollPane.setPreferredSize(new Dimension(width, height));
+		return scrollPane;
 	}
 
 	public static JPanel flowPanel(Component... components)
