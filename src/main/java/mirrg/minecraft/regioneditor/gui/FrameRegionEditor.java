@@ -214,9 +214,18 @@ public class FrameRegionEditor
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 	}
 
+	private void setPosition(int x, int z)
+	{
+		canvasMap.setPosition(x, z);
+		labelCoordX.setText("" + canvasMap.getPositionX() * 16);
+		labelCoordZ.setText("" + canvasMap.getPositionZ() * 16);
+		labelChunkX.setText("" + canvasMap.getPositionX());
+		labelChunkZ.setText("" + canvasMap.getPositionZ());
+	}
+
 	private void scroll(int x, int z)
 	{
-		canvasMap.setPosition(canvasMap.getPositionX() + x, canvasMap.getPositionZ() + z);
+		setPosition(canvasMap.getPositionX() + x, canvasMap.getPositionZ() + z);
 	}
 
 	public void show()
