@@ -188,16 +188,15 @@ public class FrameRegionEditor
 
 						button("D", e -> {
 							String[] input = {
-								"001110",
-								"011010",
-								"010110",
-								"011100",
-							};
-
-							for (int i = 0; i < input.length; i++) {
-								for (int j = 0; j < input[i].length(); j++) {
-									if (input[i].toCharArray()[j] == '1') System.out.println(i + "," + j);
-									;
+									 "001110",
+									 "011010",
+									 "010110",
+									 "011100",
+									};
+							
+							for(int i = 0;i < input.length;i++) {
+								for(int j = 0;j < input[i].length(); j++) {
+									if(input[i].toCharArray()[j] == '1') System.out.println(i + "," + j);
 								}
 							}
 
@@ -217,7 +216,7 @@ public class FrameRegionEditor
 
 	private void scroll(int x, int z)
 	{
-
+		canvasMap.setPosition(canvasMap.getPositionX() + x, canvasMap.getPositionZ() + z);
 	}
 
 	public void show()
