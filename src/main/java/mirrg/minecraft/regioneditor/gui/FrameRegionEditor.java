@@ -16,13 +16,17 @@ import java.awt.FileDialog;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
 public class FrameRegionEditor
@@ -30,6 +34,12 @@ public class FrameRegionEditor
 
 	private JFrame frame;
 	private CanvasMap canvasMap;
+	private JLabel labelCoordX;
+	private JLabel labelCoordZ;
+	private JLabel labelChunkX;
+	private JLabel labelChunkZ;
+	private JFormattedTextField textFieldX;
+	private JFormattedTextField textFieldZ;
 
 	public FrameRegionEditor()
 	{
@@ -41,32 +51,92 @@ public class FrameRegionEditor
 
 			frame.add(splitPaneHorizontal(0.7,
 
-				// 左ペイン：地図側
-				borderPanelUp(
-
-					button("↑", e -> scroll(0, -4)),
+				borderPanelDown(
 
 					borderPanelDown(
 
-						borderPanelLeft(
+						// 左ペイン：地図側
+						borderPanelUp(
 
-							button("←", e -> scroll(-4, 0)),
+							button("↑", e -> scroll(0, -4)),
 
-							borderPanelRight(
+							borderPanelDown(
 
-								// 地図
-								canvasMap = get(new CanvasMap(), c -> {
-									c.setMinimumSize(new Dimension(100, 100));
-									c.setPreferredSize(new Dimension(600, 600));
-								}),
+								borderPanelLeft(
 
-								button("→", e -> scroll(4, 0))
+									button("←", e -> scroll(-4, 0)),
+
+									borderPanelRight(
+
+										// 地図
+										canvasMap = get(new CanvasMap(), c -> {
+											c.setMinimumSize(new Dimension(100, 100));
+											c.setPreferredSize(new Dimension(600, 600));
+										}),
+
+										button("→", e -> scroll(4, 0))
+
+									)
+
+								),
+
+								button("↓", e -> scroll(0, 4))
 
 							)
 
 						),
 
-						button("↓", e -> scroll(0, 4))
+						flowPanel(
+
+							new JLabel("Coord:"),
+
+							labelCoordX = new JLabel("???"),
+
+							new JLabel(","),
+
+							labelCoordZ = new JLabel("???"),
+
+							new JLabel("Chunk:"),
+
+							labelChunkX = new JLabel("???"),
+
+							new JLabel(","),
+
+							labelChunkZ = new JLabel("???")
+
+						)
+
+					),
+
+					flowPanel(
+
+						new JLabel("X:"),
+
+						textFieldX = get(new JFormattedTextField(NumberFormat.getIntegerInstance()), c -> {
+							c.setValue(0);
+							c.setColumns(8);
+							c.setHorizontalAlignment(JTextField.RIGHT);
+						}),
+
+						new JLabel("Z:"),
+
+						textFieldZ = get(new JFormattedTextField(NumberFormat.getIntegerInstance()), c -> {
+							c.setValue(0);
+							c.setColumns(8);
+							c.setHorizontalAlignment(JTextField.RIGHT);
+						}),
+
+						button("座標に飛ぶ", e -> {
+							setPosition(
+								((Number) textFieldX.getValue()).intValue() / 16,
+								((Number) textFieldZ.getValue()).intValue() / 16);
+						}),
+
+						button("チャンク座標に飛ぶ", e -> {
+							setPosition(
+								((Number) textFieldX.getValue()).intValue(),
+								((Number) textFieldZ.getValue()).intValue());
+						})
 
 					)
 
