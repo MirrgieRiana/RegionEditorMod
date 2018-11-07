@@ -55,9 +55,9 @@ public class FrameRegionEditor
 							borderPanelRight(
 
 								// 地図
-								canvasMap = get(new CanvasMap(), canvasMap -> {
-									canvasMap.setMinimumSize(new Dimension(100, 100));
-									canvasMap.setPreferredSize(new Dimension(600, 600));
+								canvasMap = get(new CanvasMap(), c -> {
+									c.setMinimumSize(new Dimension(100, 100));
+									c.setPreferredSize(new Dimension(600, 600));
 								}),
 
 								button("→", e -> scroll(4, 0))
