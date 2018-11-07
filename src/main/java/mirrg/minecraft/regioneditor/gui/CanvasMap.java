@@ -58,8 +58,7 @@ public class CanvasMap extends Canvas
 						"" + random.nextInt(10000));
 				}
 
-				regionMap.setRegionInfo(new ChunkPosition(random.nextInt(1000), random.nextInt(1000)),
-					regionInfo);
+				regionMap.setRegionInfo(new ChunkPosition(random.nextInt(1000), random.nextInt(1000)), Optional.of(regionInfo));
 			}
 
 		} catch (ParseException e) {
