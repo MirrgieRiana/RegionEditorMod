@@ -32,6 +32,8 @@ public class CanvasMap extends Canvas
 	private int positionX = 0;
 	private int positionZ = 0;
 
+	private Optional<RegionInfo> oRegionInfo = Optional.empty();
+
 	private RegionMap regionMap = new RegionMap();
 	// TODO
 	{
@@ -67,6 +69,7 @@ public class CanvasMap extends Canvas
 	}
 
 	private Optional<Point> oMousePosition = Optional.empty();
+	private boolean[] mouseButtons = new boolean[8];
 
 	public CanvasMap()
 	{
@@ -83,13 +86,26 @@ public class CanvasMap extends Canvas
 			public void mousePressed(MouseEvent e)
 			{
 				oMousePosition = Optional.of(e.getPoint());
+				mouseButtons[Math.min(e.getButton(), mouseButtons.length - 1)] = true;
 				updateLayerBack();
+
+				ChunkPosition chunkPosition = getChunkPosition(e.getPoint());
+				if (e.getButton() == MouseEvent.BUTTON2) {
+					oRegionInfo = regionMap.getRegionInfo(chunkPosition);
+				} else if (e.getButton() == MouseEvent.BUTTON3) {
+					regionMap.setRegionInfo(chunkPosition, oRegionInfo);
+					updateLayerOverlay();
+				} else if (e.getButton() == MouseEvent.BUTTON1) {
+					regionMap.setRegionInfo(chunkPosition, Optional.empty());
+					updateLayerOverlay();
+				}
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent e)
 			{
 				oMousePosition = Optional.of(e.getPoint());
+				mouseButtons[Math.min(e.getButton(), mouseButtons.length - 1)] = false;
 				updateLayerBack();
 			}
 
@@ -120,6 +136,15 @@ public class CanvasMap extends Canvas
 			{
 				oMousePosition = Optional.of(e.getPoint());
 				updateLayerBack();
+
+				ChunkPosition chunkPosition = getChunkPosition(e.getPoint());
+				if (mouseButtons[MouseEvent.BUTTON3]) {
+					regionMap.setRegionInfo(chunkPosition, oRegionInfo);
+					updateLayerOverlay();
+				} else if (mouseButtons[MouseEvent.BUTTON1]) {
+					regionMap.setRegionInfo(chunkPosition, Optional.empty());
+					updateLayerOverlay();
+				}
 			}
 		});
 
@@ -231,9 +256,7 @@ public class CanvasMap extends Canvas
 		graphicsLayerBack.drawImage(imageLayerOverlay, 0, 0, null);
 
 		if (oMousePosition.isPresent()) {
-			int xi = oMousePosition.get().x / 16;
-			int zi = oMousePosition.get().y / 16;
-			Optional<RegionInfo> oRegionInfo = regionMap.getRegionInfo(new ChunkPosition(positionX + xi, positionZ + zi));
+			Optional<RegionInfo> oRegionInfo = regionMap.getRegionInfo(getChunkPosition(oMousePosition.get()));
 			if (oRegionInfo.isPresent()) {
 				RegionInfo regionInfo = oRegionInfo.get();
 
@@ -246,6 +269,11 @@ public class CanvasMap extends Canvas
 		}
 
 		repaint();
+	}
+
+	private ChunkPosition getChunkPosition(Point point)
+	{
+		return new ChunkPosition(positionX + point.x / 16, positionZ + point.y / 16);
 	}
 
 	//
