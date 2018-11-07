@@ -4,8 +4,12 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.text.ParseException;
 import java.util.Optional;
@@ -63,6 +67,8 @@ public class CanvasMap extends Canvas
 		}
 	}
 
+	private Optional<Point> oMousePosition = Optional.empty();
+
 	public CanvasMap()
 	{
 		addComponentListener(new ComponentAdapter() {
@@ -71,6 +77,50 @@ public class CanvasMap extends Canvas
 			{
 				resizeLayer();
 				updateLayerMap();
+			}
+		});
+		addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e)
+			{
+				oMousePosition = Optional.of(e.getPoint());
+				updateLayerBack();
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e)
+			{
+				oMousePosition = Optional.of(e.getPoint());
+				updateLayerBack();
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e)
+			{
+				oMousePosition = Optional.of(e.getPoint());
+				updateLayerBack();
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e)
+			{
+				oMousePosition = Optional.empty();
+				updateLayerBack();
+			}
+		});
+		addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseMoved(MouseEvent e)
+			{
+				oMousePosition = Optional.of(e.getPoint());
+				updateLayerBack();
+			}
+
+			@Override
+			public void mouseDragged(MouseEvent e)
+			{
+				oMousePosition = Optional.of(e.getPoint());
+				updateLayerBack();
 			}
 		});
 
@@ -181,10 +231,31 @@ public class CanvasMap extends Canvas
 	{
 		graphicsLayerBack.drawImage(imageLayerOverlay, 0, 0, null);
 
+		if (oMousePosition.isPresent()) {
+			int xi = oMousePosition.get().x / 16;
+			int zi = oMousePosition.get().y / 16;
+			Optional<RegionInfo> oRegionInfo = regionMap.getRegionInfo(new ChunkPosition(positionX + xi, positionZ + zi));
+			if (oRegionInfo.isPresent()) {
+				RegionInfo regionInfo = oRegionInfo.get();
+
+				int height = graphicsLayerBack.getFontMetrics().getHeight();
+
+				graphicsLayerBack.drawString(regionInfo.countryNumber + ":" + regionInfo.countryName, oMousePosition.get().x + 2, oMousePosition.get().y - height - 2);
+				graphicsLayerBack.drawString(regionInfo.stateNumber + ":" + regionInfo.stateName, oMousePosition.get().x + 2, oMousePosition.get().y - 2);
+
+			}
+		}
+
 		repaint();
 	}
 
 	//
+
+	@Override
+	public void update(Graphics g)
+	{
+		paint(g);
+	}
 
 	@Override
 	public void paint(Graphics g)
