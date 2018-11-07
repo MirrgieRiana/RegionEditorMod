@@ -180,7 +180,7 @@ public class FrameRegionEditor
 
 						}
 
-						),0
+						),
 
 						button("C", e -> {
 
