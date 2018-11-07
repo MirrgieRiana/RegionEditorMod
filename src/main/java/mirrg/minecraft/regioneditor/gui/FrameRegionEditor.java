@@ -209,6 +209,8 @@ public class FrameRegionEditor
 			));
 		}
 
+		setPosition(0, 0);
+
 		frame.pack();
 		frame.setLocationByPlatform(true);
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
