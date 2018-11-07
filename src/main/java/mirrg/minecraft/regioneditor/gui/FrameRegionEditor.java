@@ -4,14 +4,13 @@ import static mirrg.minecraft.regioneditor.gui.SwingUtils.*;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.List;
 import java.awt.FileDialog;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -109,7 +108,7 @@ public class FrameRegionEditor
 									"1111111",
 								};
 								//処理待ちキュー
-								ArrayDeque<int[]> wait = new ArrayDeque<int[]>();
+								ArrayDeque<Point> wait = new ArrayDeque<Point>();
 								//Char[]データ配列
 								List<char[]> dispos = new ArrayList<char[]>();
 								//inputのStringをchar[]に変換
@@ -126,38 +125,38 @@ public class FrameRegionEditor
 										//その文字が1ならば
 										if (chars[x] == '1') {
 											//処理待ちキューに追加
-											wait.addFirst(new int[] { x, y });
+											wait.addFirst(new Point(x,y));
 											dispos.get(y)[x] = '0'; //処理待ちキューに入れた座標を0にする
 											//幅優先探索の開始
 											while (!wait.isEmpty()) {
 												//処理待ちの取り出して削除
-												int[] pos = wait.removeLast();
+												Point pos = wait.removeLast();
 												//結果に座標を記録する
-												results.add(pos[1] + "," + pos[0]);
+												results.add(pos.X + "," + pos.Y);
 
 												//上下左右の調査の開始
-												if (pos[1] + 1 < dispos.size())
-													if (dispos.get(pos[1] + 1)[pos[0]] == '1') {
-													wait.addFirst(new int[] { pos[0], pos[1] + 1 }); //もしも右が1なら処理待ちキューに追加
-													dispos.get(pos[1] + 1)[pos[0]] = '0'; //処理待ちキューに入れた座標を0にする
+												if (pos.X + 1 < dispos.size())
+													if (dispos.get(pos.X + 1)[pos.Y] == '1') {
+													wait.addFirst(new Point(pos.Y, pos.X + 1 )); //もしも右が1なら処理待ちキューに追加
+													dispos.get(pos.X + 1)[pos.Y] = '0'; //処理待ちキューに入れた座標を0にする
 												}
 
-												if (pos[1] - 1 >= 0)
-													if (dispos.get(pos[1] - 1)[pos[0]] == '1') {
-													wait.addFirst(new int[] { pos[0], pos[1] - 1 }); //もしも左が1なら   "
-													dispos.get(pos[1] - 1)[pos[0]] = '0'; // "
+												if (pos.X - 1 >= 0)
+													if (dispos.get(pos.X - 1)[pos.Y] == '1') {
+													wait.addFirst(new Point( pos.Y, pos.X - 1 )); //もしも左が1なら   "
+													dispos.get(pos.X - 1)[pos.Y] = '0'; // "
 												}
 
-												if (pos[0] + 1 < dispos.get(pos[1]).length)
-													if (dispos.get(pos[1])[pos[0] + 1] == '1') {
-													wait.addFirst(new int[] { pos[0] + 1, pos[1] }); //もしも下が1なら   
-													dispos.get(pos[1])[pos[0] + 1] = '0'; // "
+												if (pos.Y + 1 < dispos.get(pos.X).length)
+													if (dispos.get(pos.X)[pos.Y + 1] == '1') {
+													wait.addFirst(new Point( pos.Y + 1, pos.X )); //もしも下が1なら
+													dispos.get(pos.X)[pos.Y + 1] = '0'; // "
 												}
 
-												if (pos[0] - 1 >= 0)
-													if (dispos.get(pos[1])[pos[0] - 1] == '1') {
-													wait.addFirst(new int[] { pos[0] + 1, pos[1] }); //もしも上が1なら   "
-													dispos.get(pos[1])[pos[0] - 1] = '0'; // "
+												if (pos.Y - 1 >= 0)
+													if (dispos.get(pos.X)[pos.Y - 1] == '1') {
+													wait.addFirst(new Point(pos.Y + 1, pos.X )); //もしも上が1なら   "
+													dispos.get(pos.X)[pos.Y - 1] = '0'; // "
 												}
 												//上下左右の調査の終了
 												//もしもまだ処理待ちのキューが存在するならこのループは抜けられない
@@ -173,7 +172,7 @@ public class FrameRegionEditor
 
 						}
 
-						),
+						),0
 
 						button("C", e -> {
 
@@ -181,15 +180,6 @@ public class FrameRegionEditor
 
 						button("D", e -> {
 							String[] input = {
-									 "001110",
-									 "011010",
-									 "010110",
-									 "011100",
-									};
-							
-							for(int i = 0;i < input.length;i++) {
-								for(int j = 0;j < input[i].length(); j++) {
-									if(input[i].toCharArray()[j] == '1') System.out.println(i + "," + j);;
 								"001110",
 								"011010",
 								"010110",
@@ -202,7 +192,7 @@ public class FrameRegionEditor
 									;
 								}
 							}
-							
+
 						})
 
 					)
@@ -226,5 +216,38 @@ public class FrameRegionEditor
 	{
 		frame.setVisible(true);
 	}
+
+}
+
+class Point
+{
+	int X;
+	int Y;
+
+	public Point(int x, int y)
+	{
+		X = x;
+		Y = y;
+
+	}
+}
+
+class Side extends Object
+{
+
+	Point Point1;
+	Point Point2;
+
+	public Side(Point p1,Point p2)
+	{
+		Point1 = p1;
+		Point2 = p2;
+	}
+
+	@Override
+    public boolean equals(Object obj) {
+        //実装中
+		return false;
+    }
 
 }
