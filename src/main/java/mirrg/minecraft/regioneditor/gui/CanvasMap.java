@@ -118,6 +118,8 @@ public class CanvasMap extends Canvas
 
 	private void updateLayerMap()
 	{
+		graphicsLayerMap.setBackground(new Color(128, 128, 128));
+		graphicsLayerMap.clearRect(0, 0, getWidth(), getHeight());
 		if (imageMap != null) graphicsLayerMap.drawImage(imageMap, 0 - positionX * 16, 0 - positionZ * 16, null);
 
 		updateLayerOverlay();
