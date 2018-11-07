@@ -23,18 +23,4 @@ public final class RegionMap
 		}
 	}
 
-	public void setRegionInfo(ChunkPosition chunkPosition, RegionInfo regionInfo)
-	{
-		if (regionInfo != null) {
-			map.put(chunkPosition, regionInfo);
-		} else {
-			map.remove(chunkPosition);
-		}
-	}
-
-	public void clearRegionInfo(ChunkPosition chunkPosition)
-	{
-		map.remove(chunkPosition);
-	}
-
 }
