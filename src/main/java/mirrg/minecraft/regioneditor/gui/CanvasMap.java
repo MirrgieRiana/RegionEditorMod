@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
+import java.text.ParseException;
 import java.util.Optional;
 import java.util.Random;
 
@@ -28,18 +29,37 @@ public class CanvasMap extends Canvas
 	private int positionZ = 0;
 
 	private RegionMap regionMap = new RegionMap();
+	// TODO
 	{
-		// TODO
-		Random random = new Random();
-		for (int i = 0; i < 10000; i++) {
-			regionMap.setRegionInfo(new ChunkPosition(random.nextInt(1000), random.nextInt(1000)),
-				new RegionInfo(
-					random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10),
-					new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)),
-					"" + random.nextInt(10000),
-					random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10),
-					new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)),
-					"" + random.nextInt(10000)));
+		try {
+
+			Random random = new Random();
+			for (int i = 0; i < 10000; i++) {
+				RegionInfo regionInfo;
+
+				if (random.nextInt(10) == 0) {
+					regionInfo = RegionInfo.decode("4432,#FF0000,レイミセロ国,1,#823413,首都");
+
+				} else if (random.nextInt(10) == 0) {
+					regionInfo = RegionInfo.decode("4432,#FF0000,レイミセロ国,5673,#198467,九州");
+				} else if (random.nextInt(10) == 0) {
+					regionInfo = RegionInfo.decode("17,#D89726,宇宙航空研究開発機構,1,#ff0000,金星探査機「あかつき28」墜落跡地");
+				} else {
+					regionInfo = new RegionInfo(
+						random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10),
+						new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)),
+						"" + random.nextInt(10000),
+						random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10),
+						new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)),
+						"" + random.nextInt(10000));
+				}
+
+				regionMap.setRegionInfo(new ChunkPosition(random.nextInt(1000), random.nextInt(1000)),
+					regionInfo);
+			}
+
+		} catch (ParseException e) {
+			e.printStackTrace();
 		}
 	}
 
