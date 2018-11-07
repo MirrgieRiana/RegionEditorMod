@@ -1,9 +1,39 @@
 package mirrg.minecraft.regioneditor.gui;
 
 import java.awt.Color;
+import java.text.ParseException;
 
 public final class RegionInfo
 {
+
+	public static RegionInfo decode(String code) throws ParseException
+	{
+		try {
+			String[] cells = code.split(",");
+			return new RegionInfo(
+				Integer.parseInt(cells[0], 10),
+				Color.decode(cells[1]),
+				cells[2],
+				Integer.parseInt(cells[3], 10),
+				Color.decode(cells[4]),
+				cells[5]);
+		} catch (NumberFormatException e) {
+			ParseException parseException = new ParseException(code, 0);
+			parseException.initCause(e);
+			throw parseException;
+		}
+	}
+
+	public String encode()
+	{
+		return String.format("%s,%s,%s,%s,%s,%s",
+			countryNumber,
+			countryColor,
+			countryName,
+			stateNumber,
+			stateColor,
+			stateName);
+	}
 
 	public final int countryNumber;
 	public final Color countryColor;
