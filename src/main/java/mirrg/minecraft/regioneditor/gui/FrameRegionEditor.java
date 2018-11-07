@@ -76,7 +76,7 @@ public class FrameRegionEditor
 				borderPanelDown(
 
 					// 領地一覧
-					scrollPane(new JTable()),
+					scrollPane(new JTable(), 300, 600),
 
 					// 操作ボタン
 					flowPanel(
@@ -209,7 +209,7 @@ public class FrameRegionEditor
 			));
 		}
 
-		frame.setSize(600, 600);
+		frame.pack();
 		frame.setLocationByPlatform(true);
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 	}
