@@ -1,6 +1,6 @@
 package mirrg.minecraft.regioneditor.gui;
 
-public class ChunkPosition
+public final class ChunkPosition
 {
 
 	public final int x;

@@ -2,7 +2,7 @@ package mirrg.minecraft.regioneditor.gui;
 
 import java.awt.Color;
 
-public class RegionInfo
+public final class RegionInfo
 {
 
 	public final int countryNumber;

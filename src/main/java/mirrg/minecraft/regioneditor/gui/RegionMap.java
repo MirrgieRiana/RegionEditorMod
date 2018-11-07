@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class RegionMap
+public final class RegionMap
 {
 
 	private Map<ChunkPosition, RegionInfo> map = new HashMap<>();
