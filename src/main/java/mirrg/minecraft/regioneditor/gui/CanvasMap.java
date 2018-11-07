@@ -12,7 +12,7 @@ import java.util.Random;
 public class CanvasMap extends Canvas
 {
 
-	private BufferedImage map = null;
+	private BufferedImage imageMap = null;
 
 	private BufferedImage imageLayerMap = null;
 	private Graphics2D graphicsLayerMap = null;
@@ -44,7 +44,7 @@ public class CanvasMap extends Canvas
 
 	public void setMap(BufferedImage map)
 	{
-		this.map = map;
+		this.imageMap = map;
 		updateLayerMap();
 	}
 
@@ -81,7 +81,7 @@ public class CanvasMap extends Canvas
 
 	private void updateLayerMap()
 	{
-		if (map != null) graphicsLayerMap.drawImage(map, 0 - positionX * 16, 0 - positionZ * 16, null);
+		if (imageMap != null) graphicsLayerMap.drawImage(imageMap, 0 - positionX * 16, 0 - positionZ * 16, null);
 
 		updateLayerOverlay();
 	}
