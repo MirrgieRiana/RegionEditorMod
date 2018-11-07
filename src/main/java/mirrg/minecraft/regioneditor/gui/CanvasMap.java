@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
+import java.util.Optional;
 import java.util.Random;
 
 public class CanvasMap extends Canvas
@@ -25,6 +26,22 @@ public class CanvasMap extends Canvas
 
 	private int positionX = 0;
 	private int positionZ = 0;
+
+	private RegionMap regionMap = new RegionMap();
+	{
+		// TODO
+		Random random = new Random();
+		for (int i = 0; i < 10000; i++) {
+			regionMap.setRegionInfo(new ChunkPosition(random.nextInt(1000), random.nextInt(1000)),
+				new RegionInfo(
+					random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10),
+					new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)),
+					"" + random.nextInt(10000),
+					random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10),
+					new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)),
+					"" + random.nextInt(10000)));
+		}
+	}
 
 	public CanvasMap()
 	{
@@ -98,22 +115,34 @@ public class CanvasMap extends Canvas
 
 		for (int x = 0; x < chunkWidth; x++) {
 			for (int z = 0; z < chunkHeight; z++) {
-				Random random = new Random((positionX + x) * 1421435 + (positionZ + z) * 352412);
 
-				// 背景半透明塗りつぶし
-				graphicsLayerOverlay.setColor(new Color(0x44ff0000, true));
-				graphicsLayerOverlay.fillRect(x * 16, z * 16, 16, 16);
+				Optional<RegionInfo> oRegionInfo = regionMap.getRegionInfo(new ChunkPosition(positionX + x, positionZ + z));
+				if (oRegionInfo.isPresent()) {
+					RegionInfo regionInfo = oRegionInfo.get();
 
-				// 領地輪郭線
-				graphicsLayerOverlay.setColor(new Color(0xff0000));
-				graphicsLayerOverlay.drawLine(x * 16 + 1, z * 16 + 1, x * 16 + 15, z * 16 + 1);
-				graphicsLayerOverlay.drawLine(x * 16 + 1, z * 16 + 1, x * 16 + 1, z * 16 + 15);
-				graphicsLayerOverlay.drawLine(x * 16 + 1, z * 16 + 15, x * 16 + 15, z * 16 + 15);
-				graphicsLayerOverlay.drawLine(x * 16 + 15, z * 16 + 1, x * 16 + 15, z * 16 + 15);
+					// 背景半透明塗りつぶし
+					graphicsLayerOverlay.setColor(new Color(
+						regionInfo.getDynmapColor().getRed(),
+						regionInfo.getDynmapColor().getGreen(),
+						regionInfo.getDynmapColor().getBlue(),
+						64));
+					graphicsLayerOverlay.fillRect(x * 16, z * 16, 16, 16);
 
-				// 数値
-				FontRenderer.drawString(graphicsLayerOverlay, "" + random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10), x * 16 + 8, z * 16 + 2);
-				FontRenderer.drawString(graphicsLayerOverlay, "" + random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10), x * 16 + 8, z * 16 + 8);
+					// 領地輪郭線
+					graphicsLayerOverlay.setColor(new Color(
+						regionInfo.getDynmapColor().getRed(),
+						regionInfo.getDynmapColor().getGreen(),
+						regionInfo.getDynmapColor().getBlue()));
+					graphicsLayerOverlay.drawLine(x * 16 + 1, z * 16 + 1, x * 16 + 15, z * 16 + 1);
+					graphicsLayerOverlay.drawLine(x * 16 + 1, z * 16 + 1, x * 16 + 1, z * 16 + 15);
+					graphicsLayerOverlay.drawLine(x * 16 + 1, z * 16 + 15, x * 16 + 15, z * 16 + 15);
+					graphicsLayerOverlay.drawLine(x * 16 + 15, z * 16 + 1, x * 16 + 15, z * 16 + 15);
+
+					// 数値
+					FontRenderer.drawString(imageLayerOverlay, "" + regionInfo.countryNumber, x * 16 + 8, z * 16 + 2, regionInfo.countryColor);
+					FontRenderer.drawString(imageLayerOverlay, "" + regionInfo.stateNumber, x * 16 + 8, z * 16 + 8, regionInfo.stateColor);
+
+				}
 
 				// グリッド
 				graphicsLayerOverlay.setColor(new Color(0x444444));
