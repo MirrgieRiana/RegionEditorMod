@@ -126,13 +126,13 @@ public class FrameRegionEditor
 							c.setHorizontalAlignment(JTextField.RIGHT);
 						}),
 
-						button("座標に飛ぶ", e -> {
+						button("Jump to position", e -> {
 							setPosition(
 								((Number) textFieldX.getValue()).intValue() / 16,
 								((Number) textFieldZ.getValue()).intValue() / 16);
 						}),
 
-						button("チャンク座標に飛ぶ", e -> {
+						button("Jump to chunk position", e -> {
 							setPosition(
 								((Number) textFieldX.getValue()).intValue(),
 								((Number) textFieldZ.getValue()).intValue());
@@ -151,8 +151,8 @@ public class FrameRegionEditor
 					// 操作ボタン
 					flowPanel(
 
-						button("地図", e -> {
-							FileDialog fileDialog = new FileDialog(frame, "地図を開く", FileDialog.LOAD);
+						button("Map", e -> {
+							FileDialog fileDialog = new FileDialog(frame, "Open Map Image", FileDialog.LOAD);
 							fileDialog.setDirectory(".");
 							fileDialog.setVisible(true);
 							if (fileDialog.getFile() == null) return;
