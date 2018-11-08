@@ -12,6 +12,8 @@ import java.text.NumberFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFormattedTextField;
@@ -168,7 +170,16 @@ public class GuiRegionEditor
 								return;
 							}
 
-							canvasMap.setMap(image);
+							java.awt.Point mapOrigin = new java.awt.Point(0, 0);
+							{
+								Matcher matcher = Pattern.compile("\\.X([0-9]+)Z([0-9]+)\\.png\\Z").matcher(file.getName());
+								if (matcher.find()) {
+									mapOrigin.x = Integer.parseInt(matcher.group(1), 10);
+									mapOrigin.y = Integer.parseInt(matcher.group(2), 10);
+								}
+							}
+
+							canvasMap.setMap(image, mapOrigin);
 						}),
 
 						button("Data", e -> new GuiData(windowWrapper, new IDialogDataListener() {

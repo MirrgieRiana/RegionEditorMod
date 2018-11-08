@@ -22,6 +22,7 @@ public class CanvasMap extends Canvas
 {
 
 	private BufferedImage imageMap = null;
+	private Point mapOrigin = null;
 
 	private BufferedImage imageLayerMap = null;
 	private Graphics2D graphicsLayerMap = null;
@@ -174,9 +175,10 @@ public class CanvasMap extends Canvas
 		updateLayerMap();
 	}
 
-	public void setMap(BufferedImage map)
+	public void setMap(BufferedImage imageMap, Point mapOrigin)
 	{
-		this.imageMap = map;
+		this.imageMap = imageMap;
+		this.mapOrigin = mapOrigin;
 		updateLayerMap();
 	}
 
@@ -289,7 +291,7 @@ public class CanvasMap extends Canvas
 	{
 		graphicsLayerMap.setBackground(new Color(128, 128, 128));
 		graphicsLayerMap.clearRect(0, 0, getWidth(), getHeight());
-		if (imageMap != null) graphicsLayerMap.drawImage(imageMap, 0 - positionX * 16, 0 - positionZ * 16, null);
+		if (imageMap != null) graphicsLayerMap.drawImage(imageMap, 0 - positionX * 16 - mapOrigin.x, 0 - positionZ * 16 - mapOrigin.y, null);
 
 		updateLayerOverlay();
 	}
