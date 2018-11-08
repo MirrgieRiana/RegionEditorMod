@@ -6,6 +6,8 @@ import java.text.ParseException;
 public final class RegionInfo implements Comparable<RegionInfo>
 {
 
+	public static final RegionInfo DEFAULT = new RegionInfo(new RegionIdentifier(0, 0), "No Country", new Color(0xFF00FF), "No State", new Color(0x000000));
+
 	public static RegionInfo decode(String code) throws ParseException
 	{
 		try {

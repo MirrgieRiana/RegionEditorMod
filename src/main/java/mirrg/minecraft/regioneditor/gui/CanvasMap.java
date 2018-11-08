@@ -92,7 +92,8 @@ public class CanvasMap extends Canvas
 
 	public RegionInfo getRegionInfo(RegionIdentifier regionIdentifier)
 	{
-		return regionInfoTable.get(regionIdentifier);
+
+		return regionInfoTable.getOrDefault(regionIdentifier, RegionInfo.DEFAULT);
 	}
 
 	private Optional<Point> oMousePosition = Optional.empty();
