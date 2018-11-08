@@ -3,7 +3,7 @@ package mirrg.minecraft.regioneditor.gui;
 import java.awt.Color;
 import java.text.ParseException;
 
-public final class RegionInfo
+public final class RegionInfo implements Comparable<RegionInfo>
 {
 
 	public static RegionInfo decode(String code) throws ParseException
@@ -83,6 +83,12 @@ public final class RegionInfo
 		RegionInfo other = (RegionInfo) obj;
 		if (!regionIdentifier.equals(other.regionIdentifier)) return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(RegionInfo other)
+	{
+		return regionIdentifier.compareTo(other.regionIdentifier);
 	}
 
 }

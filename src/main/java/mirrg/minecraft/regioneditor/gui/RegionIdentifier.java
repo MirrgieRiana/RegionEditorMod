@@ -2,7 +2,7 @@ package mirrg.minecraft.regioneditor.gui;
 
 import java.text.ParseException;
 
-public final class RegionIdentifier
+public final class RegionIdentifier implements Comparable<RegionIdentifier>
 {
 
 	public static RegionIdentifier decode(String code) throws ParseException
@@ -65,6 +65,20 @@ public final class RegionIdentifier
 		if (countryNumber != other.countryNumber) return false;
 		if (stateNumber != other.stateNumber) return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(RegionIdentifier other)
+	{
+		int a;
+
+		a = countryNumber - other.countryNumber;
+		if (a != 0) return a;
+
+		a = stateNumber - other.stateNumber;
+		if (a != 0) return a;
+
+		return 0;
 	}
 
 }
