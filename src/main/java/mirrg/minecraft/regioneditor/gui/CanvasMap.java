@@ -383,16 +383,31 @@ public class CanvasMap extends Canvas
 		graphicsLayerBack.drawImage(imageLayerOverlay, 0, 0, null);
 
 		if (oMousePosition.isPresent()) {
-			Optional<RegionIdentifier> oRegionIdentifier = regionMap.get(getChunkPosition(oMousePosition.get()));
+
+			int height = graphicsLayerBack.getFontMetrics().getHeight();
+
+			ChunkPosition chunkPosition = getChunkPosition(oMousePosition.get());
+
+			graphicsLayerBack.drawString(
+				chunkPosition.x + ", " + chunkPosition.z,
+				oMousePosition.get().x + 2,
+				oMousePosition.get().y - height * 2 - 2);
+
+			Optional<RegionIdentifier> oRegionIdentifier = regionMap.get(chunkPosition);
 			if (oRegionIdentifier.isPresent()) {
 				RegionInfo regionInfo = getRegionInfo(oRegionIdentifier.get());
 
-				int height = graphicsLayerBack.getFontMetrics().getHeight();
-
-				graphicsLayerBack.drawString(regionInfo.regionIdentifier.countryNumber + ":" + regionInfo.countryName, oMousePosition.get().x + 2, oMousePosition.get().y - height - 2);
-				graphicsLayerBack.drawString(regionInfo.regionIdentifier.stateNumber + ":" + regionInfo.stateName, oMousePosition.get().x + 2, oMousePosition.get().y - 2);
+				graphicsLayerBack.drawString(
+					regionInfo.regionIdentifier.countryNumber + ":" + regionInfo.countryName,
+					oMousePosition.get().x + 2,
+					oMousePosition.get().y - height * 1 - 2);
+				graphicsLayerBack.drawString(
+					regionInfo.regionIdentifier.stateNumber + ":" + regionInfo.stateName,
+					oMousePosition.get().x + 2,
+					oMousePosition.get().y - height * 0 - 2);
 
 			}
+
 		}
 
 		repaint();
