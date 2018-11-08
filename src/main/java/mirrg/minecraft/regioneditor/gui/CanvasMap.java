@@ -11,7 +11,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
-import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 
@@ -32,40 +34,58 @@ public class CanvasMap extends Canvas
 	private int positionX = 0;
 	private int positionZ = 0;
 
-	private Optional<RegionInfo> oRegionInfo = Optional.empty();
+	private Optional<RegionIdentifier> oRegionIdentifier = Optional.empty();
 
+	private Map<RegionIdentifier, RegionInfo> regionInfoTable = new HashMap<>();
 	private RegionMap regionMap = new RegionMap();
 	// TODO
 	{
 		try {
 
 			Random random = new Random();
+
+			for (int i = 0; i < 5; i++) {
+				addRegionInfo(new RegionInfo(
+					new RegionIdentifier(
+						random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10),
+						random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10)),
+					"" + random.nextInt(10000),
+					new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)),
+					"" + random.nextInt(10000),
+					new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256))));
+			}
+			addRegionInfo(RegionInfo.decode("4432:1,レイミセロ国:#FF0000:首都:#823413"));
+			addRegionInfo(RegionInfo.decode("4432:5673,レイミセロ国:#FF0000:九州:#198467"));
+			addRegionInfo(RegionInfo.decode("17:1,宇宙航空研究開発機構:#D89726:金星探査機「あかつき28」墜落跡地:#ff0000"));
+
 			for (int i = 0; i < 10000; i++) {
-				RegionInfo regionInfo;
+				RegionIdentifier regionIdentifier;
 
-				if (random.nextInt(10) == 0) {
-					regionInfo = RegionInfo.decode("4432:1,レイミセロ国:#FF0000:首都:#823413");
-				} else if (random.nextInt(10) == 0) {
-					regionInfo = RegionInfo.decode("4432:5673,レイミセロ国:#FF0000:九州:#198467");
-				} else if (random.nextInt(10) == 0) {
-					regionInfo = RegionInfo.decode("17:1,宇宙航空研究開発機構:#D89726:金星探査機「あかつき28」墜落跡地:#ff0000");
-				} else {
-					regionInfo = new RegionInfo(
-						new RegionIdentifier(
-							random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10),
-							random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10)),
-						"" + random.nextInt(10000),
-						new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)),
-						"" + random.nextInt(10000),
-						new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)));
+				regionIdentifier = new ArrayList<>(regionInfoTable.keySet()).get(random.nextInt(regionInfoTable.size()));
+
+				int x = random.nextInt(1000);
+				int z = random.nextInt(1000);
+				int s = random.nextInt(5);
+				for (int xi = -s; xi <= s; xi++) {
+					for (int zi = -s; zi <= s; zi++) {
+						regionMap.set(new ChunkPosition(x + xi, z + zi), Optional.of(regionIdentifier));
+					}
 				}
-
-				regionMap.setRegionInfo(new ChunkPosition(random.nextInt(1000), random.nextInt(1000)), Optional.of(regionInfo));
 			}
 
-		} catch (ParseException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
+	}
+
+	public void addRegionInfo(RegionInfo regionInfo)
+	{
+		regionInfoTable.put(regionInfo.regionIdentifier, regionInfo);
+	}
+
+	public RegionInfo getRegionInfo(RegionIdentifier regionIdentifier)
+	{
+		return regionInfoTable.get(regionIdentifier);
 	}
 
 	private Optional<Point> oMousePosition = Optional.empty();
@@ -91,12 +111,12 @@ public class CanvasMap extends Canvas
 
 				ChunkPosition chunkPosition = getChunkPosition(e.getPoint());
 				if (e.getButton() == MouseEvent.BUTTON2) {
-					oRegionInfo = regionMap.getRegionInfo(chunkPosition);
+					oRegionIdentifier = regionMap.get(chunkPosition);
 				} else if (e.getButton() == MouseEvent.BUTTON3) {
-					regionMap.setRegionInfo(chunkPosition, oRegionInfo);
+					regionMap.set(chunkPosition, oRegionIdentifier);
 					updateLayerOverlay();
 				} else if (e.getButton() == MouseEvent.BUTTON1) {
-					regionMap.setRegionInfo(chunkPosition, Optional.empty());
+					regionMap.set(chunkPosition, Optional.empty());
 					updateLayerOverlay();
 				}
 			}
@@ -139,10 +159,10 @@ public class CanvasMap extends Canvas
 
 				ChunkPosition chunkPosition = getChunkPosition(e.getPoint());
 				if (mouseButtons[MouseEvent.BUTTON3]) {
-					regionMap.setRegionInfo(chunkPosition, oRegionInfo);
+					regionMap.set(chunkPosition, oRegionIdentifier);
 					updateLayerOverlay();
 				} else if (mouseButtons[MouseEvent.BUTTON1]) {
-					regionMap.setRegionInfo(chunkPosition, Optional.empty());
+					regionMap.set(chunkPosition, Optional.empty());
 					updateLayerOverlay();
 				}
 			}
@@ -223,9 +243,9 @@ public class CanvasMap extends Canvas
 		for (int x = 0; x < chunkWidth; x++) {
 			for (int z = 0; z < chunkHeight; z++) {
 
-				Optional<RegionInfo> oRegionInfo = regionMap.getRegionInfo(new ChunkPosition(positionX + x, positionZ + z));
-				if (oRegionInfo.isPresent()) {
-					RegionInfo regionInfo = oRegionInfo.get();
+				Optional<RegionIdentifier> oRegionIdentifier = regionMap.get(new ChunkPosition(positionX + x, positionZ + z));
+				if (oRegionIdentifier.isPresent()) {
+					RegionInfo regionInfo = getRegionInfo(oRegionIdentifier.get());
 
 					// 背景半透明塗りつぶし
 					graphicsLayerOverlay.setColor(new Color(
@@ -267,9 +287,9 @@ public class CanvasMap extends Canvas
 		graphicsLayerBack.drawImage(imageLayerOverlay, 0, 0, null);
 
 		if (oMousePosition.isPresent()) {
-			Optional<RegionInfo> oRegionInfo = regionMap.getRegionInfo(getChunkPosition(oMousePosition.get()));
-			if (oRegionInfo.isPresent()) {
-				RegionInfo regionInfo = oRegionInfo.get();
+			Optional<RegionIdentifier> oRegionIdentifier = regionMap.get(getChunkPosition(oMousePosition.get()));
+			if (oRegionIdentifier.isPresent()) {
+				RegionInfo regionInfo = getRegionInfo(oRegionIdentifier.get());
 
 				int height = graphicsLayerBack.getFontMetrics().getHeight();
 

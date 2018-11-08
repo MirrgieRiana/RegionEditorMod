@@ -7,14 +7,14 @@ import java.util.Optional;
 public final class RegionMap
 {
 
-	private Map<ChunkPosition, RegionInfo> map = new HashMap<>();
+	private Map<ChunkPosition, RegionIdentifier> map = new HashMap<>();
 
-	public Optional<RegionInfo> getRegionInfo(ChunkPosition chunkPosition)
+	public Optional<RegionIdentifier> get(ChunkPosition chunkPosition)
 	{
 		return Optional.ofNullable(map.get(chunkPosition));
 	}
 
-	public void setRegionInfo(ChunkPosition chunkPosition, Optional<RegionInfo> oRegionInfo)
+	public void set(ChunkPosition chunkPosition, Optional<RegionIdentifier> oRegionInfo)
 	{
 		if (oRegionInfo.isPresent()) {
 			map.put(chunkPosition, oRegionInfo.get());
