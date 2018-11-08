@@ -7,13 +7,13 @@ import java.awt.Font;
 
 import javax.swing.JTextArea;
 
-public class DialogData
+public class GuiData
 {
 
 	private WindowWrapper windowWrapper;
 	private JTextArea textArea;
 
-	public DialogData(WindowWrapper owner, IDialogDataListener listener)
+	public GuiData(WindowWrapper owner, IDialogDataListener listener)
 	{
 		windowWrapper = WindowWrapper.createWindow(owner, "Data");
 

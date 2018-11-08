@@ -1,13 +1,13 @@
 package mirrg.minecraft.regioneditor;
 
-import mirrg.minecraft.regioneditor.gui.FrameRegionEditor;
+import mirrg.minecraft.regioneditor.gui.GuiRegionEditor;
 
 public class MainRegionEditor
 {
 
 	public static void main(String[] args)
 	{
-		new FrameRegionEditor(null).show();
+		new GuiRegionEditor(null).show();
 	}
 
 }

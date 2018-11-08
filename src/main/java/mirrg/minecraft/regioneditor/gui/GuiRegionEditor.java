@@ -19,9 +19,9 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
-import mirrg.minecraft.regioneditor.gui.DialogData.IDialogDataListener;
+import mirrg.minecraft.regioneditor.gui.GuiData.IDialogDataListener;
 
-public class FrameRegionEditor
+public class GuiRegionEditor
 {
 
 	private WindowWrapper windowWrapper;
@@ -33,7 +33,7 @@ public class FrameRegionEditor
 	private JFormattedTextField textFieldX;
 	private JFormattedTextField textFieldZ;
 
-	public FrameRegionEditor(WindowWrapper owner)
+	public GuiRegionEditor(WindowWrapper owner)
 	{
 		windowWrapper = WindowWrapper.createWindow(owner, "RegionEditor");
 
@@ -171,7 +171,7 @@ public class FrameRegionEditor
 							canvasMap.setMap(image);
 						}),
 
-						button("Data", e -> new DialogData(windowWrapper, new IDialogDataListener() {
+						button("Data", e -> new GuiData(windowWrapper, new IDialogDataListener() {
 							@Override
 							public void onImport(String string)
 							{

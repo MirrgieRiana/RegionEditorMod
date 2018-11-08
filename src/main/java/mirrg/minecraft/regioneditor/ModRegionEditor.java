@@ -2,7 +2,7 @@ package mirrg.minecraft.regioneditor;
 
 import org.apache.logging.log4j.Logger;
 
-import mirrg.minecraft.regioneditor.gui.FrameRegionEditor;
+import mirrg.minecraft.regioneditor.gui.GuiRegionEditor;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -42,7 +42,7 @@ public class ModRegionEditor
 						ItemStack itemStack = event.getItemStack();
 						if (itemStack.getItem() == Items.STICK) {
 							if (itemStack.getDisplayName().equals("RegionEditor.show")) {
-								new FrameRegionEditor(null).show();
+								new GuiRegionEditor(null).show();
 							}
 						}
 					}
