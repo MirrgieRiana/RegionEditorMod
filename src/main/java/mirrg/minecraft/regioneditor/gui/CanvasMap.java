@@ -291,7 +291,11 @@ public class CanvasMap extends Canvas
 	{
 		graphicsLayerMap.setBackground(new Color(128, 128, 128));
 		graphicsLayerMap.clearRect(0, 0, getWidth(), getHeight());
-		if (imageMap != null) graphicsLayerMap.drawImage(imageMap, 0 - positionX * 16 - mapOrigin.x, 0 - positionZ * 16 - mapOrigin.y, null);
+		if (imageMap != null) graphicsLayerMap.drawImage(
+			imageMap,
+			0 - positionX * 16 - mapOrigin.x + getWidth() / 2,
+			0 - positionZ * 16 - mapOrigin.y + getHeight() / 2,
+			null);
 
 		updateLayerOverlay();
 	}
@@ -303,13 +307,13 @@ public class CanvasMap extends Canvas
 		int width = getWidth();
 		int height = getHeight();
 
-		int chunkWidth = (width - 1) / 16 + 1;
-		int chunkHeight = (height - 1) / 16 + 1;
+		int chunkWidth = ((width / 2 - 1) / 16 + 1);
+		int chunkHeight = ((height / 2 - 1) / 16 + 1);
 
-		for (int x = 0; x < chunkWidth; x++) {
-			for (int z = 0; z < chunkHeight; z++) {
+		for (int xi = -chunkWidth; xi < chunkWidth; xi++) {
+			for (int zi = -chunkHeight; zi < chunkHeight; zi++) {
 
-				Optional<RegionIdentifier> oRegionIdentifier = regionMap.get(new ChunkPosition(positionX + x, positionZ + z));
+				Optional<RegionIdentifier> oRegionIdentifier = regionMap.get(new ChunkPosition(positionX + xi, positionZ + zi));
 				if (oRegionIdentifier.isPresent()) {
 					RegionInfo regionInfo = getRegionInfo(oRegionIdentifier.get());
 
@@ -319,7 +323,7 @@ public class CanvasMap extends Canvas
 						regionInfo.getDynmapColor().getGreen(),
 						regionInfo.getDynmapColor().getBlue(),
 						64));
-					graphicsLayerOverlay.fillRect(x * 16, z * 16, 16, 16);
+					graphicsLayerOverlay.fillRect(xi * 16 + getWidth() / 2, zi * 16 + getHeight() / 2, 16, 16);
 
 					// 領地輪郭線
 					graphicsLayerOverlay.setColor(new Color(
@@ -330,32 +334,42 @@ public class CanvasMap extends Canvas
 						int w = 2;
 
 						// left
-						if (!regionMap.get(new ChunkPosition(positionX + x - 1, positionZ + z)).equals(oRegionIdentifier)) {
-							graphicsLayerOverlay.fillRect(x * 16 + 1 + 0, z * 16 + 1 + 0, w, 16);
+						if (!regionMap.get(new ChunkPosition(positionX + xi - 1, positionZ + zi)).equals(oRegionIdentifier)) {
+							graphicsLayerOverlay.fillRect(xi * 16 + 1 + 0 + getWidth() / 2, zi * 16 + 1 + 0 + getHeight() / 2, w, 16);
 						}
 						// right
-						if (!regionMap.get(new ChunkPosition(positionX + x + 1, positionZ + z)).equals(oRegionIdentifier)) {
-							graphicsLayerOverlay.fillRect(x * 16 + (16 - w), z * 16 + 1 + 0, w, 16);
+						if (!regionMap.get(new ChunkPosition(positionX + xi + 1, positionZ + zi)).equals(oRegionIdentifier)) {
+							graphicsLayerOverlay.fillRect(xi * 16 + (16 - w) + getWidth() / 2, zi * 16 + 1 + 0 + getHeight() / 2, w, 16);
 						}
 						// top
-						if (!regionMap.get(new ChunkPosition(positionX + x, positionZ + z - 1)).equals(oRegionIdentifier)) {
-							graphicsLayerOverlay.fillRect(x * 16 + 1 + 0, z * 16 + 1 + 0, 16, w);
+						if (!regionMap.get(new ChunkPosition(positionX + xi, positionZ + zi - 1)).equals(oRegionIdentifier)) {
+							graphicsLayerOverlay.fillRect(xi * 16 + 1 + 0 + getWidth() / 2, zi * 16 + 1 + 0 + getHeight() / 2, 16, w);
 						}
 						// bottom
-						if (!regionMap.get(new ChunkPosition(positionX + x, positionZ + z + 1)).equals(oRegionIdentifier)) {
-							graphicsLayerOverlay.fillRect(x * 16 + 1 + 0, z * 16 + (16 - w), 16, w);
+						if (!regionMap.get(new ChunkPosition(positionX + xi, positionZ + zi + 1)).equals(oRegionIdentifier)) {
+							graphicsLayerOverlay.fillRect(xi * 16 + 1 + 0 + getWidth() / 2, zi * 16 + (16 - w) + getHeight() / 2, 16, w);
 						}
 					}
 
 					// 数値
-					FontRenderer.drawString(imageLayerOverlay, "" + regionInfo.regionIdentifier.countryNumber, x * 16 + 8, z * 16 + 2, regionInfo.countryColor);
-					FontRenderer.drawString(imageLayerOverlay, "" + regionInfo.regionIdentifier.stateNumber, x * 16 + 8, z * 16 + 8, regionInfo.stateColor);
+					FontRenderer.drawString(
+						imageLayerOverlay,
+						"" + regionInfo.regionIdentifier.countryNumber,
+						xi * 16 + 8 + getWidth() / 2,
+						zi * 16 + 2 + getHeight() / 2,
+						regionInfo.countryColor);
+					FontRenderer.drawString(
+						imageLayerOverlay,
+						"" + regionInfo.regionIdentifier.stateNumber,
+						xi * 16 + 8 + getWidth() / 2,
+						zi * 16 + 8 + getHeight() / 2,
+						regionInfo.stateColor);
 
 				}
 
 				// グリッド
 				graphicsLayerOverlay.setColor(new Color(0x444444));
-				graphicsLayerOverlay.drawRect(x * 16, z * 16, 16, 16);
+				graphicsLayerOverlay.drawRect(xi * 16 + getWidth() / 2, zi * 16 + getHeight() / 2, 16, 16);
 
 			}
 
@@ -386,7 +400,9 @@ public class CanvasMap extends Canvas
 
 	private ChunkPosition getChunkPosition(Point point)
 	{
-		return new ChunkPosition(positionX + point.x / 16, positionZ + point.y / 16);
+		return new ChunkPosition(
+			positionX + (int) Math.floor(((double) point.x - getWidth() / 2) / 16),
+			positionZ + (int) Math.floor(((double) point.y - getHeight() / 2) / 16));
 	}
 
 	//
