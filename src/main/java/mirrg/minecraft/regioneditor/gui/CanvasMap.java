@@ -176,6 +176,17 @@ public class CanvasMap extends Canvas
 		updateLayerMap();
 	}
 
+	public void fromExpression(String string)
+	{
+		// TODO
+	}
+
+	public String toExpression()
+	{
+		// TODO
+		return "a";
+	}
+
 	//
 
 	private void resizeLayer()

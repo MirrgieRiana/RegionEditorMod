@@ -29,6 +29,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
+import mirrg.minecraft.regioneditor.gui.DialogData.IDialogDataListener;
+
 public class FrameRegionEditor
 {
 
@@ -173,6 +175,20 @@ public class FrameRegionEditor
 
 							canvasMap.setMap(image);
 						}),
+
+						button("Data", e -> new DialogData(frame, new IDialogDataListener() {
+							@Override
+							public void onImport(String string)
+							{
+								canvasMap.fromExpression(string);
+							}
+
+							@Override
+							public String onExport()
+							{
+								return canvasMap.toExpression();
+							}
+						}).show()),
 
 						button("B", e -> {
 							try {
