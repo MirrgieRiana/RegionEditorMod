@@ -1,13 +1,14 @@
 package mirrg.minecraft.regioneditor.gui;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
 
 public final class RegionMap
 {
 
-	private Map<ChunkPosition, RegionIdentifier> map = new HashMap<>();
+	private Map<ChunkPosition, RegionIdentifier> map = new TreeMap<>();
 
 	public Optional<RegionIdentifier> get(ChunkPosition chunkPosition)
 	{
@@ -21,6 +22,11 @@ public final class RegionMap
 		} else {
 			map.remove(chunkPosition);
 		}
+	}
+
+	public Set<ChunkPosition> getKeys()
+	{
+		return map.keySet();
 	}
 
 }
