@@ -26,12 +26,12 @@ public final class RegionInfo
 
 	public String encode()
 	{
-		return String.format("%s,%s:%s:%s:%s",
+		return String.format("%s,%s:#%06x:%s:#%06x",
 			regionIdentifier.encode(),
 			countryName,
-			countryColor,
+			countryColor.getRGB() & 0xffffff,
 			stateName,
-			stateColor);
+			stateColor.getRGB() & 0xffffff);
 	}
 
 	public final RegionIdentifier regionIdentifier;
