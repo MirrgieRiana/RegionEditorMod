@@ -5,6 +5,8 @@ import static mirrg.minecraft.regioneditor.gui.SwingUtils.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FileDialog;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -12,15 +14,21 @@ import java.text.NumberFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
+import javax.swing.DefaultListModel;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
-import javax.swing.JTable;
+import javax.swing.JList;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 
+import mirrg.minecraft.regioneditor.gui.CanvasMap.ICanvasMapListener;
 import mirrg.minecraft.regioneditor.gui.GuiData.IDialogDataListener;
 
 public class GuiRegionEditor
@@ -34,6 +42,7 @@ public class GuiRegionEditor
 	private JLabel labelChunkZ;
 	private JFormattedTextField textFieldX;
 	private JFormattedTextField textFieldZ;
+	private JList<RegionInfo> tableRegionInfoTable;
 
 	public GuiRegionEditor(WindowWrapper owner)
 	{
@@ -63,7 +72,17 @@ public class GuiRegionEditor
 									borderPanelRight(
 
 										// 地図
-										canvasMap = get(new CanvasMap(), c -> {
+										canvasMap = get(new CanvasMap(new ICanvasMapListener() {
+											@Override
+											public void onRegionInfoTableChange(Map<RegionIdentifier, RegionInfo> regionInfoTable)
+											{
+												DefaultListModel<RegionInfo> model = (DefaultListModel<RegionInfo>) tableRegionInfoTable.getModel();
+												model.clear();
+												for (Entry<RegionIdentifier, RegionInfo> entry : regionInfoTable.entrySet()) {
+													model.addElement(entry.getValue());
+												}
+											}
+										}), c -> {
 											c.setMinimumSize(new Dimension(100, 100));
 											c.setPreferredSize(new Dimension(600, 600));
 										}),
@@ -140,7 +159,16 @@ public class GuiRegionEditor
 				borderPanelDown(
 
 					// 領地一覧
-					scrollPane(new JTable(), 300, 600),
+					scrollPane(tableRegionInfoTable = get(new JList<>(new DefaultListModel<RegionInfo>()), c -> {
+						c.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+						c.addMouseListener(new MouseAdapter() {
+							@Override
+							public void mouseClicked(MouseEvent e)
+							{
+								canvasMap.setRegionIdentifierCurrent(Optional.of(c.getModel().getElementAt(c.getSelectedIndex()).regionIdentifier));
+							}
+						});
+					}), 300, 600),
 
 					// 操作ボタン
 					flowPanel(
@@ -302,6 +330,7 @@ public class GuiRegionEditor
 		}
 
 		setPosition(0, 0);
+		canvasMap.init();
 
 		windowWrapper.getWindow().pack();
 	}

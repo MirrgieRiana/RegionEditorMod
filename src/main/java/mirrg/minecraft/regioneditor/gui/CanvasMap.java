@@ -21,6 +21,8 @@ import java.util.TreeMap;
 public class CanvasMap extends Canvas
 {
 
+	private ICanvasMapListener listener;
+
 	private BufferedImage imageMap = null;
 	private Point mapOrigin = null;
 
@@ -36,11 +38,13 @@ public class CanvasMap extends Canvas
 	private int positionX = 0;
 	private int positionZ = 0;
 
-	private Optional<RegionIdentifier> oRegionIdentifier = Optional.empty();
+	private Optional<RegionIdentifier> oRegionIdentifierCurrent = Optional.empty();
 
 	private Map<RegionIdentifier, RegionInfo> regionInfoTable = new TreeMap<>();
 	private RegionMap regionMap = new RegionMap();
+
 	// TODO
+	public void init()
 	{
 		try {
 
@@ -83,6 +87,7 @@ public class CanvasMap extends Canvas
 	public void addRegionInfo(RegionInfo regionInfo)
 	{
 		regionInfoTable.put(regionInfo.regionIdentifier, regionInfo);
+		listener.onRegionInfoTableChange(regionInfoTable);
 	}
 
 	public RegionInfo getRegionInfo(RegionIdentifier regionIdentifier)
@@ -93,8 +98,10 @@ public class CanvasMap extends Canvas
 	private Optional<Point> oMousePosition = Optional.empty();
 	private boolean[] mouseButtons = new boolean[8];
 
-	public CanvasMap()
+	public CanvasMap(ICanvasMapListener listener)
 	{
+		this.listener = listener;
+
 		addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e)
@@ -113,9 +120,9 @@ public class CanvasMap extends Canvas
 
 				ChunkPosition chunkPosition = getChunkPosition(e.getPoint());
 				if (e.getButton() == MouseEvent.BUTTON2) {
-					oRegionIdentifier = regionMap.get(chunkPosition);
+					oRegionIdentifierCurrent = regionMap.get(chunkPosition);
 				} else if (e.getButton() == MouseEvent.BUTTON3) {
-					regionMap.set(chunkPosition, oRegionIdentifier);
+					regionMap.set(chunkPosition, oRegionIdentifierCurrent);
 					updateLayerOverlay();
 				} else if (e.getButton() == MouseEvent.BUTTON1) {
 					regionMap.set(chunkPosition, Optional.empty());
@@ -161,7 +168,7 @@ public class CanvasMap extends Canvas
 
 				ChunkPosition chunkPosition = getChunkPosition(e.getPoint());
 				if (mouseButtons[MouseEvent.BUTTON3]) {
-					regionMap.set(chunkPosition, oRegionIdentifier);
+					regionMap.set(chunkPosition, oRegionIdentifierCurrent);
 					updateLayerOverlay();
 				} else if (mouseButtons[MouseEvent.BUTTON1]) {
 					regionMap.set(chunkPosition, Optional.empty());
@@ -173,6 +180,19 @@ public class CanvasMap extends Canvas
 		setSize(1, 1);
 		resizeLayer();
 		updateLayerMap();
+	}
+
+	public void setRegionIdentifierCurrent(Optional<RegionIdentifier> oRegionIdentifierCurrent)
+	{
+		this.oRegionIdentifierCurrent = oRegionIdentifierCurrent;
+		updateLayerBack();
+	}
+
+	public static interface ICanvasMapListener
+	{
+
+		public void onRegionInfoTableChange(Map<RegionIdentifier, RegionInfo> regionInfoTable);
+
 	}
 
 	public void setMap(BufferedImage imageMap, Point mapOrigin)
@@ -233,6 +253,9 @@ public class CanvasMap extends Canvas
 				}
 
 			}
+
+			listener.onRegionInfoTableChange(regionInfoTable);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -398,11 +421,11 @@ public class CanvasMap extends Canvas
 				RegionInfo regionInfo = getRegionInfo(oRegionIdentifier.get());
 
 				graphicsLayerBack.drawString(
-					regionInfo.regionIdentifier.countryNumber + ":" + regionInfo.countryName,
+					"Country: (" + regionInfo.regionIdentifier.countryNumber + ") " + regionInfo.countryName,
 					oMousePosition.get().x + 2,
 					oMousePosition.get().y - height * 1 - 2);
 				graphicsLayerBack.drawString(
-					regionInfo.regionIdentifier.stateNumber + ":" + regionInfo.stateName,
+					"State: (" + regionInfo.regionIdentifier.stateNumber + ") " + regionInfo.stateName,
 					oMousePosition.get().x + 2,
 					oMousePosition.get().y - height * 0 - 2);
 
