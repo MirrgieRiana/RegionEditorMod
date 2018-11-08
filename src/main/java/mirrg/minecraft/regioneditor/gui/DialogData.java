@@ -5,25 +5,22 @@ import static mirrg.minecraft.regioneditor.gui.SwingUtils.*;
 import java.awt.CardLayout;
 import java.awt.Font;
 
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JTextArea;
-import javax.swing.WindowConstants;
 
 public class DialogData
 {
 
-	private JDialog dialog;
+	private WindowWrapper windowWrapper;
 	private JTextArea textArea;
 
-	public DialogData(JFrame frame, IDialogDataListener listener)
+	public DialogData(WindowWrapper owner, IDialogDataListener listener)
 	{
-		dialog = new JDialog(frame);
+		windowWrapper = WindowWrapper.createWindow(owner, "Data");
 
 		{
-			dialog.setLayout(new CardLayout());
+			windowWrapper.getWindow().setLayout(new CardLayout());
 
-			dialog.add(borderPanelDown(
+			windowWrapper.getWindow().add(borderPanelDown(
 
 				scrollPane(textArea = get(new JTextArea(), c -> {
 					c.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
@@ -44,14 +41,12 @@ public class DialogData
 			));
 		}
 
-		dialog.pack();
-		dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		dialog.setLocationByPlatform(true);
+		windowWrapper.getWindow().pack();
 	}
 
 	public void show()
 	{
-		dialog.setVisible(true);
+		windowWrapper.getWindow().setVisible(true);
 	}
 
 	public static interface IDialogDataListener

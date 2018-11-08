@@ -42,7 +42,7 @@ public class ModRegionEditor
 						ItemStack itemStack = event.getItemStack();
 						if (itemStack.getItem() == Items.STICK) {
 							if (itemStack.getDisplayName().equals("RegionEditor.show")) {
-								new FrameRegionEditor().show();
+								new FrameRegionEditor(null).show();
 							}
 						}
 					}

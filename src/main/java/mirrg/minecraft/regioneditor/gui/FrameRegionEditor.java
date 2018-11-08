@@ -23,18 +23,16 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFormattedTextField;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.WindowConstants;
 
 import mirrg.minecraft.regioneditor.gui.DialogData.IDialogDataListener;
 
 public class FrameRegionEditor
 {
 
-	private JFrame frame;
+	private WindowWrapper windowWrapper;
 	private CanvasMap canvasMap;
 	private JLabel labelCoordX;
 	private JLabel labelCoordZ;
@@ -43,15 +41,15 @@ public class FrameRegionEditor
 	private JFormattedTextField textFieldX;
 	private JFormattedTextField textFieldZ;
 
-	public FrameRegionEditor()
+	public FrameRegionEditor(WindowWrapper owner)
 	{
-		frame = new JFrame("RegionEditor");
+		windowWrapper = WindowWrapper.createWindow(owner, "RegionEditor");
 
 		// 内容
 		{
-			frame.setLayout(new BorderLayout());
+			windowWrapper.getWindow().setLayout(new BorderLayout());
 
-			frame.add(splitPaneHorizontal(0.7,
+			windowWrapper.getWindow().add(splitPaneHorizontal(0.7,
 
 				borderPanelDown(
 
@@ -154,7 +152,12 @@ public class FrameRegionEditor
 					flowPanel(
 
 						button("Map", e -> {
-							FileDialog fileDialog = new FileDialog(frame, "Open Map Image", FileDialog.LOAD);
+							FileDialog fileDialog;
+							if (windowWrapper.frame != null) {
+								fileDialog = new FileDialog(windowWrapper.frame, "Open Map Image", FileDialog.LOAD);
+							} else {
+								fileDialog = new FileDialog(windowWrapper.dialog, "Open Map Image", FileDialog.LOAD);
+							}
 							fileDialog.setDirectory(".");
 							fileDialog.setVisible(true);
 							if (fileDialog.getFile() == null) return;
@@ -176,7 +179,7 @@ public class FrameRegionEditor
 							canvasMap.setMap(image);
 						}),
 
-						button("Data", e -> new DialogData(frame, new IDialogDataListener() {
+						button("Data", e -> new DialogData(windowWrapper, new IDialogDataListener() {
 							@Override
 							public void onImport(String string)
 							{
@@ -297,9 +300,7 @@ public class FrameRegionEditor
 
 		setPosition(0, 0);
 
-		frame.pack();
-		frame.setLocationByPlatform(true);
-		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		windowWrapper.getWindow().pack();
 	}
 
 	private void setPosition(int x, int z)
@@ -318,7 +319,7 @@ public class FrameRegionEditor
 
 	public void show()
 	{
-		frame.setVisible(true);
+		windowWrapper.getWindow().setVisible(true);
 	}
 
 }

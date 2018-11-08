@@ -7,7 +7,7 @@ public class MainRegionEditor
 
 	public static void main(String[] args)
 	{
-		new FrameRegionEditor().show();
+		new FrameRegionEditor(null).show();
 	}
 
 }
