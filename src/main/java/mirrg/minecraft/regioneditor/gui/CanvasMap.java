@@ -199,7 +199,43 @@ public class CanvasMap extends Canvas
 
 	public void fromExpression(String string)
 	{
-		// TODO
+		try {
+			string = string.replaceAll("[\r\n\t ]", "");
+			String[] commands = string.split(";");
+
+			regionInfoTable.clear();
+			regionMap.clear();
+
+			for (String command : commands) {
+				String kind = command.substring(0, 1);
+				String args = command.substring(1);
+
+				if (kind.equals("#")) {
+					// Comment Out
+				} else if (kind.equals("I")) {
+					// Info
+					RegionInfo regionInfo = RegionInfo.decode(args);
+					regionInfoTable.put(regionInfo.regionIdentifier, regionInfo);
+				} else if (kind.equals("M")) {
+					// Map
+					String[] s = args.split(",");
+					int countryNumber = Integer.parseInt(s[0], 10);
+					int stateNumber = Integer.parseInt(s[1], 10);
+					int x = Integer.parseInt(s[2], 10);
+					int z = Integer.parseInt(s[3], 10);
+					int length = Integer.parseInt(s[4], 10);
+					RegionIdentifier regionIdentifier = new RegionIdentifier(countryNumber, stateNumber);
+					for (int xi = 0; xi < length; xi++) {
+						regionMap.set(new ChunkPosition(x + xi, z), Optional.of(regionIdentifier));
+					}
+				}
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		updateLayerOverlay();
 	}
 
 	public String toExpression()

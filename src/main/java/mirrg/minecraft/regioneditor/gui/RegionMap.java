@@ -29,4 +29,9 @@ public final class RegionMap
 		return map.keySet();
 	}
 
+	public void clear()
+	{
+		map.clear();
+	}
+
 }
