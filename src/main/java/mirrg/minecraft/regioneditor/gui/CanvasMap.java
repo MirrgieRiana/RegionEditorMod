@@ -260,10 +260,26 @@ public class CanvasMap extends Canvas
 						regionInfo.getDynmapColor().getRed(),
 						regionInfo.getDynmapColor().getGreen(),
 						regionInfo.getDynmapColor().getBlue()));
-					graphicsLayerOverlay.drawLine(x * 16 + 1, z * 16 + 1, x * 16 + 15, z * 16 + 1);
-					graphicsLayerOverlay.drawLine(x * 16 + 1, z * 16 + 1, x * 16 + 1, z * 16 + 15);
-					graphicsLayerOverlay.drawLine(x * 16 + 1, z * 16 + 15, x * 16 + 15, z * 16 + 15);
-					graphicsLayerOverlay.drawLine(x * 16 + 15, z * 16 + 1, x * 16 + 15, z * 16 + 15);
+					{
+						int w = 2;
+
+						// left
+						if (!regionMap.get(new ChunkPosition(positionX + x - 1, positionZ + z)).equals(oRegionIdentifier)) {
+							graphicsLayerOverlay.fillRect(x * 16 + 1 + 0, z * 16 + 1 + 0, w, 16);
+						}
+						// right
+						if (!regionMap.get(new ChunkPosition(positionX + x + 1, positionZ + z)).equals(oRegionIdentifier)) {
+							graphicsLayerOverlay.fillRect(x * 16 + (16 - w), z * 16 + 1 + 0, w, 16);
+						}
+						// top
+						if (!regionMap.get(new ChunkPosition(positionX + x, positionZ + z - 1)).equals(oRegionIdentifier)) {
+							graphicsLayerOverlay.fillRect(x * 16 + 1 + 0, z * 16 + 1 + 0, 16, w);
+						}
+						// bottom
+						if (!regionMap.get(new ChunkPosition(positionX + x, positionZ + z + 1)).equals(oRegionIdentifier)) {
+							graphicsLayerOverlay.fillRect(x * 16 + 1 + 0, z * 16 + (16 - w), 16, w);
+						}
+					}
 
 					// 数値
 					FontRenderer.drawString(imageLayerOverlay, "" + regionInfo.regionIdentifier.countryNumber, x * 16 + 8, z * 16 + 2, regionInfo.countryColor);
