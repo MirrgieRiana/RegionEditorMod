@@ -1,6 +1,6 @@
 package mirrg.minecraft.regioneditor.gui;
 
-public final class ChunkPosition
+public final class ChunkPosition implements Comparable<ChunkPosition>
 {
 
 	public final int x;
@@ -38,6 +38,20 @@ public final class ChunkPosition
 		if (x != other.x) return false;
 		if (z != other.z) return false;
 		return true;
+	}
+
+	@Override
+	public int compareTo(ChunkPosition other)
+	{
+		int a;
+
+		a = z - other.z;
+		if (a != 0) return a;
+
+		a = x - other.x;
+		if (a != 0) return a;
+
+		return 0;
 	}
 
 }
