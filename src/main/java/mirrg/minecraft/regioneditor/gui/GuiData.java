@@ -7,46 +7,44 @@ import java.awt.Font;
 
 import javax.swing.JTextArea;
 
-public class GuiData
+public class GuiData extends GuiBase
 {
 
 	private WindowWrapper windowWrapper;
-	private JTextArea textArea;
+	private IDialogDataListener listener;
 
 	public GuiData(WindowWrapper owner, IDialogDataListener listener)
 	{
-		windowWrapper = WindowWrapper.createWindow(owner, "Data");
-
-		{
-			windowWrapper.getWindow().setLayout(new CardLayout());
-
-			windowWrapper.getWindow().add(borderPanelDown(
-
-				scrollPane(textArea = get(new JTextArea(), c -> {
-					c.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-				}), 200, 200),
-
-				flowPanel(
-
-					button("↑Export↑", e2 -> {
-						textArea.setText(listener.onExport());
-					}),
-
-					button("↓Import↓", e2 -> {
-						listener.onImport(textArea.getText());
-					})
-
-				)
-
-			));
-		}
-
-		windowWrapper.getWindow().pack();
+		super(owner, "Data");
+		this.listener = listener;
 	}
 
-	public void show()
+	private JTextArea textArea;
+
+	@Override
+	protected void initComponenets()
 	{
-		windowWrapper.getWindow().setVisible(true);
+		windowWrapper.getWindow().setLayout(new CardLayout());
+
+		windowWrapper.getWindow().add(borderPanelDown(
+
+			scrollPane(textArea = get(new JTextArea(), c -> {
+				c.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+			}), 200, 200),
+
+			flowPanel(
+
+				button("↑Export↑", e2 -> {
+					textArea.setText(listener.onExport());
+				}),
+
+				button("↓Import↓", e2 -> {
+					listener.onImport(textArea.getText());
+				})
+
+			)
+
+		));
 	}
 
 	public static interface IDialogDataListener
