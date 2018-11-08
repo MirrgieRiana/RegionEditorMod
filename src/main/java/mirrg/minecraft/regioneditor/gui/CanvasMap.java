@@ -13,6 +13,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
 import java.util.TreeMap;
@@ -203,8 +204,35 @@ public class CanvasMap extends Canvas
 
 	public String toExpression()
 	{
-		// TODO
-		return "a";
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("#infos");
+		sb.append(";\n");
+
+		for (Entry<RegionIdentifier, RegionInfo> entry : regionInfoTable.entrySet()) {
+			sb.append("I");
+			sb.append(entry.getValue().encode());
+			sb.append(";\n");
+		}
+
+		sb.append("#map");
+		sb.append(";\n");
+
+		// TODO 横並びの領地は1行にまとめる
+		// TODO Zip Base64
+		for (ChunkPosition chunkPosition : regionMap.getKeys()) {
+			RegionIdentifier regionIdentifier = regionMap.get(chunkPosition).get();
+			sb.append("M");
+			sb.append(String.format("%s,%s,%s,%s,%s",
+				regionIdentifier.countryNumber,
+				regionIdentifier.stateNumber,
+				chunkPosition.x,
+				chunkPosition.z,
+				1));
+			sb.append(";\n");
+		}
+
+		return sb.toString();
 	}
 
 	//
