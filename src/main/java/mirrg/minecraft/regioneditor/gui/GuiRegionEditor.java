@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -43,6 +44,7 @@ public class GuiRegionEditor
 	private JFormattedTextField textFieldX;
 	private JFormattedTextField textFieldZ;
 	private JList<RegionInfo> tableRegionInfoTable;
+	private DefaultListModel<RegionInfo> modelTableRegionInfoTable;
 
 	public GuiRegionEditor(WindowWrapper owner)
 	{
@@ -76,10 +78,25 @@ public class GuiRegionEditor
 											@Override
 											public void onRegionInfoTableChange(Map<RegionIdentifier, RegionInfo> regionInfoTable)
 											{
-												DefaultListModel<RegionInfo> model = (DefaultListModel<RegionInfo>) tableRegionInfoTable.getModel();
-												model.clear();
+												modelTableRegionInfoTable.clear();
 												for (Entry<RegionIdentifier, RegionInfo> entry : regionInfoTable.entrySet()) {
-													model.addElement(entry.getValue());
+													modelTableRegionInfoTable.addElement(entry.getValue());
+												}
+											}
+
+											@Override
+											public void onRegionIdentifierCurrentChange(Optional<RegionIdentifier> oRegionIdentifierCurrent)
+											{
+												tableRegionInfoTable.getSelectionModel().clearSelection();
+												Enumeration<RegionInfo> elements = modelTableRegionInfoTable.elements();
+												int i = 0;
+												while (elements.hasMoreElements()) {
+													RegionInfo regionInfo = elements.nextElement();
+													if (Optional.of(regionInfo.regionIdentifier).equals(oRegionIdentifierCurrent)) {
+														tableRegionInfoTable.setSelectedIndex(i);
+														break;
+													}
+													i++;
 												}
 											}
 										}), c -> {
@@ -159,7 +176,7 @@ public class GuiRegionEditor
 				borderPanelDown(
 
 					// 領地一覧
-					scrollPane(tableRegionInfoTable = get(new JList<>(new DefaultListModel<RegionInfo>()), c -> {
+					scrollPane(tableRegionInfoTable = get(new JList<>(modelTableRegionInfoTable = new DefaultListModel<>()), c -> {
 						c.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 						c.addMouseListener(new MouseAdapter() {
 							@Override

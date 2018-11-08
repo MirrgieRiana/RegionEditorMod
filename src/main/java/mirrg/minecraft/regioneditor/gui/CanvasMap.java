@@ -121,7 +121,7 @@ public class CanvasMap extends Canvas
 
 				ChunkPosition chunkPosition = getChunkPosition(e.getPoint());
 				if (e.getButton() == MouseEvent.BUTTON2) {
-					oRegionIdentifierCurrent = regionMap.get(chunkPosition);
+					setRegionIdentifierCurrent(regionMap.get(chunkPosition));
 				} else if (e.getButton() == MouseEvent.BUTTON3) {
 					regionMap.set(chunkPosition, oRegionIdentifierCurrent);
 					updateLayerOverlay();
@@ -186,6 +186,7 @@ public class CanvasMap extends Canvas
 	public void setRegionIdentifierCurrent(Optional<RegionIdentifier> oRegionIdentifierCurrent)
 	{
 		this.oRegionIdentifierCurrent = oRegionIdentifierCurrent;
+		listener.onRegionIdentifierCurrentChange(oRegionIdentifierCurrent);
 		updateLayerBack();
 	}
 
@@ -193,6 +194,8 @@ public class CanvasMap extends Canvas
 	{
 
 		public void onRegionInfoTableChange(Map<RegionIdentifier, RegionInfo> regionInfoTable);
+
+		public void onRegionIdentifierCurrentChange(Optional<RegionIdentifier> oRegionIdentifierCurrent);
 
 	}
 
