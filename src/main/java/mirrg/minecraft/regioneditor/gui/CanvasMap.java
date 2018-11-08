@@ -44,20 +44,20 @@ public class CanvasMap extends Canvas
 				RegionInfo regionInfo;
 
 				if (random.nextInt(10) == 0) {
-					regionInfo = RegionInfo.decode("4432,#FF0000,レイミセロ国,1,#823413,首都");
-
+					regionInfo = RegionInfo.decode("4432:1,レイミセロ国:#FF0000:首都:#823413");
 				} else if (random.nextInt(10) == 0) {
-					regionInfo = RegionInfo.decode("4432,#FF0000,レイミセロ国,5673,#198467,九州");
+					regionInfo = RegionInfo.decode("4432:5673,レイミセロ国:#FF0000:九州:#198467");
 				} else if (random.nextInt(10) == 0) {
-					regionInfo = RegionInfo.decode("17,#D89726,宇宙航空研究開発機構,1,#ff0000,金星探査機「あかつき28」墜落跡地");
+					regionInfo = RegionInfo.decode("17:1,宇宙航空研究開発機構:#D89726:金星探査機「あかつき28」墜落跡地:#ff0000");
 				} else {
 					regionInfo = new RegionInfo(
-						random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10),
+						new RegionIdentifier(
+							random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10),
+							random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10)),
+						"" + random.nextInt(10000),
 						new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)),
 						"" + random.nextInt(10000),
-						random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10),
-						new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)),
-						"" + random.nextInt(10000));
+						new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)));
 				}
 
 				regionMap.setRegionInfo(new ChunkPosition(random.nextInt(1000), random.nextInt(1000)), Optional.of(regionInfo));
@@ -246,8 +246,8 @@ public class CanvasMap extends Canvas
 					graphicsLayerOverlay.drawLine(x * 16 + 15, z * 16 + 1, x * 16 + 15, z * 16 + 15);
 
 					// 数値
-					FontRenderer.drawString(imageLayerOverlay, "" + regionInfo.countryNumber, x * 16 + 8, z * 16 + 2, regionInfo.countryColor);
-					FontRenderer.drawString(imageLayerOverlay, "" + regionInfo.stateNumber, x * 16 + 8, z * 16 + 8, regionInfo.stateColor);
+					FontRenderer.drawString(imageLayerOverlay, "" + regionInfo.regionIdentifier.countryNumber, x * 16 + 8, z * 16 + 2, regionInfo.countryColor);
+					FontRenderer.drawString(imageLayerOverlay, "" + regionInfo.regionIdentifier.stateNumber, x * 16 + 8, z * 16 + 8, regionInfo.stateColor);
 
 				}
 
@@ -273,8 +273,8 @@ public class CanvasMap extends Canvas
 
 				int height = graphicsLayerBack.getFontMetrics().getHeight();
 
-				graphicsLayerBack.drawString(regionInfo.countryNumber + ":" + regionInfo.countryName, oMousePosition.get().x + 2, oMousePosition.get().y - height - 2);
-				graphicsLayerBack.drawString(regionInfo.stateNumber + ":" + regionInfo.stateName, oMousePosition.get().x + 2, oMousePosition.get().y - 2);
+				graphicsLayerBack.drawString(regionInfo.regionIdentifier.countryNumber + ":" + regionInfo.countryName, oMousePosition.get().x + 2, oMousePosition.get().y - height - 2);
+				graphicsLayerBack.drawString(regionInfo.regionIdentifier.stateNumber + ":" + regionInfo.stateName, oMousePosition.get().x + 2, oMousePosition.get().y - 2);
 
 			}
 		}

@@ -9,14 +9,14 @@ public final class RegionInfo
 	public static RegionInfo decode(String code) throws ParseException
 	{
 		try {
-			String[] cells = code.split(",");
+			String[] a = code.split(",");
+			String[] b = a[1].split(":");
 			return new RegionInfo(
-				Integer.parseInt(cells[0], 10),
-				Color.decode(cells[1]),
-				cells[2],
-				Integer.parseInt(cells[3], 10),
-				Color.decode(cells[4]),
-				cells[5]);
+				RegionIdentifier.decode(a[0]),
+				b[0],
+				Color.decode(b[1]),
+				b[2],
+				Color.decode(b[3]));
 		} catch (NumberFormatException e) {
 			ParseException parseException = new ParseException(code, 0);
 			parseException.initCause(e);
@@ -26,36 +26,32 @@ public final class RegionInfo
 
 	public String encode()
 	{
-		return String.format("%s,%s,%s,%s,%s,%s",
-			countryNumber,
-			countryColor,
+		return String.format("%s,%s:%s:%s:%s",
+			regionIdentifier.encode(),
 			countryName,
-			stateNumber,
-			stateColor,
-			stateName);
+			countryColor,
+			stateName,
+			stateColor);
 	}
 
-	public final int countryNumber;
-	public final Color countryColor;
+	public final RegionIdentifier regionIdentifier;
 	public final String countryName;
-	public final int stateNumber;
-	public final Color stateColor;
+	public final Color countryColor;
 	public final String stateName;
+	public final Color stateColor;
 
 	public RegionInfo(
-		int countryNumber,
-		Color countryColor,
+		RegionIdentifier regionIdentifier,
 		String countryName,
-		int stateNumber,
-		Color stateColor,
-		String stateName)
+		Color countryColor,
+		String stateName,
+		Color stateColor)
 	{
-		this.countryNumber = countryNumber;
-		this.countryColor = countryColor;
+		this.regionIdentifier = regionIdentifier;
 		this.countryName = countryName;
-		this.stateNumber = stateNumber;
-		this.stateColor = stateColor;
+		this.countryColor = countryColor;
 		this.stateName = stateName;
+		this.stateColor = stateColor;
 	}
 
 	public Color getDynmapColor()
@@ -75,11 +71,7 @@ public final class RegionInfo
 	@Override
 	public int hashCode()
 	{
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + countryNumber;
-		result = prime * result + stateNumber;
-		return result;
+		return regionIdentifier.hashCode();
 	}
 
 	@Override
@@ -89,8 +81,7 @@ public final class RegionInfo
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 		RegionInfo other = (RegionInfo) obj;
-		if (countryNumber != other.countryNumber) return false;
-		if (stateNumber != other.stateNumber) return false;
+		if (!regionIdentifier.equals(other.regionIdentifier)) return false;
 		return true;
 	}
 
