@@ -12,10 +12,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.TreeMap;
 
 public class CanvasMap extends Canvas
 {
@@ -36,7 +36,7 @@ public class CanvasMap extends Canvas
 
 	private Optional<RegionIdentifier> oRegionIdentifier = Optional.empty();
 
-	private Map<RegionIdentifier, RegionInfo> regionInfoTable = new HashMap<>();
+	private Map<RegionIdentifier, RegionInfo> regionInfoTable = new TreeMap<>();
 	private RegionMap regionMap = new RegionMap();
 	// TODO
 	{
