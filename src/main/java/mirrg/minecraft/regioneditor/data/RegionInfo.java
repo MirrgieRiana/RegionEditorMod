@@ -67,7 +67,11 @@ public final class RegionInfo implements Comparable<RegionInfo>
 	@Override
 	public String toString()
 	{
-		return countryName + ":" + stateName;
+		return String.format("(%s)%s:(%s)%s",
+			regionIdentifier.countryNumber,
+			countryName,
+			regionIdentifier.stateNumber,
+			stateName);
 	}
 
 	@Override
