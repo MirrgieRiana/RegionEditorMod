@@ -1,4 +1,4 @@
-package mirrg.minecraft.regioneditor.gui;
+package mirrg.minecraft.regioneditor.data;
 
 public final class ChunkPosition implements Comparable<ChunkPosition>
 {

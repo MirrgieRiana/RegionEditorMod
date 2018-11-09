@@ -1,4 +1,4 @@
-package mirrg.minecraft.regioneditor.gui;
+package mirrg.minecraft.regioneditor.data;
 
 import java.util.Map;
 import java.util.Optional;

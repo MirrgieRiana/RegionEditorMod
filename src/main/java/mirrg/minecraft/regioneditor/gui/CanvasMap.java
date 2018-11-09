@@ -14,6 +14,12 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import mirrg.minecraft.regioneditor.data.ChunkPosition;
+import mirrg.minecraft.regioneditor.data.RegionIdentifier;
+import mirrg.minecraft.regioneditor.data.RegionInfo;
+import mirrg.minecraft.regioneditor.data.RegionMap;
+
 import java.util.Optional;
 import java.util.Random;
 import java.util.TreeMap;
