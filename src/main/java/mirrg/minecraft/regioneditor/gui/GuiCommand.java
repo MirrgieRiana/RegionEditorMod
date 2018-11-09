@@ -10,8 +10,6 @@ import javax.swing.JTextArea;
 public class GuiCommand extends GuiBase
 {
 
-	private WindowWrapper windowWrapper;
-
 	public GuiCommand(WindowWrapper owner)
 	{
 		super(owner, "Command");

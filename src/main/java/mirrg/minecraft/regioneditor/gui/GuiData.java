@@ -10,7 +10,6 @@ import javax.swing.JTextArea;
 public class GuiData extends GuiBase
 {
 
-	private WindowWrapper windowWrapper;
 	private IDialogDataListener listener;
 
 	public GuiData(WindowWrapper owner, IDialogDataListener listener)
