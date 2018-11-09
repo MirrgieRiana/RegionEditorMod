@@ -12,15 +12,20 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
+import io.netty.util.internal.shaded.org.jctools.queues.MessagePassingQueue.Consumer;
 import mirrg.minecraft.regioneditor.data.ChunkPosition;
 import mirrg.minecraft.regioneditor.data.MapData;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
 import mirrg.minecraft.regioneditor.data.RegionInfoTable;
+import net.minecraft.util.Tuple;
 
 public class CanvasMap extends Canvas
 {
@@ -222,44 +227,49 @@ public class CanvasMap extends Canvas
 
 	public void fromExpression(String string)
 	{
-		try {
-			string = string.replaceAll("[\r\n\t ]", "");
-			String[] commands = string.split(";");
+		mapData.regionInfoTable.clear();
+		mapData.regionMap.clear();
 
-			mapData.regionInfoTable.clear();
-			mapData.regionMap.clear();
+		Consumer<String>[] commandConsumer = new Consumer[1];
+		commandConsumer[0] = string2 -> {
+			try {
+				string2 = string2.replaceAll("[\\r\\n\\t ]", "");
+				String[] commands = string2.split(";");
 
-			for (String command : commands) {
-				String kind = command.substring(0, 1);
-				String args = command.substring(1);
+				for (String command : commands) {
+					String kind = command.substring(0, 1);
+					String args = command.substring(1);
 
-				if (kind.equals("#")) {
-					// Comment Out
-				} else if (kind.equals("I")) {
-					// Info
-					RegionInfo regionInfo = RegionInfo.decode(args);
-					mapData.regionInfoTable.put(regionInfo.regionIdentifier, regionInfo);
-				} else if (kind.equals("M")) {
-					// Map
-					String[] s = args.split(",");
-					int countryNumber = Integer.parseInt(s[0], 10);
-					int stateNumber = Integer.parseInt(s[1], 10);
-					int x = Integer.parseInt(s[2], 10);
-					int z = Integer.parseInt(s[3], 10);
-					int length = Integer.parseInt(s[4], 10);
-					RegionIdentifier regionIdentifier = new RegionIdentifier(countryNumber, stateNumber);
-					for (int xi = 0; xi < length; xi++) {
-						mapData.regionMap.set(new ChunkPosition(x + xi, z), Optional.of(regionIdentifier));
+					if (kind.equals("#")) {
+						// Comment Out
+					} else if (kind.equals("I")) {
+						// Info
+						RegionInfo regionInfo = RegionInfo.decode(args);
+						mapData.regionInfoTable.put(regionInfo.regionIdentifier, regionInfo);
+					} else if (kind.equals("M")) {
+						// Map
+						String[] s = args.split(",");
+						int countryNumber = Integer.parseInt(s[0], 10);
+						int stateNumber = Integer.parseInt(s[1], 10);
+						int x = Integer.parseInt(s[2], 10);
+						int z = Integer.parseInt(s[3], 10);
+						int length = Integer.parseInt(s[4], 10);
+						RegionIdentifier regionIdentifier = new RegionIdentifier(countryNumber, stateNumber);
+						for (int xi = 0; xi < length; xi++) {
+							mapData.regionMap.set(new ChunkPosition(x + xi, z), Optional.of(regionIdentifier));
+						}
+					} else if (kind.equals("C")) {
+						commandConsumer[0].accept(decompress(args));
 					}
+
 				}
-
+			} catch (Exception e) {
+				throw new RuntimeException(e);
 			}
+		};
+		commandConsumer[0].accept(string);
 
-			listener.onRegionInfoTableChange(mapData.regionInfoTable);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		listener.onRegionInfoTableChange(mapData.regionInfoTable);
 
 		updateLayerOverlay();
 	}
@@ -280,21 +290,162 @@ public class CanvasMap extends Canvas
 		sb.append("#map");
 		sb.append(";\n");
 
-		// TODO 横並びの領地は1行にまとめる
-		// TODO Zip Base64
-		for (ChunkPosition chunkPosition : mapData.regionMap.getKeys()) {
-			RegionIdentifier regionIdentifier = mapData.regionMap.get(chunkPosition).get();
-			sb.append("M");
-			sb.append(String.format("%s,%s,%s,%s,%s",
-				regionIdentifier.countryNumber,
-				regionIdentifier.stateNumber,
-				chunkPosition.x,
-				chunkPosition.z,
-				1));
+		{
+			sb.append("C");
+			sb.append("\n");
+			try {
+				sb.append(compress(getMapExpression()));
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
 			sb.append(";\n");
 		}
 
 		return sb.toString();
+	}
+
+	private String getMapExpression()
+	{
+		StringBuilder sb = new StringBuilder();
+
+		ChunkPosition chunkPositionLast = null;
+		RegionIdentifier regionIdentifierLast = null;
+		int length = 0;
+
+		for (ChunkPosition chunkPosition : mapData.regionMap.getKeys()) {
+			RegionIdentifier regionIdentifier = mapData.regionMap.get(chunkPosition).get();
+
+			if (chunkPositionLast != null) {
+				// 1個前の領地がある場合
+
+				if (chunkPositionLast.x + 1 == chunkPosition.x
+					&& chunkPositionLast.z == chunkPosition.z
+					&& regionIdentifierLast.equals(regionIdentifier)) {
+					// 1個前の領地のすぐ右で同じ領地情報の場合
+
+					// この領地を飛ばす
+					chunkPositionLast = chunkPosition;
+					length++;
+
+				} else {
+					// そうでない場合
+
+					// 前の領地を出力する
+					sb.append("M");
+					sb.append(String.format("%s,%s,%s,%s,%s",
+						regionIdentifierLast.countryNumber,
+						regionIdentifierLast.stateNumber,
+						chunkPositionLast.x - length + 1,
+						chunkPositionLast.z,
+						length));
+					sb.append(";\n");
+
+					// この領地を飛ばす
+					chunkPositionLast = chunkPosition;
+					regionIdentifierLast = regionIdentifier;
+					length = 1;
+
+				}
+
+			} else {
+				// 1個前の領地がない場合
+
+				// この領地を飛ばす
+				chunkPositionLast = chunkPosition;
+				regionIdentifierLast = regionIdentifier;
+				length = 1;
+
+			}
+
+		}
+
+		if (chunkPositionLast != null) {
+			// 1個前の領地がある場合
+
+			// 前の領地を出力する
+			sb.append("M");
+			sb.append(String.format("%s,%s,%s,%s,%s",
+				regionIdentifierLast.countryNumber,
+				regionIdentifierLast.stateNumber,
+				chunkPositionLast.x - length + 1,
+				chunkPositionLast.z,
+				length));
+			sb.append(";\n");
+
+		}
+
+		return sb.toString();
+	}
+
+	private String compress(String string) throws Exception
+	{
+		Deflater deflater = new Deflater();
+		deflater.setInput(string.getBytes("utf-8"));
+		deflater.finish();
+		ArrayList<Tuple<Integer, byte[]>> buffers = new ArrayList<>();
+		while (true) {
+			byte[] buffer = new byte[1024];
+			int length = deflater.deflate(buffer);
+			if (length > 0) {
+				buffers.add(new Tuple<>(length, buffer));
+			} else {
+				break;
+			}
+		}
+		deflater.end();
+
+		int length = buffers.stream()
+			.mapToInt(t -> t.getFirst())
+			.sum();
+		byte[] buffer2 = new byte[length];
+		{
+			int start = 0;
+			for (Tuple<Integer, byte[]> buffer : buffers) {
+				System.arraycopy(buffer.getSecond(), 0, buffer2, start, buffer.getFirst());
+				start += buffer.getFirst();
+			}
+		}
+
+		String out = new String(Base64.getEncoder().encode(buffer2), "utf-8");
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < out.length(); i += 100) {
+			sb.append(out.substring(i, Math.min(i + 100, out.length())));
+			sb.append("\n");
+		}
+		return sb.toString();
+	}
+
+	private String decompress(String string) throws Exception
+	{
+		byte[] buffer1 = Base64.getDecoder().decode(string.replaceAll("[\\r\\n\\t ]", ""));
+
+		Inflater inflater = new Inflater();
+		inflater.setInput(buffer1, 0, buffer1.length);
+		ArrayList<Tuple<Integer, byte[]>> buffers = new ArrayList<>();
+		while (true) {
+			byte[] buffer = new byte[1024];
+			int length = inflater.inflate(buffer);
+			if (length > 0) {
+				buffers.add(new Tuple<>(length, buffer));
+			} else {
+				break;
+			}
+		}
+		inflater.end();
+
+		int length = buffers.stream()
+			.mapToInt(t -> t.getFirst())
+			.sum();
+		byte[] buffer2 = new byte[length];
+		{
+			int start = 0;
+			for (Tuple<Integer, byte[]> buffer : buffers) {
+				System.arraycopy(buffer.getSecond(), 0, buffer2, start, buffer.getFirst());
+				start += buffer.getFirst();
+			}
+		}
+
+		return new String(buffer2, "utf-8");
 	}
 
 	//
