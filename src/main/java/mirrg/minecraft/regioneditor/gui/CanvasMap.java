@@ -124,10 +124,10 @@ public class CanvasMap extends Canvas
 				ChunkPosition chunkPosition = getChunkPosition(e.getPoint());
 				if (e.getButton() == MouseEvent.BUTTON2) {
 					setRegionIdentifierCurrent(mapData.regionMap.get(chunkPosition));
-				} else if (e.getButton() == MouseEvent.BUTTON3) {
+				} else if (e.getButton() == MouseEvent.BUTTON1) {
 					mapData.regionMap.set(chunkPosition, oRegionIdentifierCurrent);
 					updateLayerOverlay();
-				} else if (e.getButton() == MouseEvent.BUTTON1) {
+				} else if (e.getButton() == MouseEvent.BUTTON3) {
 					mapData.regionMap.set(chunkPosition, Optional.empty());
 					updateLayerOverlay();
 				}
@@ -170,10 +170,10 @@ public class CanvasMap extends Canvas
 				updateLayerBack();
 
 				ChunkPosition chunkPosition = getChunkPosition(e.getPoint());
-				if (mouseButtons[MouseEvent.BUTTON3]) {
+				if (mouseButtons[MouseEvent.BUTTON1]) {
 					mapData.regionMap.set(chunkPosition, oRegionIdentifierCurrent);
 					updateLayerOverlay();
-				} else if (mouseButtons[MouseEvent.BUTTON1]) {
+				} else if (mouseButtons[MouseEvent.BUTTON3]) {
 					mapData.regionMap.set(chunkPosition, Optional.empty());
 					updateLayerOverlay();
 				}
