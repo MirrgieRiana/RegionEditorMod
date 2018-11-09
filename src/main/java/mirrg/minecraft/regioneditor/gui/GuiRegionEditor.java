@@ -183,7 +183,7 @@ public class GuiRegionEditor extends GuiBase
 					c.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 					c.addMouseListener(new MouseAdapter() {
 						@Override
-						public void mouseClicked(MouseEvent e)
+						public void mouseReleased(MouseEvent e)
 						{
 							canvasMap.setRegionIdentifierCurrent(Optional.of(c.getModel().getElementAt(c.getSelectedIndex()).regionIdentifier));
 						}
