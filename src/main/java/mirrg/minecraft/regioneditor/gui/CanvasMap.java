@@ -12,17 +12,15 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Random;
 
 import mirrg.minecraft.regioneditor.data.ChunkPosition;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
+import mirrg.minecraft.regioneditor.data.RegionInfoTable;
 import mirrg.minecraft.regioneditor.data.RegionMap;
-
-import java.util.Optional;
-import java.util.Random;
-import java.util.TreeMap;
 
 public class CanvasMap extends Canvas
 {
@@ -46,7 +44,7 @@ public class CanvasMap extends Canvas
 
 	private Optional<RegionIdentifier> oRegionIdentifierCurrent = Optional.empty();
 
-	private Map<RegionIdentifier, RegionInfo> regionInfoTable = new TreeMap<>();
+	private RegionInfoTable regionInfoTable = new RegionInfoTable();
 	private RegionMap regionMap = new RegionMap();
 
 	// TODO
@@ -94,12 +92,6 @@ public class CanvasMap extends Canvas
 	{
 		regionInfoTable.put(regionInfo.regionIdentifier, regionInfo);
 		listener.onRegionInfoTableChange(regionInfoTable);
-	}
-
-	public RegionInfo getRegionInfo(RegionIdentifier regionIdentifier)
-	{
-
-		return regionInfoTable.getOrDefault(regionIdentifier, RegionInfo.DEFAULT);
 	}
 
 	private Optional<Point> oMousePosition = Optional.empty();
@@ -199,7 +191,7 @@ public class CanvasMap extends Canvas
 	public static interface ICanvasMapListener
 	{
 
-		public void onRegionInfoTableChange(Map<RegionIdentifier, RegionInfo> regionInfoTable);
+		public void onRegionInfoTableChange(RegionInfoTable regionInfoTable);
 
 		public void onRegionIdentifierCurrentChange(Optional<RegionIdentifier> oRegionIdentifierCurrent);
 
@@ -348,7 +340,7 @@ public class CanvasMap extends Canvas
 
 				Optional<RegionIdentifier> oRegionIdentifier = regionMap.get(new ChunkPosition(positionX + xi, positionZ + zi));
 				if (oRegionIdentifier.isPresent()) {
-					RegionInfo regionInfo = getRegionInfo(oRegionIdentifier.get());
+					RegionInfo regionInfo = regionInfoTable.get(oRegionIdentifier.get());
 
 					// 背景半透明塗りつぶし
 					graphicsLayerOverlay.setColor(new Color(
@@ -428,7 +420,7 @@ public class CanvasMap extends Canvas
 
 			Optional<RegionIdentifier> oRegionIdentifier = regionMap.get(chunkPosition);
 			if (oRegionIdentifier.isPresent()) {
-				RegionInfo regionInfo = getRegionInfo(oRegionIdentifier.get());
+				RegionInfo regionInfo = regionInfoTable.get(oRegionIdentifier.get());
 
 				graphicsLayerBack.drawString(
 					"Country: (" + regionInfo.regionIdentifier.countryNumber + ") " + regionInfo.countryName,

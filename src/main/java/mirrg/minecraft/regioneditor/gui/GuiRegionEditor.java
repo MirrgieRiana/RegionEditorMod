@@ -15,7 +15,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -31,6 +30,7 @@ import javax.swing.ListSelectionModel;
 
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
+import mirrg.minecraft.regioneditor.data.RegionInfoTable;
 import mirrg.minecraft.regioneditor.gui.CanvasMap.ICanvasMapListener;
 import mirrg.minecraft.regioneditor.gui.GuiData.IDialogDataListener;
 
@@ -79,7 +79,7 @@ public class GuiRegionEditor extends GuiBase
 									// 地図
 									canvasMap = get(new CanvasMap(new ICanvasMapListener() {
 										@Override
-										public void onRegionInfoTableChange(Map<RegionIdentifier, RegionInfo> regionInfoTable)
+										public void onRegionInfoTableChange(RegionInfoTable regionInfoTable)
 										{
 											modelTableRegionInfoTable.clear();
 											for (Entry<RegionIdentifier, RegionInfo> entry : regionInfoTable.entrySet()) {
