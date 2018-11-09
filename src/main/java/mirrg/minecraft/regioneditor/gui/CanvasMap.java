@@ -17,10 +17,10 @@ import java.util.Optional;
 import java.util.Random;
 
 import mirrg.minecraft.regioneditor.data.ChunkPosition;
+import mirrg.minecraft.regioneditor.data.MapData;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
 import mirrg.minecraft.regioneditor.data.RegionInfoTable;
-import mirrg.minecraft.regioneditor.data.RegionMap;
 
 public class CanvasMap extends Canvas
 {
@@ -44,8 +44,7 @@ public class CanvasMap extends Canvas
 
 	private Optional<RegionIdentifier> oRegionIdentifierCurrent = Optional.empty();
 
-	private RegionInfoTable regionInfoTable = new RegionInfoTable();
-	private RegionMap regionMap = new RegionMap();
+	private MapData mapData = new MapData();
 
 	// TODO
 	public void init()
@@ -71,14 +70,14 @@ public class CanvasMap extends Canvas
 			for (int i = 0; i < 10000; i++) {
 				RegionIdentifier regionIdentifier;
 
-				regionIdentifier = new ArrayList<>(regionInfoTable.keySet()).get(random.nextInt(regionInfoTable.size()));
+				regionIdentifier = new ArrayList<>(mapData.regionInfoTable.keySet()).get(random.nextInt(mapData.regionInfoTable.size()));
 
 				int x = random.nextInt(1000);
 				int z = random.nextInt(1000);
 				int s = random.nextInt(5);
 				for (int xi = -s; xi <= s; xi++) {
 					for (int zi = -s; zi <= s; zi++) {
-						regionMap.set(new ChunkPosition(x + xi, z + zi), Optional.of(regionIdentifier));
+						mapData.regionMap.set(new ChunkPosition(x + xi, z + zi), Optional.of(regionIdentifier));
 					}
 				}
 			}
@@ -90,8 +89,8 @@ public class CanvasMap extends Canvas
 
 	public void addRegionInfo(RegionInfo regionInfo)
 	{
-		regionInfoTable.put(regionInfo.regionIdentifier, regionInfo);
-		listener.onRegionInfoTableChange(regionInfoTable);
+		mapData.regionInfoTable.put(regionInfo.regionIdentifier, regionInfo);
+		listener.onRegionInfoTableChange(mapData.regionInfoTable);
 	}
 
 	private Optional<Point> oMousePosition = Optional.empty();
@@ -119,12 +118,12 @@ public class CanvasMap extends Canvas
 
 				ChunkPosition chunkPosition = getChunkPosition(e.getPoint());
 				if (e.getButton() == MouseEvent.BUTTON2) {
-					setRegionIdentifierCurrent(regionMap.get(chunkPosition));
+					setRegionIdentifierCurrent(mapData.regionMap.get(chunkPosition));
 				} else if (e.getButton() == MouseEvent.BUTTON3) {
-					regionMap.set(chunkPosition, oRegionIdentifierCurrent);
+					mapData.regionMap.set(chunkPosition, oRegionIdentifierCurrent);
 					updateLayerOverlay();
 				} else if (e.getButton() == MouseEvent.BUTTON1) {
-					regionMap.set(chunkPosition, Optional.empty());
+					mapData.regionMap.set(chunkPosition, Optional.empty());
 					updateLayerOverlay();
 				}
 			}
@@ -167,10 +166,10 @@ public class CanvasMap extends Canvas
 
 				ChunkPosition chunkPosition = getChunkPosition(e.getPoint());
 				if (mouseButtons[MouseEvent.BUTTON3]) {
-					regionMap.set(chunkPosition, oRegionIdentifierCurrent);
+					mapData.regionMap.set(chunkPosition, oRegionIdentifierCurrent);
 					updateLayerOverlay();
 				} else if (mouseButtons[MouseEvent.BUTTON1]) {
-					regionMap.set(chunkPosition, Optional.empty());
+					mapData.regionMap.set(chunkPosition, Optional.empty());
 					updateLayerOverlay();
 				}
 			}
@@ -227,8 +226,8 @@ public class CanvasMap extends Canvas
 			string = string.replaceAll("[\r\n\t ]", "");
 			String[] commands = string.split(";");
 
-			regionInfoTable.clear();
-			regionMap.clear();
+			mapData.regionInfoTable.clear();
+			mapData.regionMap.clear();
 
 			for (String command : commands) {
 				String kind = command.substring(0, 1);
@@ -239,7 +238,7 @@ public class CanvasMap extends Canvas
 				} else if (kind.equals("I")) {
 					// Info
 					RegionInfo regionInfo = RegionInfo.decode(args);
-					regionInfoTable.put(regionInfo.regionIdentifier, regionInfo);
+					mapData.regionInfoTable.put(regionInfo.regionIdentifier, regionInfo);
 				} else if (kind.equals("M")) {
 					// Map
 					String[] s = args.split(",");
@@ -250,13 +249,13 @@ public class CanvasMap extends Canvas
 					int length = Integer.parseInt(s[4], 10);
 					RegionIdentifier regionIdentifier = new RegionIdentifier(countryNumber, stateNumber);
 					for (int xi = 0; xi < length; xi++) {
-						regionMap.set(new ChunkPosition(x + xi, z), Optional.of(regionIdentifier));
+						mapData.regionMap.set(new ChunkPosition(x + xi, z), Optional.of(regionIdentifier));
 					}
 				}
 
 			}
 
-			listener.onRegionInfoTableChange(regionInfoTable);
+			listener.onRegionInfoTableChange(mapData.regionInfoTable);
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -272,7 +271,7 @@ public class CanvasMap extends Canvas
 		sb.append("#infos");
 		sb.append(";\n");
 
-		for (Entry<RegionIdentifier, RegionInfo> entry : regionInfoTable.entrySet()) {
+		for (Entry<RegionIdentifier, RegionInfo> entry : mapData.regionInfoTable.entrySet()) {
 			sb.append("I");
 			sb.append(entry.getValue().encode());
 			sb.append(";\n");
@@ -283,8 +282,8 @@ public class CanvasMap extends Canvas
 
 		// TODO 横並びの領地は1行にまとめる
 		// TODO Zip Base64
-		for (ChunkPosition chunkPosition : regionMap.getKeys()) {
-			RegionIdentifier regionIdentifier = regionMap.get(chunkPosition).get();
+		for (ChunkPosition chunkPosition : mapData.regionMap.getKeys()) {
+			RegionIdentifier regionIdentifier = mapData.regionMap.get(chunkPosition).get();
 			sb.append("M");
 			sb.append(String.format("%s,%s,%s,%s,%s",
 				regionIdentifier.countryNumber,
@@ -338,9 +337,9 @@ public class CanvasMap extends Canvas
 		for (int xi = -chunkWidth; xi < chunkWidth; xi++) {
 			for (int zi = -chunkHeight; zi < chunkHeight; zi++) {
 
-				Optional<RegionIdentifier> oRegionIdentifier = regionMap.get(new ChunkPosition(positionX + xi, positionZ + zi));
+				Optional<RegionIdentifier> oRegionIdentifier = mapData.regionMap.get(new ChunkPosition(positionX + xi, positionZ + zi));
 				if (oRegionIdentifier.isPresent()) {
-					RegionInfo regionInfo = regionInfoTable.get(oRegionIdentifier.get());
+					RegionInfo regionInfo = mapData.regionInfoTable.get(oRegionIdentifier.get());
 
 					// 背景半透明塗りつぶし
 					graphicsLayerOverlay.setColor(new Color(
@@ -359,19 +358,19 @@ public class CanvasMap extends Canvas
 						int w = 2;
 
 						// left
-						if (!regionMap.get(new ChunkPosition(positionX + xi - 1, positionZ + zi)).equals(oRegionIdentifier)) {
+						if (!mapData.regionMap.get(new ChunkPosition(positionX + xi - 1, positionZ + zi)).equals(oRegionIdentifier)) {
 							graphicsLayerOverlay.fillRect(xi * 16 + 1 + 0 + getWidth() / 2, zi * 16 + 1 + 0 + getHeight() / 2, w, 16);
 						}
 						// right
-						if (!regionMap.get(new ChunkPosition(positionX + xi + 1, positionZ + zi)).equals(oRegionIdentifier)) {
+						if (!mapData.regionMap.get(new ChunkPosition(positionX + xi + 1, positionZ + zi)).equals(oRegionIdentifier)) {
 							graphicsLayerOverlay.fillRect(xi * 16 + (16 - w) + getWidth() / 2, zi * 16 + 1 + 0 + getHeight() / 2, w, 16);
 						}
 						// top
-						if (!regionMap.get(new ChunkPosition(positionX + xi, positionZ + zi - 1)).equals(oRegionIdentifier)) {
+						if (!mapData.regionMap.get(new ChunkPosition(positionX + xi, positionZ + zi - 1)).equals(oRegionIdentifier)) {
 							graphicsLayerOverlay.fillRect(xi * 16 + 1 + 0 + getWidth() / 2, zi * 16 + 1 + 0 + getHeight() / 2, 16, w);
 						}
 						// bottom
-						if (!regionMap.get(new ChunkPosition(positionX + xi, positionZ + zi + 1)).equals(oRegionIdentifier)) {
+						if (!mapData.regionMap.get(new ChunkPosition(positionX + xi, positionZ + zi + 1)).equals(oRegionIdentifier)) {
 							graphicsLayerOverlay.fillRect(xi * 16 + 1 + 0 + getWidth() / 2, zi * 16 + (16 - w) + getHeight() / 2, 16, w);
 						}
 					}
@@ -418,9 +417,9 @@ public class CanvasMap extends Canvas
 				oMousePosition.get().x + 2,
 				oMousePosition.get().y - height * 2 - 2);
 
-			Optional<RegionIdentifier> oRegionIdentifier = regionMap.get(chunkPosition);
+			Optional<RegionIdentifier> oRegionIdentifier = mapData.regionMap.get(chunkPosition);
 			if (oRegionIdentifier.isPresent()) {
-				RegionInfo regionInfo = regionInfoTable.get(oRegionIdentifier.get());
+				RegionInfo regionInfo = mapData.regionInfoTable.get(oRegionIdentifier.get());
 
 				graphicsLayerBack.drawString(
 					"Country: (" + regionInfo.regionIdentifier.countryNumber + ") " + regionInfo.countryName,
