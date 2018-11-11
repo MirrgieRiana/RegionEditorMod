@@ -529,13 +529,13 @@ public class CanvasMap extends Canvas
 					// 数値
 					FontRenderer.drawString(
 						imageLayerOverlay,
-						"" + regionInfo.regionIdentifier.countryNumber,
+						"" + oRegionIdentifier.get().countryNumber,
 						xi * 16 + 8 + getWidth() / 2,
 						zi * 16 + 2 + getHeight() / 2,
 						regionInfo.countryColor);
 					FontRenderer.drawString(
 						imageLayerOverlay,
-						"" + regionInfo.regionIdentifier.stateNumber,
+						"" + oRegionIdentifier.get().stateNumber,
 						xi * 16 + 8 + getWidth() / 2,
 						zi * 16 + 8 + getHeight() / 2,
 						regionInfo.stateColor);
