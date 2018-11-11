@@ -30,13 +30,12 @@ public class FontRenderer
 	{
 		int sx;
 		int sy;
-		if ('0' <= ch && ch <= '9') {
-			sx = ch - '0';
-			sy = 0;
-		} else {
-			sx = 0;
-			sy = 0;
+
+		if (!(' ' <= ch && ch <= '~')) {
+			ch = '?';
 		}
+		sx = ch & 0xF;
+		sy = ((ch >> 4) & 0xF) - 2;
 
 		int br = color.getRed();
 		int bg = color.getGreen();

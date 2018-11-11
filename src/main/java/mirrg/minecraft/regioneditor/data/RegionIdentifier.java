@@ -9,9 +9,7 @@ public final class RegionIdentifier implements Comparable<RegionIdentifier>
 	{
 		try {
 			String[] cells = code.split(":");
-			return new RegionIdentifier(
-				Integer.parseInt(cells[0], 10),
-				Integer.parseInt(cells[1], 10));
+			return new RegionIdentifier(cells[0], cells[1]);
 		} catch (NumberFormatException e) {
 			ParseException parseException = new ParseException(code, 0);
 			parseException.initCause(e);
@@ -28,10 +26,10 @@ public final class RegionIdentifier implements Comparable<RegionIdentifier>
 
 	//
 
-	public final int countryNumber;
-	public final int stateNumber;
+	public final String countryNumber;
+	public final String stateNumber;
 
-	public RegionIdentifier(int countryNumber, int stateNumber)
+	public RegionIdentifier(String countryNumber, String stateNumber)
 	{
 		this.countryNumber = countryNumber;
 		this.stateNumber = stateNumber;
@@ -50,8 +48,8 @@ public final class RegionIdentifier implements Comparable<RegionIdentifier>
 	{
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + countryNumber;
-		result = prime * result + stateNumber;
+		result = prime * result + countryNumber.hashCode();
+		result = prime * result + stateNumber.hashCode();
 		return result;
 	}
 
@@ -62,8 +60,8 @@ public final class RegionIdentifier implements Comparable<RegionIdentifier>
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 		RegionIdentifier other = (RegionIdentifier) obj;
-		if (countryNumber != other.countryNumber) return false;
-		if (stateNumber != other.stateNumber) return false;
+		if (!countryNumber.equals(other.countryNumber)) return false;
+		if (!stateNumber.equals(other.stateNumber)) return false;
 		return true;
 	}
 
@@ -72,10 +70,10 @@ public final class RegionIdentifier implements Comparable<RegionIdentifier>
 	{
 		int a;
 
-		a = countryNumber - other.countryNumber;
+		a = countryNumber.compareTo(other.countryNumber);
 		if (a != 0) return a;
 
-		a = stateNumber - other.stateNumber;
+		a = stateNumber.compareTo(other.stateNumber);
 		if (a != 0) return a;
 
 		return 0;

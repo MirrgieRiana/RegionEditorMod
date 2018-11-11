@@ -61,8 +61,8 @@ public class CanvasMap extends Canvas
 			for (int i = 0; i < 5; i++) {
 				addRegionInfo(new RegionInfo(
 					new RegionIdentifier(
-						random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10),
-						random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10)),
+						"" + (random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10)),
+						"" + (random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10))),
 					"" + random.nextInt(10000),
 					new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)),
 					"" + random.nextInt(10000),
@@ -249,8 +249,8 @@ public class CanvasMap extends Canvas
 					} else if (kind.equals("M")) {
 						// Map
 						String[] s = args.split(",");
-						int countryNumber = Integer.parseInt(s[0], 10);
-						int stateNumber = Integer.parseInt(s[1], 10);
+						String countryNumber = s[0];
+						String stateNumber = s[1];
 						int x = Integer.parseInt(s[2], 10);
 						int z = Integer.parseInt(s[3], 10);
 						int length = Integer.parseInt(s[4], 10);
