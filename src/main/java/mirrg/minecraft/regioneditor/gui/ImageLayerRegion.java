@@ -54,69 +54,98 @@ public class ImageLayerRegion extends ImageLayer
 
 		for (int x = chunkPositionStart.x; x <= chunkPositionEnd.x; x++) {
 			for (int z = chunkPositionStart.z; z <= chunkPositionEnd.z; z++) {
+				ChunkPosition chunkPosition = new ChunkPosition(x, z);
 
-				Optional<RegionIdentifier> oRegionIdentifier = mapData.regionMap.get(new ChunkPosition(x, z));
+				Optional<RegionIdentifier> oRegionIdentifier = mapData.regionMap.get(chunkPosition);
 				if (oRegionIdentifier.isPresent()) {
 					RegionInfo regionInfo = mapData.regionInfoTable.get(oRegionIdentifier.get());
 
-					// 背景半透明塗りつぶし
-					graphics.setColor(new Color(
-						regionInfo.getDynmapColor().getRed(),
-						regionInfo.getDynmapColor().getGreen(),
-						regionInfo.getDynmapColor().getBlue(),
-						64));
-					graphics.fillRect((x - positionX) * 16 + width / 2, (z - positionZ) * 16 + height / 2, 16, 16);
-
-					// 領地輪郭線
-					graphics.setColor(new Color(
-						regionInfo.getDynmapColor().getRed(),
-						regionInfo.getDynmapColor().getGreen(),
-						regionInfo.getDynmapColor().getBlue()));
-					{
-						int w = 2;
-
-						// left
-						if (!mapData.regionMap.get(new ChunkPosition(x - 1, z)).equals(oRegionIdentifier)) {
-							graphics.fillRect((x - positionX) * 16 + 1 + 0 + width / 2, (z - positionZ) * 16 + 1 + 0 + height / 2, w, 16);
-						}
-						// right
-						if (!mapData.regionMap.get(new ChunkPosition(x + 1, z)).equals(oRegionIdentifier)) {
-							graphics.fillRect((x - positionX) * 16 + (16 - w) + width / 2, (z - positionZ) * 16 + 1 + 0 + height / 2, w, 16);
-						}
-						// top
-						if (!mapData.regionMap.get(new ChunkPosition(x, z - 1)).equals(oRegionIdentifier)) {
-							graphics.fillRect((x - positionX) * 16 + 1 + 0 + width / 2, (z - positionZ) * 16 + 1 + 0 + height / 2, 16, w);
-						}
-						// bottom
-						if (!mapData.regionMap.get(new ChunkPosition(x, z + 1)).equals(oRegionIdentifier)) {
-							graphics.fillRect((x - positionX) * 16 + 1 + 0 + width / 2, (z - positionZ) * 16 + (16 - w) + height / 2, 16, w);
-						}
-					}
-
-					// 数値
-					FontRenderer.drawString(
-						image,
-						"" + oRegionIdentifier.get().countryNumber,
-						(x - positionX) * 16 + 8 + width / 2,
-						(z - positionZ) * 16 + 2 + height / 2,
-						regionInfo.countryColor);
-					FontRenderer.drawString(
-						image,
-						"" + oRegionIdentifier.get().stateNumber,
-						(x - positionX) * 16 + 8 + width / 2,
-						(z - positionZ) * 16 + 8 + height / 2,
-						regionInfo.stateColor);
+					drawRegionInfo(
+						oRegionIdentifier.get(),
+						regionInfo,
+						x - positionX,
+						z - positionZ,
+						!mapData.regionMap.get(chunkPosition.offset(-1, 0)).equals(oRegionIdentifier),
+						!mapData.regionMap.get(chunkPosition.offset(1, 0)).equals(oRegionIdentifier),
+						!mapData.regionMap.get(chunkPosition.offset(0, -1)).equals(oRegionIdentifier),
+						!mapData.regionMap.get(chunkPosition.offset(0, 1)).equals(oRegionIdentifier));
 
 				}
 
 				// グリッド
-				graphics.setColor(new Color(0x444444));
-				graphics.drawRect((x - positionX) * 16 + width / 2, (z - positionZ) * 16 + height / 2, 16, 16);
+				drawGrid(
+					positionX,
+					positionZ, (x - positionX) * 16 + width / 2,
+					(z - positionZ) * 16 + height / 2);
 
 			}
 
 		}
 
+	}
+
+	private void drawRegionInfo(
+		RegionIdentifier regionIdentifier,
+		RegionInfo regionInfo,
+		int x,
+		int y,
+		boolean borderLeft,
+		boolean borderRight,
+		boolean borderUp,
+		boolean borderDown)
+	{
+
+		// 背景半透明塗りつぶし
+		graphics.setColor(new Color(
+			regionInfo.getDynmapColor().getRed(),
+			regionInfo.getDynmapColor().getGreen(),
+			regionInfo.getDynmapColor().getBlue(),
+			64));
+
+		graphics.fillRect(x * 16 + width / 2, y * 16 + height / 2, 16, 16);
+
+		// 領地輪郭線
+		graphics.setColor(new Color(
+			regionInfo.getDynmapColor().getRed(),
+			regionInfo.getDynmapColor().getGreen(),
+			regionInfo.getDynmapColor().getBlue()));
+		{
+			int w = 2;
+
+			// left
+			if (borderLeft) graphics.fillRect(x * 16 + 1 + 0 + width / 2, y * 16 + 1 + 0 + height / 2, w, 16);
+
+			// right
+			if (borderRight) graphics.fillRect(x * 16 + (16 - w) + width / 2, y * 16 + 1 + 0 + height / 2, w, 16);
+
+			// top
+			if (borderUp) graphics.fillRect(x * 16 + 1 + 0 + width / 2, y * 16 + 1 + 0 + height / 2, 16, w);
+
+			// bottom
+			if (borderDown) graphics.fillRect(x * 16 + 1 + 0 + width / 2, y * 16 + (16 - w) + height / 2, 16, w);
+
+		}
+
+		// 数値
+		FontRenderer.drawString(
+			image,
+			"" + regionIdentifier.countryNumber,
+			x * 16 + 8 + width / 2,
+			y * 16 + 2 + height / 2,
+			regionInfo.countryColor);
+		FontRenderer.drawString(
+			image,
+			"" + regionIdentifier.stateNumber,
+			x * 16 + 8 + width / 2,
+			y * 16 + 8 + height / 2,
+			regionInfo.stateColor);
+
+	}
+
+	private void drawGrid(int positionX, int positionZ, int x, int y)
+	{
+		graphics.setColor(new Color(0x444444));
+		graphics.drawRect(x, y, 16, 16);
 	}
 
 }
