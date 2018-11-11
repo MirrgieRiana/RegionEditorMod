@@ -125,11 +125,15 @@ public class CanvasMap extends Canvas
 				if (e.getButton() == MouseEvent.BUTTON2) {
 					setRegionIdentifierCurrent(mapData.regionMap.get(chunkPosition));
 				} else if (e.getButton() == MouseEvent.BUTTON1) {
-					mapData.regionMap.set(chunkPosition, oRegionIdentifierCurrent);
-					updateLayerOverlay();
+					if (!mapData.regionMap.get(chunkPosition).equals(oRegionIdentifierCurrent)) {
+						mapData.regionMap.set(chunkPosition, oRegionIdentifierCurrent);
+						updateLayerRegion();
+					}
 				} else if (e.getButton() == MouseEvent.BUTTON3) {
-					mapData.regionMap.set(chunkPosition, Optional.empty());
-					updateLayerOverlay();
+					if (!mapData.regionMap.get(chunkPosition).equals(Optional.empty())) {
+						mapData.regionMap.set(chunkPosition, Optional.empty());
+						updateLayerRegion();
+					}
 				}
 			}
 
@@ -171,11 +175,15 @@ public class CanvasMap extends Canvas
 
 				ChunkPosition chunkPosition = getChunkPosition(e.getPoint());
 				if (mouseButtons[MouseEvent.BUTTON1]) {
-					mapData.regionMap.set(chunkPosition, oRegionIdentifierCurrent);
-					updateLayerOverlay();
+					if (!mapData.regionMap.get(chunkPosition).equals(oRegionIdentifierCurrent)) {
+						mapData.regionMap.set(chunkPosition, oRegionIdentifierCurrent);
+						updateLayerRegion();
+					}
 				} else if (mouseButtons[MouseEvent.BUTTON3]) {
-					mapData.regionMap.set(chunkPosition, Optional.empty());
-					updateLayerOverlay();
+					if (!mapData.regionMap.get(chunkPosition).equals(Optional.empty())) {
+						mapData.regionMap.set(chunkPosition, Optional.empty());
+						updateLayerRegion();
+					}
 				}
 			}
 		});
