@@ -38,8 +38,7 @@ public class CanvasMap extends Canvas
 	private BufferedImage imageLayerMap = null;
 	private Graphics2D graphicsLayerMap = null;
 
-	private BufferedImage imageLayerOverlay = null;
-	private Graphics2D graphicsLayerOverlay = null;
+	private ImageLayerRegion imageLayerRegion = new ImageLayerRegion();
 
 	private BufferedImage imageLayerBack = null;
 	private Graphics2D graphicsLayerBack = null;
@@ -279,7 +278,7 @@ public class CanvasMap extends Canvas
 
 		listener.onRegionInfoTableChange(mapData.regionInfoTable);
 
-		updateLayerOverlay();
+		updateLayerRegion();
 	}
 
 	public String toExpression()
@@ -463,8 +462,7 @@ public class CanvasMap extends Canvas
 		imageLayerMap = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
 		graphicsLayerMap = imageLayerMap.createGraphics();
 
-		imageLayerOverlay = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
-		graphicsLayerOverlay = imageLayerOverlay.createGraphics();
+		imageLayerRegion.resize(getWidth(), getHeight());
 
 		imageLayerBack = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
 		graphicsLayerBack = imageLayerBack.createGraphics();
@@ -480,90 +478,18 @@ public class CanvasMap extends Canvas
 			0 - positionZ * 16 - mapOrigin.y + getHeight() / 2,
 			null);
 
-		updateLayerOverlay();
+		updateLayerRegion();
 	}
 
-	private void updateLayerOverlay()
+	private void updateLayerRegion()
 	{
-		graphicsLayerOverlay.drawImage(imageLayerMap, 0, 0, null);
-
-		int width = getWidth();
-		int height = getHeight();
-
-		int chunkWidth = ((width / 2 - 1) / 16 + 1);
-		int chunkHeight = ((height / 2 - 1) / 16 + 1);
-
-		for (int xi = -chunkWidth; xi < chunkWidth; xi++) {
-			for (int zi = -chunkHeight; zi < chunkHeight; zi++) {
-
-				Optional<RegionIdentifier> oRegionIdentifier = mapData.regionMap.get(new ChunkPosition(positionX + xi, positionZ + zi));
-				if (oRegionIdentifier.isPresent()) {
-					RegionInfo regionInfo = mapData.regionInfoTable.get(oRegionIdentifier.get());
-
-					// 背景半透明塗りつぶし
-					graphicsLayerOverlay.setColor(new Color(
-						regionInfo.getDynmapColor().getRed(),
-						regionInfo.getDynmapColor().getGreen(),
-						regionInfo.getDynmapColor().getBlue(),
-						64));
-					graphicsLayerOverlay.fillRect(xi * 16 + getWidth() / 2, zi * 16 + getHeight() / 2, 16, 16);
-
-					// 領地輪郭線
-					graphicsLayerOverlay.setColor(new Color(
-						regionInfo.getDynmapColor().getRed(),
-						regionInfo.getDynmapColor().getGreen(),
-						regionInfo.getDynmapColor().getBlue()));
-					{
-						int w = 2;
-
-						// left
-						if (!mapData.regionMap.get(new ChunkPosition(positionX + xi - 1, positionZ + zi)).equals(oRegionIdentifier)) {
-							graphicsLayerOverlay.fillRect(xi * 16 + 1 + 0 + getWidth() / 2, zi * 16 + 1 + 0 + getHeight() / 2, w, 16);
-						}
-						// right
-						if (!mapData.regionMap.get(new ChunkPosition(positionX + xi + 1, positionZ + zi)).equals(oRegionIdentifier)) {
-							graphicsLayerOverlay.fillRect(xi * 16 + (16 - w) + getWidth() / 2, zi * 16 + 1 + 0 + getHeight() / 2, w, 16);
-						}
-						// top
-						if (!mapData.regionMap.get(new ChunkPosition(positionX + xi, positionZ + zi - 1)).equals(oRegionIdentifier)) {
-							graphicsLayerOverlay.fillRect(xi * 16 + 1 + 0 + getWidth() / 2, zi * 16 + 1 + 0 + getHeight() / 2, 16, w);
-						}
-						// bottom
-						if (!mapData.regionMap.get(new ChunkPosition(positionX + xi, positionZ + zi + 1)).equals(oRegionIdentifier)) {
-							graphicsLayerOverlay.fillRect(xi * 16 + 1 + 0 + getWidth() / 2, zi * 16 + (16 - w) + getHeight() / 2, 16, w);
-						}
-					}
-
-					// 数値
-					FontRenderer.drawString(
-						imageLayerOverlay,
-						"" + oRegionIdentifier.get().countryNumber,
-						xi * 16 + 8 + getWidth() / 2,
-						zi * 16 + 2 + getHeight() / 2,
-						regionInfo.countryColor);
-					FontRenderer.drawString(
-						imageLayerOverlay,
-						"" + oRegionIdentifier.get().stateNumber,
-						xi * 16 + 8 + getWidth() / 2,
-						zi * 16 + 8 + getHeight() / 2,
-						regionInfo.stateColor);
-
-				}
-
-				// グリッド
-				graphicsLayerOverlay.setColor(new Color(0x444444));
-				graphicsLayerOverlay.drawRect(xi * 16 + getWidth() / 2, zi * 16 + getHeight() / 2, 16, 16);
-
-			}
-
-		}
-
+		imageLayerRegion.update(imageLayerMap, mapData, positionX, positionZ);
 		updateLayerBack();
 	}
 
 	private void updateLayerBack()
 	{
-		graphicsLayerBack.drawImage(imageLayerOverlay, 0, 0, null);
+		graphicsLayerBack.drawImage(imageLayerRegion.getImage(), 0, 0, null);
 
 		if (oMousePosition.isPresent()) {
 
