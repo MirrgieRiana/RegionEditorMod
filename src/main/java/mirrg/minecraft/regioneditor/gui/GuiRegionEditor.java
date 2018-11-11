@@ -5,6 +5,8 @@ import static mirrg.minecraft.regioneditor.gui.SwingUtils.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FileDialog;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -105,6 +107,21 @@ public class GuiRegionEditor extends GuiBase
 									}), c -> {
 										c.setMinimumSize(new Dimension(100, 100));
 										c.setPreferredSize(new Dimension(600, 600));
+										c.setFocusable(true);
+										c.addKeyListener(new KeyAdapter() {
+											@Override
+											public void keyPressed(KeyEvent e)
+											{
+												if (e.getKeyCode() == KeyEvent.VK_LEFT) scroll(-4, 0);
+												if (e.getKeyCode() == KeyEvent.VK_RIGHT) scroll(4, 0);
+												if (e.getKeyCode() == KeyEvent.VK_UP) scroll(0, -4);
+												if (e.getKeyCode() == KeyEvent.VK_DOWN) scroll(0, 4);
+												if (e.getKeyCode() == KeyEvent.VK_A) scroll(-4, 0);
+												if (e.getKeyCode() == KeyEvent.VK_D) scroll(4, 0);
+												if (e.getKeyCode() == KeyEvent.VK_W) scroll(0, -4);
+												if (e.getKeyCode() == KeyEvent.VK_S) scroll(0, 4);
+											}
+										});
 									}),
 
 									button("→", e -> scroll(4, 0))
