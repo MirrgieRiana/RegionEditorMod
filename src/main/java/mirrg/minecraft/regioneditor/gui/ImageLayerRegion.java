@@ -1,9 +1,7 @@
 package mirrg.minecraft.regioneditor.gui;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.util.Optional;
 
 import mirrg.minecraft.regioneditor.data.ChunkPosition;
@@ -11,32 +9,8 @@ import mirrg.minecraft.regioneditor.data.MapData;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
 
-public class ImageLayerRegion
+public class ImageLayerRegion extends ImageLayer
 {
-
-	private int width;
-	private int height;
-
-	private BufferedImage image;
-	private Graphics2D graphics;
-
-	public ImageLayerRegion()
-	{
-		resize(1, 1);
-	}
-
-	public void resize(int width, int height)
-	{
-		this.width = width;
-		this.height = height;
-		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		graphics = image.createGraphics();
-	}
-
-	public BufferedImage getImage()
-	{
-		return image;
-	}
 
 	public void update(Image imageBackground, MapData mapData, int positionX, int positionZ)
 	{
