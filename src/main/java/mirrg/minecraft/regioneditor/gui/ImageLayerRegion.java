@@ -40,15 +40,48 @@ public class ImageLayerRegion
 
 	public void update(Image imageBackground, MapData mapData, int positionX, int positionZ)
 	{
-		graphics.drawImage(imageBackground, 0, 0, null);
+		// width = 255, maptipWidth = 16 -> xRadius = (254 / 2 / 16 + 1) = (127 / 16 + 1) = (7 + 1) = 8
+		// width = 256, maptipWidth = 16 -> xRadius = (255 / 2 / 16 + 1) = (127 / 16 + 1) = (7 + 1) = 8
+		// width = 257, maptipWidth = 16 -> xRadius = (256 / 2 / 16 + 1) = (128 / 16 + 1) = (8 + 1) = 9
+		// width = 258, maptipWidth = 16 -> xRadius = (257 / 2 / 16 + 1) = (128 / 16 + 1) = (8 + 1) = 9
+		int xRadius = ((width - 1) / 2 / 16 + 1);
+		int zRadius = ((height - 1) / 2 / 16 + 1);
 
-		int chunkWidth = ((width / 2 - 1) / 16 + 1);
-		int chunkHeight = ((height / 2 - 1) / 16 + 1);
+		update(
+			imageBackground,
+			mapData,
+			positionX,
+			positionZ,
+			new ChunkPosition(
+				positionX - xRadius,
+				positionZ - zRadius),
+			new ChunkPosition(
+				positionX + xRadius,
+				positionZ + zRadius));
+	}
 
-		for (int xi = -chunkWidth; xi < chunkWidth; xi++) {
-			for (int zi = -chunkHeight; zi < chunkHeight; zi++) {
+	/**
+	 * @param chunkPositionEnd
+	 *            このチャンクまでが描画範囲に含まれる。
+	 */
+	public void update(Image imageBackground, MapData mapData, int positionX, int positionZ, ChunkPosition chunkPositionStart, ChunkPosition chunkPositionEnd)
+	{
+		graphics.drawImage(
+			imageBackground,
+			(chunkPositionStart.x - positionX) * 16 + width / 2,
+			(chunkPositionStart.z - positionZ) * 16 + height / 2,
+			(chunkPositionEnd.x - positionX) * 16 + width / 2 + 16,
+			(chunkPositionEnd.z - positionZ) * 16 + height / 2 + 16,
+			(chunkPositionStart.x - positionX) * 16 + width / 2,
+			(chunkPositionStart.z - positionZ) * 16 + height / 2,
+			(chunkPositionEnd.x - positionX) * 16 + width / 2 + 16,
+			(chunkPositionEnd.z - positionZ) * 16 + height / 2 + 16,
+			null);
 
-				Optional<RegionIdentifier> oRegionIdentifier = mapData.regionMap.get(new ChunkPosition(positionX + xi, positionZ + zi));
+		for (int x = chunkPositionStart.x; x <= chunkPositionEnd.x; x++) {
+			for (int z = chunkPositionStart.z; z <= chunkPositionEnd.z; z++) {
+
+				Optional<RegionIdentifier> oRegionIdentifier = mapData.regionMap.get(new ChunkPosition(x, z));
 				if (oRegionIdentifier.isPresent()) {
 					RegionInfo regionInfo = mapData.regionInfoTable.get(oRegionIdentifier.get());
 
@@ -58,7 +91,7 @@ public class ImageLayerRegion
 						regionInfo.getDynmapColor().getGreen(),
 						regionInfo.getDynmapColor().getBlue(),
 						64));
-					graphics.fillRect(xi * 16 + width / 2, zi * 16 + height / 2, 16, 16);
+					graphics.fillRect((x - positionX) * 16 + width / 2, (z - positionZ) * 16 + height / 2, 16, 16);
 
 					// 領地輪郭線
 					graphics.setColor(new Color(
@@ -69,20 +102,20 @@ public class ImageLayerRegion
 						int w = 2;
 
 						// left
-						if (!mapData.regionMap.get(new ChunkPosition(positionX + xi - 1, positionZ + zi)).equals(oRegionIdentifier)) {
-							graphics.fillRect(xi * 16 + 1 + 0 + width / 2, zi * 16 + 1 + 0 + height / 2, w, 16);
+						if (!mapData.regionMap.get(new ChunkPosition(x - 1, z)).equals(oRegionIdentifier)) {
+							graphics.fillRect((x - positionX) * 16 + 1 + 0 + width / 2, (z - positionZ) * 16 + 1 + 0 + height / 2, w, 16);
 						}
 						// right
-						if (!mapData.regionMap.get(new ChunkPosition(positionX + xi + 1, positionZ + zi)).equals(oRegionIdentifier)) {
-							graphics.fillRect(xi * 16 + (16 - w) + width / 2, zi * 16 + 1 + 0 + height / 2, w, 16);
+						if (!mapData.regionMap.get(new ChunkPosition(x + 1, z)).equals(oRegionIdentifier)) {
+							graphics.fillRect((x - positionX) * 16 + (16 - w) + width / 2, (z - positionZ) * 16 + 1 + 0 + height / 2, w, 16);
 						}
 						// top
-						if (!mapData.regionMap.get(new ChunkPosition(positionX + xi, positionZ + zi - 1)).equals(oRegionIdentifier)) {
-							graphics.fillRect(xi * 16 + 1 + 0 + width / 2, zi * 16 + 1 + 0 + height / 2, 16, w);
+						if (!mapData.regionMap.get(new ChunkPosition(x, z - 1)).equals(oRegionIdentifier)) {
+							graphics.fillRect((x - positionX) * 16 + 1 + 0 + width / 2, (z - positionZ) * 16 + 1 + 0 + height / 2, 16, w);
 						}
 						// bottom
-						if (!mapData.regionMap.get(new ChunkPosition(positionX + xi, positionZ + zi + 1)).equals(oRegionIdentifier)) {
-							graphics.fillRect(xi * 16 + 1 + 0 + width / 2, zi * 16 + (16 - w) + height / 2, 16, w);
+						if (!mapData.regionMap.get(new ChunkPosition(x, z + 1)).equals(oRegionIdentifier)) {
+							graphics.fillRect((x - positionX) * 16 + 1 + 0 + width / 2, (z - positionZ) * 16 + (16 - w) + height / 2, 16, w);
 						}
 					}
 
@@ -90,21 +123,21 @@ public class ImageLayerRegion
 					FontRenderer.drawString(
 						image,
 						"" + oRegionIdentifier.get().countryNumber,
-						xi * 16 + 8 + width / 2,
-						zi * 16 + 2 + height / 2,
+						(x - positionX) * 16 + 8 + width / 2,
+						(z - positionZ) * 16 + 2 + height / 2,
 						regionInfo.countryColor);
 					FontRenderer.drawString(
 						image,
 						"" + oRegionIdentifier.get().stateNumber,
-						xi * 16 + 8 + width / 2,
-						zi * 16 + 8 + height / 2,
+						(x - positionX) * 16 + 8 + width / 2,
+						(z - positionZ) * 16 + 8 + height / 2,
 						regionInfo.stateColor);
 
 				}
 
 				// グリッド
 				graphics.setColor(new Color(0x444444));
-				graphics.drawRect(xi * 16 + width / 2, zi * 16 + height / 2, 16, 16);
+				graphics.drawRect((x - positionX) * 16 + width / 2, (z - positionZ) * 16 + height / 2, 16, 16);
 
 			}
 

@@ -12,6 +12,11 @@ public final class ChunkPosition implements Comparable<ChunkPosition>
 		this.z = z;
 	}
 
+	public ChunkPosition offset(int xi, int zi)
+	{
+		return new ChunkPosition(x + xi, z + zi);
+	}
+
 	@Override
 	public String toString()
 	{
