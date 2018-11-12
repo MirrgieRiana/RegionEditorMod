@@ -1,13 +1,15 @@
 package mirrg.minecraft.regioneditor.gui;
 
+import java.awt.Dialog.ModalityType;
+
 public abstract class GuiBase
 {
 
 	protected WindowWrapper windowWrapper;
 
-	public GuiBase(WindowWrapper owner, String title)
+	public GuiBase(WindowWrapper owner, String title, ModalityType modalityType)
 	{
-		windowWrapper = WindowWrapper.createWindow(owner, title);
+		windowWrapper = WindowWrapper.createWindow(owner, title, modalityType);
 
 		initComponenets();
 

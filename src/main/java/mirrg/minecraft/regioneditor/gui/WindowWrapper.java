@@ -1,5 +1,6 @@
 package mirrg.minecraft.regioneditor.gui;
 
+import java.awt.Dialog.ModalityType;
 import java.awt.Window;
 
 import javax.swing.JDialog;
@@ -45,17 +46,17 @@ public final class WindowWrapper
 		return fromFrame(frame);
 	}
 
-	public static WindowWrapper createWindow(WindowWrapper owner, String title)
+	public static WindowWrapper createWindow(WindowWrapper owner, String title, ModalityType modalityType)
 	{
 		if (owner == null) {
 			return createFrame(title);
 		} else if (owner.frame != null) {
-			JDialog dialog = new JDialog(owner.frame, title);
+			JDialog dialog = new JDialog(owner.frame, title, modalityType);
 			dialog.setLocationByPlatform(true);
 			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			return fromDialog(dialog);
 		} else {
-			JDialog dialog = new JDialog(owner.dialog, title);
+			JDialog dialog = new JDialog(owner.dialog, title, modalityType);
 			dialog.setLocationByPlatform(true);
 			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			return fromDialog(dialog);

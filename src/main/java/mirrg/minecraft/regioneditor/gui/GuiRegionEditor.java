@@ -3,6 +3,7 @@ package mirrg.minecraft.regioneditor.gui;
 import static mirrg.minecraft.regioneditor.gui.SwingUtils.*;
 
 import java.awt.BorderLayout;
+import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.event.KeyAdapter;
@@ -51,7 +52,7 @@ public class GuiRegionEditor extends GuiBase
 
 	public GuiRegionEditor(WindowWrapper owner)
 	{
-		super(owner, "RegionEditor");
+		super(owner, "RegionEditor", ModalityType.MODELESS);
 	}
 
 	@Override
