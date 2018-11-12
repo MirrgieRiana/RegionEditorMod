@@ -68,13 +68,17 @@ public class GuiRegionEditor extends GuiBase
 					// 左ペイン：地図側
 					borderPanelUp(
 
-						button("↑", e -> scroll(0, -4)),
+						get(button("↑", e -> scroll(0, -4)), c -> {
+							c.setFocusable(false);
+						}),
 
 						borderPanelDown(
 
 							borderPanelLeft(
 
-								button("←", e -> scroll(-4, 0)),
+								get(button("←", e -> scroll(-4, 0)), c -> {
+									c.setFocusable(false);
+								}),
 
 								borderPanelRight(
 
@@ -124,13 +128,17 @@ public class GuiRegionEditor extends GuiBase
 										});
 									}),
 
-									button("→", e -> scroll(4, 0))
+									get(button("→", e -> scroll(4, 0)), c -> {
+										c.setFocusable(false);
+									})
 
 								)
 
 							),
 
-							button("↓", e -> scroll(0, 4))
+							get(button("↓", e -> scroll(0, 4)), c -> {
+								c.setFocusable(false);
+							})
 
 						)
 
