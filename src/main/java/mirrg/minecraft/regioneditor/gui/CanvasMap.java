@@ -3,7 +3,6 @@ package mirrg.minecraft.regioneditor.gui;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -35,11 +34,8 @@ public class CanvasMap extends Canvas
 	private BufferedImage imageMap = null;
 	private Point mapOrigin = null;
 
-	private BufferedImage imageLayerMap = null;
-	private Graphics2D graphicsLayerMap = null;
-
+	private ImageLayerMap imageLayerMap = new ImageLayerMap();
 	private ImageLayerRegion imageLayerRegion = new ImageLayerRegion();
-
 	private ImageLayerMouse imageLayerMouse = new ImageLayerMouse();
 
 	private int positionX = 0;
@@ -458,36 +454,26 @@ public class CanvasMap extends Canvas
 
 	private void resizeLayer()
 	{
-		imageLayerMap = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
-		graphicsLayerMap = imageLayerMap.createGraphics();
-
+		imageLayerMap.resize(getWidth(), getHeight());
 		imageLayerRegion.resize(getWidth(), getHeight());
-
 		imageLayerMouse.resize(getWidth(), getHeight());
 	}
 
 	private void updateLayerMap()
 	{
-		graphicsLayerMap.setBackground(new Color(128, 128, 128));
-		graphicsLayerMap.clearRect(0, 0, getWidth(), getHeight());
-		if (imageMap != null) graphicsLayerMap.drawImage(
-			imageMap,
-			0 - positionX * 16 - mapOrigin.x + getWidth() / 2,
-			0 - positionZ * 16 - mapOrigin.y + getHeight() / 2,
-			null);
-
+		imageLayerMap.update(imageMap, mapData, positionX, positionZ, mapOrigin);
 		updateLayerRegion();
 	}
 
 	private void updateLayerRegion(ChunkPosition chunkPosition)
 	{
-		imageLayerRegion.update(imageLayerMap, mapData, positionX, positionZ, chunkPosition.offset(-1, -1), chunkPosition.offset(1, 1));
+		imageLayerRegion.update(imageLayerMap.getImage(), mapData, positionX, positionZ, chunkPosition.offset(-1, -1), chunkPosition.offset(1, 1));
 		updateLayerBack();
 	}
 
 	private void updateLayerRegion()
 	{
-		imageLayerRegion.update(imageLayerMap, mapData, positionX, positionZ);
+		imageLayerRegion.update(imageLayerMap.getImage(), mapData, positionX, positionZ);
 		updateLayerBack();
 	}
 
