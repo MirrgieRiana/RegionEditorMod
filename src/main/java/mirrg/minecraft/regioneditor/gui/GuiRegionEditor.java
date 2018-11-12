@@ -12,7 +12,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.NumberFormat;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -25,9 +28,12 @@ import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
@@ -219,41 +225,35 @@ public class GuiRegionEditor extends GuiBase
 				// 操作ボタン
 				flowPanel(
 
-					button("Map", e -> {
-						FileDialog fileDialog;
-						if (windowWrapper.frame != null) {
-							fileDialog = new FileDialog(windowWrapper.frame, "Open Map Image", FileDialog.LOAD);
-						} else {
-							fileDialog = new FileDialog(windowWrapper.dialog, "Open Map Image", FileDialog.LOAD);
-						}
-						fileDialog.setDirectory(".");
-						fileDialog.setVisible(true);
-						if (fileDialog.getFile() == null) return;
-						File file = new File(fileDialog.getDirectory(), fileDialog.getFile());
-
-						BufferedImage image;
-						try {
-							image = ImageIO.read(file);
-						} catch (IOException e1) {
-							e1.printStackTrace();
-							return;
-						}
-
-						if (image == null) {
-							System.err.println("画像の読み込みに失敗しました。");
-							return;
-						}
-
-						java.awt.Point mapOrigin = new java.awt.Point(0, 0);
-						{
-							Matcher matcher = Pattern.compile("\\.X([0-9]+)Z([0-9]+)\\.png\\Z").matcher(file.getName());
-							if (matcher.find()) {
-								mapOrigin.x = Integer.parseInt(matcher.group(1), 10);
-								mapOrigin.y = Integer.parseInt(matcher.group(2), 10);
+					get(new JButton("Map"), c -> {
+						c.addMouseListener(new MouseAdapter() {
+							@Override
+							public void mouseReleased(MouseEvent e)
+							{
+								JPopupMenu popupMenu = new JPopupMenu();
+								{
+									popupMenu.add(get(new JMenuItem("From Local File"), c -> {
+										c.addActionListener(e2 -> {
+											loadMapFromLocal();
+										});
+									}));
+									popupMenu.add(get(new JMenuItem("From URL"), c -> {
+										c.addActionListener(e2 -> {
+											GuiUrl guiUrl = new GuiUrl(windowWrapper);
+											guiUrl.show();
+											if (guiUrl.ok) {
+												try (InputStream in = guiUrl.url.openStream()) {
+													loadMapFrom(in, new File(guiUrl.uri.getPath()).getName());
+												} catch (IOException e1) {
+													e1.printStackTrace();
+												}
+											}
+										});
+									}));
+								}
+								popupMenu.show(c, e.getX(), e.getY());
 							}
-						}
-
-						canvasMap.setMap(image, mapOrigin);
+						});
 					}),
 
 					button("Data", e -> new GuiData(windowWrapper, new IDialogDataListener() {
@@ -376,6 +376,55 @@ public class GuiRegionEditor extends GuiBase
 
 		setPosition(0, 0);
 		canvasMap.init();
+	}
+
+	private void loadMapFromLocal()
+	{
+		FileDialog fileDialog;
+		if (windowWrapper.frame != null) {
+			fileDialog = new FileDialog(windowWrapper.frame, "Open Map Image", FileDialog.LOAD);
+		} else {
+			fileDialog = new FileDialog(windowWrapper.dialog, "Open Map Image", FileDialog.LOAD);
+		}
+		fileDialog.setDirectory(".");
+		fileDialog.setVisible(true);
+		if (fileDialog.getFile() == null) return;
+		File file = new File(fileDialog.getDirectory(), fileDialog.getFile());
+
+		try (FileInputStream in = new FileInputStream(file)) {
+			loadMapFrom(in, file.getName());
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void loadMapFrom(InputStream in, String fileName)
+	{
+		BufferedImage image;
+		try {
+			image = ImageIO.read(in);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
+
+		if (image == null) {
+			System.err.println("画像の読み込みに失敗しました。");
+			return;
+		}
+
+		java.awt.Point mapOrigin = new java.awt.Point(0, 0);
+		{
+			Matcher matcher = Pattern.compile("\\.X([0-9]+)Z([0-9]+)\\.png\\Z").matcher(fileName);
+			if (matcher.find()) {
+				mapOrigin.x = Integer.parseInt(matcher.group(1), 10);
+				mapOrigin.y = Integer.parseInt(matcher.group(2), 10);
+			}
+		}
+
+		canvasMap.setMap(image, mapOrigin);
 	}
 
 	private void setPosition(int x, int z)
