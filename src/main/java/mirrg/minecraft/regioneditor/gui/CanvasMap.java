@@ -479,7 +479,7 @@ public class CanvasMap extends Canvas
 
 	private void updateLayerBack()
 	{
-		imageLayerMouse.update(imageLayerRegion.getImage(), mapData, positionX, positionZ, oMousePosition, this::getChunkPosition);
+		imageLayerMouse.update(imageLayerRegion.getImage(), mapData, oMousePosition, this::getChunkPosition);
 		repaint();
 	}
 

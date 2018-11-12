@@ -13,7 +13,7 @@ import mirrg.minecraft.regioneditor.data.RegionInfo;
 public class ImageLayerMouse extends ImageLayer
 {
 
-	public void update(Image imageBackground, MapData mapData, int positionX, int positionZ, Optional<Point> oMousePosition, Function<Point, ChunkPosition> function)
+	public void update(Image imageBackground, MapData mapData, Optional<Point> oMousePosition, Function<Point, ChunkPosition> function)
 	{
 		graphics.drawImage(imageBackground, 0, 0, null);
 
