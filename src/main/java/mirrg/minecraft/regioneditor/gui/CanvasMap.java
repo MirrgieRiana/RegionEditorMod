@@ -40,8 +40,7 @@ public class CanvasMap extends Canvas
 
 	private ImageLayerRegion imageLayerRegion = new ImageLayerRegion();
 
-	private BufferedImage imageLayerBack = null;
-	private Graphics2D graphicsLayerBack = null;
+	private ImageLayerMouse imageLayerMouse = new ImageLayerMouse();
 
 	private int positionX = 0;
 	private int positionZ = 0;
@@ -464,8 +463,7 @@ public class CanvasMap extends Canvas
 
 		imageLayerRegion.resize(getWidth(), getHeight());
 
-		imageLayerBack = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
-		graphicsLayerBack = imageLayerBack.createGraphics();
+		imageLayerMouse.resize(getWidth(), getHeight());
 	}
 
 	private void updateLayerMap()
@@ -495,36 +493,7 @@ public class CanvasMap extends Canvas
 
 	private void updateLayerBack()
 	{
-		graphicsLayerBack.drawImage(imageLayerRegion.getImage(), 0, 0, null);
-
-		if (oMousePosition.isPresent()) {
-
-			int height = graphicsLayerBack.getFontMetrics().getHeight();
-
-			ChunkPosition chunkPosition = getChunkPosition(oMousePosition.get());
-
-			graphicsLayerBack.drawString(
-				chunkPosition.x + ", " + chunkPosition.z,
-				oMousePosition.get().x + 2,
-				oMousePosition.get().y - height * 2 - 2);
-
-			Optional<RegionIdentifier> oRegionIdentifier = mapData.regionMap.get(chunkPosition);
-			if (oRegionIdentifier.isPresent()) {
-				RegionInfo regionInfo = mapData.regionInfoTable.get(oRegionIdentifier.get());
-
-				graphicsLayerBack.drawString(
-					"Country: (" + regionInfo.regionIdentifier.countryNumber + ") " + regionInfo.countryName,
-					oMousePosition.get().x + 2,
-					oMousePosition.get().y - height * 1 - 2);
-				graphicsLayerBack.drawString(
-					"State: (" + regionInfo.regionIdentifier.stateNumber + ") " + regionInfo.stateName,
-					oMousePosition.get().x + 2,
-					oMousePosition.get().y - height * 0 - 2);
-
-			}
-
-		}
-
+		imageLayerMouse.update(imageLayerRegion.getImage(), mapData, positionX, positionZ, oMousePosition, this::getChunkPosition);
 		repaint();
 	}
 
@@ -546,7 +515,7 @@ public class CanvasMap extends Canvas
 	@Override
 	public void paint(Graphics g)
 	{
-		g.drawImage(imageLayerBack, 0, 0, null);
+		g.drawImage(imageLayerMouse.getImage(), 0, 0, null);
 	}
 
 }
