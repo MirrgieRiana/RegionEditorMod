@@ -176,13 +176,13 @@ public class GuiRegionEditor extends GuiBase
 					// 左ペイン：地図側
 					borderPanelUp(
 
-						button("↑", e -> scroll(0, -4)),
+						button("↑", actionScrollUp),
 
 						borderPanelDown(
 
 							borderPanelLeft(
 
-								button("←", e -> scroll(-4, 0)),
+								button("←", actionScrollLeft),
 
 								borderPanelRight(
 
@@ -217,13 +217,13 @@ public class GuiRegionEditor extends GuiBase
 										c.setPreferredSize(new Dimension(600, 600));
 									}),
 
-									button("→", e -> scroll(4, 0))
+									button("→", actionScrollRight)
 
 								)
 
 							),
 
-							button("↓", e -> scroll(0, 4))
+							button("↓", actionScrollDown)
 
 						)
 

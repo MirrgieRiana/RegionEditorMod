@@ -8,6 +8,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.util.function.Consumer;
 
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -93,6 +94,14 @@ public class SwingUtils
 	{
 		JButton button = new JButton(text);
 		button.addActionListener(listener);
+		return button;
+	}
+
+	public static JButton button(String text, Action action)
+	{
+		JButton button = new JButton();
+		button.setAction(action);
+		button.setText(text);
 		return button;
 	}
 
