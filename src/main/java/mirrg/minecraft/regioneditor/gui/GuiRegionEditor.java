@@ -37,6 +37,8 @@ import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
@@ -142,6 +144,27 @@ public class GuiRegionEditor extends GuiBase
 				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, 0))
 				.key(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0))
 				.register();
+		}
+
+		{
+			JMenuBar menuBar = get(new JMenuBar(), menuBar2 -> {
+				menuBar2.add(get(new JMenu("Data"), menu -> {
+					menu.setMnemonic(KeyEvent.VK_D);
+
+				}));
+				menuBar2.add(get(new JMenu("Map"), menu -> {
+					menu.setMnemonic(KeyEvent.VK_M);
+					menu.add(new JMenuItem(actionScrollLeft));
+					menu.add(new JMenuItem(actionScrollRight));
+					menu.add(new JMenuItem(actionScrollUp));
+					menu.add(new JMenuItem(actionScrollDown));
+				}));
+			});
+			if (windowWrapper.frame != null) {
+				windowWrapper.frame.setJMenuBar(menuBar);
+			} else if (windowWrapper.dialog != null) {
+				windowWrapper.dialog.setJMenuBar(menuBar);
+			}
 		}
 
 		windowWrapper.setContentPane(get(splitPaneHorizontal(0.7,
