@@ -1,5 +1,6 @@
 package mirrg.minecraft.regioneditor.gui;
 
+import java.awt.Container;
 import java.awt.Dialog.ModalityType;
 import java.awt.Window;
 
@@ -34,6 +35,20 @@ public final class WindowWrapper
 	public Window getWindow()
 	{
 		return frame != null ? frame : dialog;
+	}
+
+	public Container getContentPane()
+	{
+		return frame != null ? frame.getContentPane() : dialog.getContentPane();
+	}
+
+	public void setContentPane(Container contentPane)
+	{
+		if (frame != null) {
+			frame.setContentPane(contentPane);
+		} else {
+			dialog.setContentPane(contentPane);
+		}
 	}
 
 	//

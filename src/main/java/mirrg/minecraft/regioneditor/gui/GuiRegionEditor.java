@@ -2,11 +2,10 @@ package mirrg.minecraft.regioneditor.gui;
 
 import static mirrg.minecraft.regioneditor.gui.SwingUtils.*;
 
-import java.awt.BorderLayout;
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.FileDialog;
-import java.awt.event.KeyAdapter;
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -23,18 +22,25 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ActionMap;
 import javax.swing.DefaultListModel;
+import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
@@ -45,6 +51,13 @@ import mirrg.minecraft.regioneditor.gui.GuiData.IDialogDataListener;
 
 public class GuiRegionEditor extends GuiBase
 {
+
+	private InputMap inputMap;
+	private ActionMap actionMap;
+	private Action actionScrollLeft;
+	private Action actionScrollRight;
+	private Action actionScrollUp;
+	private Action actionScrollDown;
 
 	private CanvasMap canvasMap;
 	private JLabel labelCoordX;
@@ -64,9 +77,74 @@ public class GuiRegionEditor extends GuiBase
 	@Override
 	protected void initComponenets()
 	{
-		windowWrapper.getWindow().setLayout(new BorderLayout());
 
-		windowWrapper.getWindow().add(splitPaneHorizontal(0.7,
+		{
+			inputMap = new InputMap();
+			actionMap = new ActionMap();
+
+			class Action1 extends AbstractAction
+			{
+
+				private Consumer<ActionEvent> listener;
+
+				public Action1(Consumer<ActionEvent> listener)
+				{
+					this.listener = listener;
+				}
+
+				public Action1 value(String key, Object value)
+				{
+					putValue(key, value);
+					return this;
+				}
+
+				public Action1 key(KeyStroke keyStroke)
+				{
+					inputMap.put(keyStroke, this);
+					return this;
+				}
+
+				public Action1 register()
+				{
+					actionMap.put(this, this);
+					return this;
+				}
+
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					listener.accept(e);
+				}
+
+			}
+
+			actionScrollLeft = new Action1(e -> scroll(-4, 0))
+				.value(Action.NAME, "Scroll Left(&L)")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_L)
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_A, 0))
+				.key(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0))
+				.register();
+			actionScrollRight = new Action1(e -> scroll(4, 0))
+				.value(Action.NAME, "Scroll Right")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_R)
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_D, 0))
+				.key(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0))
+				.register();
+			actionScrollUp = new Action1(e -> scroll(0, -4))
+				.value(Action.NAME, "Scroll Up")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_U)
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_W, 0))
+				.key(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0))
+				.register();
+			actionScrollDown = new Action1(e -> scroll(0, 4))
+				.value(Action.NAME, "Scroll Down")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, 0))
+				.key(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0))
+				.register();
+		}
+
+		windowWrapper.setContentPane(get(splitPaneHorizontal(0.7,
 
 			borderPanelDown(
 
@@ -75,17 +153,13 @@ public class GuiRegionEditor extends GuiBase
 					// 左ペイン：地図側
 					borderPanelUp(
 
-						get(button("↑", e -> scroll(0, -4)), c -> {
-							c.setFocusable(false);
-						}),
+						button("↑", e -> scroll(0, -4)),
 
 						borderPanelDown(
 
 							borderPanelLeft(
 
-								get(button("←", e -> scroll(-4, 0)), c -> {
-									c.setFocusable(false);
-								}),
+								button("←", e -> scroll(-4, 0)),
 
 								borderPanelRight(
 
@@ -118,34 +192,15 @@ public class GuiRegionEditor extends GuiBase
 									}), c -> {
 										c.setMinimumSize(new Dimension(100, 100));
 										c.setPreferredSize(new Dimension(600, 600));
-										c.setFocusable(true);
-										c.addKeyListener(new KeyAdapter() {
-											@Override
-											public void keyPressed(KeyEvent e)
-											{
-												if (e.getKeyCode() == KeyEvent.VK_LEFT) scroll(-4, 0);
-												if (e.getKeyCode() == KeyEvent.VK_RIGHT) scroll(4, 0);
-												if (e.getKeyCode() == KeyEvent.VK_UP) scroll(0, -4);
-												if (e.getKeyCode() == KeyEvent.VK_DOWN) scroll(0, 4);
-												if (e.getKeyCode() == KeyEvent.VK_A) scroll(-4, 0);
-												if (e.getKeyCode() == KeyEvent.VK_D) scroll(4, 0);
-												if (e.getKeyCode() == KeyEvent.VK_W) scroll(0, -4);
-												if (e.getKeyCode() == KeyEvent.VK_S) scroll(0, 4);
-											}
-										});
 									}),
 
-									get(button("→", e -> scroll(4, 0)), c -> {
-										c.setFocusable(false);
-									})
+									button("→", e -> scroll(4, 0))
 
 								)
 
 							),
 
-							get(button("↓", e -> scroll(0, 4)), c -> {
-								c.setFocusable(false);
-							})
+							button("↓", e -> scroll(0, 4))
 
 						)
 
@@ -372,7 +427,10 @@ public class GuiRegionEditor extends GuiBase
 
 			)
 
-		));
+		), c -> {
+			c.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).setParent(inputMap);
+			c.getActionMap().setParent(actionMap);
+		}));
 
 		setPosition(0, 0);
 		canvasMap.init();
