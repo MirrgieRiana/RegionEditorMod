@@ -1,6 +1,7 @@
 package mirrg.minecraft.regioneditor.gui;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -78,6 +79,13 @@ public class SwingUtils
 		for (Component component : components) {
 			panel.add(component);
 		}
+		return panel;
+	}
+
+	public static JPanel cardPanel(Component component)
+	{
+		JPanel panel = new JPanel(new CardLayout());
+		panel.add(component);
 		return panel;
 	}
 
