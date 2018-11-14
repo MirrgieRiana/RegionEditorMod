@@ -203,8 +203,8 @@ public class GuiRegionEditor extends GuiBase
 					menu.add(new JMenuItem(actionOpenGuiData));
 					menu.add(new JMenuItem(actionOpenGuiCommand));
 				}));
-				menuBar2.add(get(new JMenu("Map(M)"), menu -> {
-					menu.setMnemonic(KeyEvent.VK_M);
+				menuBar2.add(get(new JMenu("View(V)"), menu -> {
+					menu.setMnemonic(KeyEvent.VK_V);
 					menu.add(new JMenuItem(actionLoadMapFromLocalFile));
 					menu.add(new JMenuItem(actionLoadMapFromUrl));
 					menu.addSeparator();
