@@ -6,6 +6,7 @@ import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -32,7 +33,6 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.DefaultListModel;
 import javax.swing.InputMap;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
@@ -40,7 +40,6 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
@@ -56,6 +55,10 @@ public class GuiRegionEditor extends GuiBase
 
 	private InputMap inputMap;
 	private ActionMap actionMap;
+	private Action actionOpenGuiData;
+	private Action actionOpenGuiCommand;
+	private Action actionLoadMapFromLocalFile;
+	private Action actionLoadMapFromUrl;
 	private Action actionScrollLeft;
 	private Action actionScrollRight;
 	private Action actionScrollUp;
@@ -120,6 +123,52 @@ public class GuiRegionEditor extends GuiBase
 
 			}
 
+			//
+
+			actionOpenGuiData = new Action1(e -> new GuiData(windowWrapper, new IDialogDataListener() {
+				@Override
+				public void onImport(String string)
+				{
+					canvasMap.fromExpression(string);
+				}
+
+				@Override
+				public String onExport()
+				{
+					return canvasMap.toExpression();
+				}
+			}).show())
+				.value(Action.NAME, "Open Import/Export Window(I)...")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_I)
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK))
+				.register();
+			actionOpenGuiCommand = new Action1(e -> new GuiCommand(windowWrapper).show())
+				.value(Action.NAME, "Open Dynmap Command Window(D)...")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_DOWN_MASK))
+				.register();
+
+			actionLoadMapFromLocalFile = new Action1(e -> loadMapFromLocal())
+				.value(Action.NAME, "Load Map From Local File(F)...")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_F)
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK))
+				.register();
+			actionLoadMapFromUrl = new Action1(e -> {
+				GuiUrl guiUrl = new GuiUrl(windowWrapper);
+				guiUrl.show();
+				if (guiUrl.ok) {
+					try (InputStream in = guiUrl.url.openStream()) {
+						loadMapFrom(in, new File(guiUrl.uri.getPath()).getName());
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+			})
+				.value(Action.NAME, "Load Map From URL(U)...")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_U)
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK))
+				.register();
+
 			actionScrollLeft = new Action1(e -> scroll(-4, 0))
 				.value(Action.NAME, "Scroll Left(L)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_L)
@@ -150,10 +199,14 @@ public class GuiRegionEditor extends GuiBase
 			JMenuBar menuBar = get(new JMenuBar(), menuBar2 -> {
 				menuBar2.add(get(new JMenu("Data(D)"), menu -> {
 					menu.setMnemonic(KeyEvent.VK_D);
-
+					menu.add(new JMenuItem(actionOpenGuiData));
+					menu.add(new JMenuItem(actionOpenGuiCommand));
 				}));
 				menuBar2.add(get(new JMenu("Map(M)"), menu -> {
 					menu.setMnemonic(KeyEvent.VK_M);
+					menu.add(new JMenuItem(actionLoadMapFromLocalFile));
+					menu.add(new JMenuItem(actionLoadMapFromUrl));
+					menu.addSeparator();
 					menu.add(new JMenuItem(actionScrollLeft));
 					menu.add(new JMenuItem(actionScrollRight));
 					menu.add(new JMenuItem(actionScrollUp));
@@ -302,53 +355,6 @@ public class GuiRegionEditor extends GuiBase
 
 				// 操作ボタン
 				flowPanel(
-
-					get(new JButton("Map"), c -> {
-						c.addMouseListener(new MouseAdapter() {
-							@Override
-							public void mouseReleased(MouseEvent e)
-							{
-								JPopupMenu popupMenu = new JPopupMenu();
-								{
-									popupMenu.add(get(new JMenuItem("From Local File"), c -> {
-										c.addActionListener(e2 -> {
-											loadMapFromLocal();
-										});
-									}));
-									popupMenu.add(get(new JMenuItem("From URL"), c -> {
-										c.addActionListener(e2 -> {
-											GuiUrl guiUrl = new GuiUrl(windowWrapper);
-											guiUrl.show();
-											if (guiUrl.ok) {
-												try (InputStream in = guiUrl.url.openStream()) {
-													loadMapFrom(in, new File(guiUrl.uri.getPath()).getName());
-												} catch (IOException e1) {
-													e1.printStackTrace();
-												}
-											}
-										});
-									}));
-								}
-								popupMenu.show(c, e.getX(), e.getY());
-							}
-						});
-					}),
-
-					button("Data", e -> new GuiData(windowWrapper, new IDialogDataListener() {
-						@Override
-						public void onImport(String string)
-						{
-							canvasMap.fromExpression(string);
-						}
-
-						@Override
-						public String onExport()
-						{
-							return canvasMap.toExpression();
-						}
-					}).show()),
-
-					button("Command", e -> new GuiCommand(windowWrapper).show()),
 
 					button("B", e -> {
 						try {
