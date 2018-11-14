@@ -33,11 +33,11 @@ public class ImageLayerMouse extends ImageLayer
 				RegionInfo regionInfo = mapData.regionInfoTable.get(oRegionIdentifier.get());
 
 				graphics.drawString(
-					"Country: (" + regionInfo.regionIdentifier.countryNumber + ") " + regionInfo.countryName,
+					"Country: (" + oRegionIdentifier.get().countryNumber + ") " + regionInfo.countryName,
 					oMousePosition.get().x + 2,
 					oMousePosition.get().y - height * 1 - 2);
 				graphics.drawString(
-					"State: (" + regionInfo.regionIdentifier.stateNumber + ") " + regionInfo.stateName,
+					"State: (" + oRegionIdentifier.get().stateNumber + ") " + regionInfo.stateName,
 					oMousePosition.get().x + 2,
 					oMousePosition.get().y - height * 0 - 2);
 

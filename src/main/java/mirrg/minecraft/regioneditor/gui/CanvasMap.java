@@ -10,20 +10,32 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
-import io.netty.util.internal.shaded.org.jctools.queues.MessagePassingQueue.Consumer;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonStreamParser;
+import com.google.gson.internal.Streams;
+import com.google.gson.stream.JsonWriter;
+
 import mirrg.minecraft.regioneditor.data.ChunkPosition;
 import mirrg.minecraft.regioneditor.data.MapData;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
 import mirrg.minecraft.regioneditor.data.RegionInfoTable;
+import mirrg.minecraft.regioneditor.data.RegionMap;
 import net.minecraft.util.Tuple;
 
 public class CanvasMap extends Canvas
@@ -53,18 +65,25 @@ public class CanvasMap extends Canvas
 			Random random = new Random();
 
 			for (int i = 0; i < 5; i++) {
-				addRegionInfo(new RegionInfo(
+				addRegionInfo(
 					new RegionIdentifier(
 						"" + (random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10)),
 						"" + (random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10))),
-					"" + random.nextInt(10000),
-					new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)),
-					"" + random.nextInt(10000),
-					new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256))));
+					new RegionInfo(
+						"" + random.nextInt(10000),
+						new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)),
+						"" + random.nextInt(10000),
+						new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256))));
 			}
-			addRegionInfo(RegionInfo.decode("4432:1,レイミセロ国:#FF0000:首都:#823413"));
-			addRegionInfo(RegionInfo.decode("4432:5673,レイミセロ国:#FF0000:九州:#198467"));
-			addRegionInfo(RegionInfo.decode("17:1,宇宙航空研究開発機構:#D89726:金星探査機「あかつき28」墜落跡地:#ff0000"));
+			addRegionInfo(
+				RegionIdentifier.decode(new Gson().fromJson("[\"4432\",\"1\"]", JsonElement.class)),
+				RegionInfo.decode(new Gson().fromJson("[\"レイミセロ国\",\"#FF0000\",\"首都\",\"#823413\"]", JsonElement.class)));
+			addRegionInfo(
+				RegionIdentifier.decode(new Gson().fromJson("[\"4432\",\"5673\"]", JsonElement.class)),
+				RegionInfo.decode(new Gson().fromJson("[\"レイミセロ国\",\"#FF0000\",\"九州\",\"#198467\"]", JsonElement.class)));
+			addRegionInfo(
+				RegionIdentifier.decode(new Gson().fromJson("[\"17\",\"1\"]", JsonElement.class)),
+				RegionInfo.decode(new Gson().fromJson("[\"宇宙航空研究開発機構\",\"#D89726\",\"金星探査機「あかつき28」墜落跡地\",\"#ff0000\"]", JsonElement.class)));
 
 			for (int i = 0; i < 10000; i++) {
 				RegionIdentifier regionIdentifier;
@@ -86,9 +105,9 @@ public class CanvasMap extends Canvas
 		}
 	}
 
-	public void addRegionInfo(RegionInfo regionInfo)
+	public void addRegionInfo(RegionIdentifier regionIdentifier, RegionInfo regionInfo)
 	{
-		mapData.regionInfoTable.put(regionInfo.regionIdentifier, regionInfo);
+		mapData.regionInfoTable.put(regionIdentifier, regionInfo);
 		listener.onRegionInfoTableChange(mapData.regionInfoTable);
 	}
 
@@ -227,86 +246,118 @@ public class CanvasMap extends Canvas
 		updateLayerMap();
 	}
 
-	public void fromExpression(String string)
+	public void setMapData(MapData mapData)
 	{
-		mapData.regionInfoTable.clear();
-		mapData.regionMap.clear();
-
-		Consumer<String>[] commandConsumer = new Consumer[1];
-		commandConsumer[0] = string2 -> {
-			try {
-				string2 = string2.replaceAll("[\\r\\n\\t ]", "");
-				String[] commands = string2.split(";");
-
-				for (String command : commands) {
-					String kind = command.substring(0, 1);
-					String args = command.substring(1);
-
-					if (kind.equals("#")) {
-						// Comment Out
-					} else if (kind.equals("I")) {
-						// Info
-						RegionInfo regionInfo = RegionInfo.decode(args);
-						mapData.regionInfoTable.put(regionInfo.regionIdentifier, regionInfo);
-					} else if (kind.equals("M")) {
-						// Map
-						String[] s = args.split(",");
-						String countryNumber = s[0];
-						String stateNumber = s[1];
-						int x = Integer.parseInt(s[2], 10);
-						int z = Integer.parseInt(s[3], 10);
-						int length = Integer.parseInt(s[4], 10);
-						RegionIdentifier regionIdentifier = new RegionIdentifier(countryNumber, stateNumber);
-						for (int xi = 0; xi < length; xi++) {
-							mapData.regionMap.set(new ChunkPosition(x + xi, z), Optional.of(regionIdentifier));
-						}
-					} else if (kind.equals("C")) {
-						commandConsumer[0].accept(decompress(args));
-					}
-
-				}
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		};
-		commandConsumer[0].accept(string);
-
-		listener.onRegionInfoTableChange(mapData.regionInfoTable);
-
+		this.mapData = mapData;
+		listener.onRegionInfoTableChange(this.mapData.regionInfoTable);
 		updateLayerRegion();
 	}
 
-	public String toExpression()
+	public void setExpression(String string) throws Exception
 	{
-		StringBuilder sb = new StringBuilder();
-
-		sb.append("#infos");
-		sb.append(";\n");
-
-		for (Entry<RegionIdentifier, RegionInfo> entry : mapData.regionInfoTable.entrySet()) {
-			sb.append("I");
-			sb.append(entry.getValue().encode());
-			sb.append(";\n");
-		}
-
-		sb.append("#map");
-		sb.append(";\n");
-
-		{
-			sb.append("C");
-			sb.append("\n");
-			try {
-				sb.append(compress(getMapExpression()));
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-			sb.append(";\n");
-		}
-
-		return sb.toString();
+		setMapData(fromExpression(string));
 	}
 
-	private String getMapExpression()
+	public String getExpression() throws Exception
+	{
+		return toExpression(mapData);
+	}
+
+	private static MapData fromExpression(String string) throws Exception
+	{
+		MapData mapData = new MapData();
+
+		{
+			JsonObject json = fromJson(string).getAsJsonObject();
+
+			{
+				JsonArray infos = json.get("infos").getAsJsonArray();
+
+				for (JsonElement info : infos) {
+					JsonArray entry = info.getAsJsonArray();
+					mapData.regionInfoTable.put(
+						RegionIdentifier.decode(entry.get(0)),
+						RegionInfo.decode(entry.get(1)));
+				}
+
+			}
+
+			{
+				JsonArray map = json.get("map").getAsJsonArray();
+
+				// 結合
+				StringBuilder sb = new StringBuilder();
+				for (JsonElement line : map) {
+					sb.append(line.getAsString());
+				}
+				String stringZipEncodeBase64 = sb.toString();
+
+				// 解凍
+				String regionMapExpression = decompress(stringZipEncodeBase64, "UTF-8");
+
+				// 地図データに入れる
+				setRegionMapExpression(mapData.regionMap, regionMapExpression);
+
+			}
+
+		}
+
+		return mapData;
+	}
+
+	private static String toExpression(MapData mapData) throws Exception
+	{
+		Map<String, String> replaceTable = new HashMap<>();
+		int replaceIndex = 0;
+
+		JsonObject json = new JsonObject();
+		{
+			JsonArray infos = new JsonArray();
+
+			for (Entry<RegionIdentifier, RegionInfo> entry : mapData.regionInfoTable.entrySet()) {
+
+				// RegionEntryのJson表現の生成
+				String string;
+				{
+					JsonArray array = new JsonArray();
+					array.add(entry.getKey().encode());
+					array.add(entry.getValue().encode());
+					string = array.toString();
+				}
+
+				// 代替の文字列の配置
+				// RegionEntry分のJsonを1行にするため
+				replaceTable.put("\"=5A46d2Wsf=" + replaceIndex + "=5A46d2Wsf=\"", string);
+				infos.add("=5A46d2Wsf=" + replaceIndex + "=5A46d2Wsf=");
+				replaceIndex++;
+
+			}
+
+			json.add("infos", infos);
+		}
+		{
+			JsonArray map = new JsonArray();
+
+			// 地図データの文字列表現の取得
+			String regionMapExpression = getRegionMapExpression(mapData.regionMap);
+
+			// 圧縮
+			List<String> list = compress(regionMapExpression, "UTF-8");
+
+			// Jsonに1行ずつ追加
+			for (String line : list) {
+				map.add(line);
+			}
+
+			json.add("map", map);
+		}
+
+		String string = toJson(json);
+		string = replace(string, replaceTable);
+		return string;
+	}
+
+	private static String getRegionMapExpression(RegionMap regionMap)
 	{
 		StringBuilder sb = new StringBuilder();
 
@@ -314,8 +365,8 @@ public class CanvasMap extends Canvas
 		RegionIdentifier regionIdentifierLast = null;
 		int length = 0;
 
-		for (ChunkPosition chunkPosition : mapData.regionMap.getKeys()) {
-			RegionIdentifier regionIdentifier = mapData.regionMap.get(chunkPosition).get();
+		for (ChunkPosition chunkPosition : regionMap.getKeys()) {
+			RegionIdentifier regionIdentifier = regionMap.get(chunkPosition).get();
 
 			if (chunkPositionLast != null) {
 				// 1個前の領地がある場合
@@ -333,7 +384,6 @@ public class CanvasMap extends Canvas
 					// そうでない場合
 
 					// 前の領地を出力する
-					sb.append("M");
 					sb.append(String.format("%s,%s,%s,%s,%s",
 						regionIdentifierLast.countryNumber,
 						regionIdentifierLast.stateNumber,
@@ -365,7 +415,6 @@ public class CanvasMap extends Canvas
 			// 1個前の領地がある場合
 
 			// 前の領地を出力する
-			sb.append("M");
 			sb.append(String.format("%s,%s,%s,%s,%s",
 				regionIdentifierLast.countryNumber,
 				regionIdentifierLast.stateNumber,
@@ -379,75 +428,190 @@ public class CanvasMap extends Canvas
 		return sb.toString();
 	}
 
-	private String compress(String string) throws Exception
+	private static void setRegionMapExpression(RegionMap regionMap, String regionMapExpression)
 	{
-		Deflater deflater = new Deflater();
-		deflater.setInput(string.getBytes("utf-8"));
-		deflater.finish();
-		ArrayList<Tuple<Integer, byte[]>> buffers = new ArrayList<>();
-		while (true) {
-			byte[] buffer = new byte[1024];
-			int length = deflater.deflate(buffer);
-			if (length > 0) {
-				buffers.add(new Tuple<>(length, buffer));
-			} else {
-				break;
-			}
-		}
-		deflater.end();
 
-		int length = buffers.stream()
-			.mapToInt(t -> t.getFirst())
-			.sum();
-		byte[] buffer2 = new byte[length];
-		{
-			int start = 0;
-			for (Tuple<Integer, byte[]> buffer : buffers) {
-				System.arraycopy(buffer.getSecond(), 0, buffer2, start, buffer.getFirst());
-				start += buffer.getFirst();
+		// 空白文字無視
+		regionMapExpression = regionMapExpression.replaceAll("[\\r\\n\\t ]", "");
+
+		// 区切ってコマンド列にする
+		String[] commands = regionMapExpression.split(";");
+
+		// コマンド列の処理
+		for (String command : commands) {
+
+			// コマンド表現を引数ごとに区切る
+			String[] s = command.split(",");
+
+			// 引数をコマンドにする
+			String countryNumber = s[0];
+			String stateNumber = s[1];
+			RegionIdentifier regionIdentifier = new RegionIdentifier(countryNumber, stateNumber);
+			int x = Integer.parseInt(s[2], 10);
+			int z = Integer.parseInt(s[3], 10);
+			int length = Integer.parseInt(s[4], 10);
+
+			// 配置実行
+			for (int xi = 0; xi < length; xi++) {
+				regionMap.set(new ChunkPosition(x + xi, z), Optional.of(regionIdentifier));
 			}
+
 		}
 
-		String out = new String(Base64.getEncoder().encode(buffer2), "utf-8");
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < out.length(); i += 100) {
-			sb.append(out.substring(i, Math.min(i + 100, out.length())));
-			sb.append("\n");
-		}
-		return sb.toString();
 	}
 
-	private String decompress(String string) throws Exception
+	private static JsonElement fromJson(String string) throws Exception
 	{
-		byte[] buffer1 = Base64.getDecoder().decode(string.replaceAll("[\\r\\n\\t ]", ""));
+		return new JsonStreamParser(string).next();
+	}
 
-		Inflater inflater = new Inflater();
-		inflater.setInput(buffer1, 0, buffer1.length);
-		ArrayList<Tuple<Integer, byte[]>> buffers = new ArrayList<>();
-		while (true) {
-			byte[] buffer = new byte[1024];
-			int length = inflater.inflate(buffer);
-			if (length > 0) {
-				buffers.add(new Tuple<>(length, buffer));
-			} else {
-				break;
-			}
+	private static String toJson(JsonElement json) throws Exception
+	{
+		StringWriter stringWriter = new StringWriter();
+		JsonWriter jsonWriter = new JsonWriter(stringWriter);
+		jsonWriter.setLenient(true);
+		jsonWriter.setIndent(" ");
+		Streams.write(json, jsonWriter);
+		return stringWriter.toString();
+	}
+
+	private static String replace(String string, Map<String, String> map)
+	{
+		for (Entry<String, String> entry : map.entrySet()) {
+			string = string.replaceAll(entry.getKey(), entry.getValue());
 		}
-		inflater.end();
+		return string;
+	}
 
-		int length = buffers.stream()
+	private static List<String> compress(String string, String charset) throws Exception
+	{
+
+		// バイト列化
+		byte[] bytes = string.getBytes(charset);
+
+		// Zip圧縮
+		byte[] bytesZip = zip(bytes);
+
+		// Base64エンコード
+		String stringZipEncodeBase64 = encodeBase64(bytesZip);
+
+		// 100文字ごとに切る
+		ArrayList<String> list = slice(stringZipEncodeBase64, 100);
+
+		return list;
+	}
+
+	private static String decompress(String string, String charset) throws Exception
+	{
+
+		// Base64デコード
+		byte[] bytesDecodeBase64 = decodeBase64(string);
+
+		// Zip解凍
+		byte[] bytesDecodeBase64Unzip = unzip(bytesDecodeBase64);
+
+		// 文字列化
+		String stringDecodeBase64Unzip = new String(bytesDecodeBase64Unzip, charset);
+
+		return stringDecodeBase64Unzip;
+	}
+
+	private static String encodeBase64(byte[] bytes) throws Exception
+	{
+
+		// Base64変換
+		String stringEncodeBase64 = new String(Base64.getEncoder().encode(bytes), "utf-8");
+
+		return stringEncodeBase64;
+	}
+
+	private static byte[] decodeBase64(String string) throws Exception
+	{
+
+		// 空白除去
+		string = string.replaceAll("[\\r\\n\\t ]", "");
+
+		// Base64逆変換
+		byte[] bytesDecodeBase64 = Base64.getDecoder().decode(string);
+
+		return bytesDecodeBase64;
+	}
+
+	private static byte[] zip(byte[] bytes) throws Exception
+	{
+
+		// Zip圧縮
+		ArrayList<Tuple<Integer, byte[]>> bytesListZip = new ArrayList<>();
+		{
+			Deflater deflater = new Deflater();
+			deflater.setInput(bytes);
+			deflater.finish();
+			while (true) {
+				byte[] buffer = new byte[1024];
+				int length = deflater.deflate(buffer);
+				if (length > 0) {
+					bytesListZip.add(new Tuple<>(length, buffer));
+				} else {
+					break;
+				}
+			}
+			deflater.end();
+		}
+
+		// 結合
+		byte[] bytesZip = concatenate(bytesListZip);
+
+		return bytesZip;
+	}
+
+	private static byte[] unzip(byte[] bytes) throws Exception
+	{
+
+		// Zip解凍
+		ArrayList<Tuple<Integer, byte[]>> bytesListUnzip = new ArrayList<>();
+		{
+			Inflater inflater = new Inflater();
+			inflater.setInput(bytes, 0, bytes.length);
+			while (true) {
+				byte[] buffer = new byte[1024];
+				int length = inflater.inflate(buffer);
+				if (length > 0) {
+					bytesListUnzip.add(new Tuple<>(length, buffer));
+				} else {
+					break;
+				}
+			}
+			inflater.end();
+		}
+
+		// 結合
+		byte[] bytesUnzip = concatenate(bytesListUnzip);
+
+		return bytesUnzip;
+	}
+
+	private static ArrayList<String> slice(String string, int length)
+	{
+		ArrayList<String> lines = new ArrayList();
+		for (int i = 0; i < string.length(); i += length) {
+			lines.add(string.substring(i, Math.min(i + length, string.length())));
+		}
+		return lines;
+	}
+
+	private static byte[] concatenate(ArrayList<Tuple<Integer, byte[]>> bytesList)
+	{
+		byte[] bytes = new byte[bytesList.stream()
 			.mapToInt(t -> t.getFirst())
-			.sum();
-		byte[] buffer2 = new byte[length];
+			.sum()];
 		{
 			int start = 0;
-			for (Tuple<Integer, byte[]> buffer : buffers) {
-				System.arraycopy(buffer.getSecond(), 0, buffer2, start, buffer.getFirst());
+			for (Tuple<Integer, byte[]> buffer : bytesList) {
+				System.arraycopy(buffer.getSecond(), 0, bytes, start, buffer.getFirst());
 				start += buffer.getFirst();
 			}
 		}
-
-		return new String(buffer2, "utf-8");
+		return bytes;
 	}
 
 	//

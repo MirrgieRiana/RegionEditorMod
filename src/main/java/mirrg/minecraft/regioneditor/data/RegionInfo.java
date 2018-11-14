@@ -3,53 +3,45 @@ package mirrg.minecraft.regioneditor.data;
 import java.awt.Color;
 import java.text.ParseException;
 
-public final class RegionInfo implements Comparable<RegionInfo>
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+
+public final class RegionInfo
 {
 
-	public static final RegionInfo DEFAULT = new RegionInfo(new RegionIdentifier("!", "!"), "No Country", new Color(0xFF00FF), "No State", new Color(0x000000));
+	public static final RegionInfo DEFAULT = new RegionInfo("No Country", new Color(0xFF00FF), "No State", new Color(0x000000));
 
-	public static RegionInfo decode(String code) throws ParseException
+	public static RegionInfo decode(JsonElement json) throws ParseException
 	{
-		try {
-			String[] a = code.split(",");
-			String[] b = a[1].split(":");
-			return new RegionInfo(
-				RegionIdentifier.decode(a[0]),
-				b[0],
-				Color.decode(b[1]),
-				b[2],
-				Color.decode(b[3]));
-		} catch (NumberFormatException e) {
-			ParseException parseException = new ParseException(code, 0);
-			parseException.initCause(e);
-			throw parseException;
-		}
+		JsonArray array = json.getAsJsonArray();
+		return new RegionInfo(
+			array.get(0).getAsString(),
+			Color.decode(array.get(1).getAsString()),
+			array.get(2).getAsString(),
+			Color.decode(array.get(3).getAsString()));
 	}
 
-	public String encode()
+	public JsonElement encode()
 	{
-		return String.format("%s,%s:#%06x:%s:#%06x",
-			regionIdentifier.encode(),
-			countryName,
-			countryColor.getRGB() & 0xffffff,
-			stateName,
-			stateColor.getRGB() & 0xffffff);
+		JsonArray array = new JsonArray();
+		array.add(countryName);
+		array.add(String.format("#%06x", countryColor.getRGB() & 0xffffff));
+		array.add(stateName);
+		array.add(String.format("#%06x", stateColor.getRGB() & 0xffffff));
+		return array;
 	}
 
-	public final RegionIdentifier regionIdentifier;
 	public final String countryName;
 	public final Color countryColor;
 	public final String stateName;
 	public final Color stateColor;
 
 	public RegionInfo(
-		RegionIdentifier regionIdentifier,
 		String countryName,
 		Color countryColor,
 		String stateName,
 		Color stateColor)
 	{
-		this.regionIdentifier = regionIdentifier;
 		this.countryName = countryName;
 		this.countryColor = countryColor;
 		this.stateName = stateName;
@@ -67,34 +59,9 @@ public final class RegionInfo implements Comparable<RegionInfo>
 	@Override
 	public String toString()
 	{
-		return String.format("(%s)%s:(%s)%s",
-			regionIdentifier.countryNumber,
+		return String.format("%s:%s",
 			countryName,
-			regionIdentifier.stateNumber,
 			stateName);
-	}
-
-	@Override
-	public int hashCode()
-	{
-		return regionIdentifier.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object obj)
-	{
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (getClass() != obj.getClass()) return false;
-		RegionInfo other = (RegionInfo) obj;
-		if (!regionIdentifier.equals(other.regionIdentifier)) return false;
-		return true;
-	}
-
-	@Override
-	public int compareTo(RegionInfo other)
-	{
-		return regionIdentifier.compareTo(other.regionIdentifier);
 	}
 
 }

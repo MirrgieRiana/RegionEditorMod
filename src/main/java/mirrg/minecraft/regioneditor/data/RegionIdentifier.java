@@ -2,26 +2,26 @@ package mirrg.minecraft.regioneditor.data;
 
 import java.text.ParseException;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+
 public final class RegionIdentifier implements Comparable<RegionIdentifier>
 {
 
-	public static RegionIdentifier decode(String code) throws ParseException
+	public static RegionIdentifier decode(JsonElement json) throws ParseException
 	{
-		try {
-			String[] cells = code.split(":");
-			return new RegionIdentifier(cells[0], cells[1]);
-		} catch (NumberFormatException e) {
-			ParseException parseException = new ParseException(code, 0);
-			parseException.initCause(e);
-			throw parseException;
-		}
+		JsonArray array = json.getAsJsonArray();
+		return new RegionIdentifier(
+			array.get(0).getAsString(), 
+			array.get(1).getAsString());
 	}
 
-	public String encode()
+	public JsonElement encode()
 	{
-		return String.format("%s:%s",
-			countryNumber,
-			stateNumber);
+		JsonArray array = new JsonArray();
+		array.add(countryNumber);
+		array.add(stateNumber);
+		return array;
 	}
 
 	//
@@ -40,7 +40,7 @@ public final class RegionIdentifier implements Comparable<RegionIdentifier>
 	@Override
 	public String toString()
 	{
-		return encode();
+		return encode().toString();
 	}
 
 	@Override

@@ -45,6 +45,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 
+import mirrg.minecraft.regioneditor.data.RegionEntry;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
 import mirrg.minecraft.regioneditor.data.RegionInfoTable;
@@ -72,8 +73,8 @@ public class GuiRegionEditor extends GuiBase
 	private JLabel labelChunkZ;
 	private JFormattedTextField textFieldX;
 	private JFormattedTextField textFieldZ;
-	private JList<RegionInfo> tableRegionInfoTable;
-	private DefaultListModel<RegionInfo> modelTableRegionInfoTable;
+	private JList<RegionEntry> tableRegionInfoTable;
+	private DefaultListModel<RegionEntry> modelTableRegionInfoTable;
 
 	public GuiRegionEditor(WindowWrapper owner)
 	{
@@ -130,13 +131,22 @@ public class GuiRegionEditor extends GuiBase
 				@Override
 				public void onImport(String string)
 				{
-					canvasMap.fromExpression(string);
+					try {
+						canvasMap.setExpression(string);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 
 				@Override
 				public String onExport()
 				{
-					return canvasMap.toExpression();
+					try {
+						return canvasMap.getExpression();
+					} catch (Exception e) {
+						e.printStackTrace();
+						return "Error";
+					}
 				}
 			}).show())
 				.value(Action.NAME, "Open Import/Export Window(I)...")
@@ -253,7 +263,7 @@ public class GuiRegionEditor extends GuiBase
 										{
 											modelTableRegionInfoTable.clear();
 											for (Entry<RegionIdentifier, RegionInfo> entry : regionInfoTable.entrySet()) {
-												modelTableRegionInfoTable.addElement(entry.getValue());
+												modelTableRegionInfoTable.addElement(new RegionEntry(entry.getKey(), entry.getValue()));
 											}
 										}
 
@@ -261,11 +271,11 @@ public class GuiRegionEditor extends GuiBase
 										public void onRegionIdentifierCurrentChange(Optional<RegionIdentifier> oRegionIdentifierCurrent)
 										{
 											tableRegionInfoTable.getSelectionModel().clearSelection();
-											Enumeration<RegionInfo> elements = modelTableRegionInfoTable.elements();
+											Enumeration<RegionEntry> elements = modelTableRegionInfoTable.elements();
 											int i = 0;
 											while (elements.hasMoreElements()) {
-												RegionInfo regionInfo = elements.nextElement();
-												if (Optional.of(regionInfo.regionIdentifier).equals(oRegionIdentifierCurrent)) {
+												RegionEntry regionEntry = elements.nextElement();
+												if (Optional.of(regionEntry.regionIdentifier).equals(oRegionIdentifierCurrent)) {
 													tableRegionInfoTable.setSelectedIndex(i);
 													break;
 												}
