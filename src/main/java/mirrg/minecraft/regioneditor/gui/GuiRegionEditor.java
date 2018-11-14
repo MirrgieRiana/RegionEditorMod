@@ -140,7 +140,7 @@ public class GuiRegionEditor extends GuiBase
 			}).show())
 				.value(Action.NAME, "Open Import/Export Window(I)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_I)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK))
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK))
 				.register();
 			actionOpenGuiCommand = new Action1(e -> new GuiCommand(windowWrapper).show())
 				.value(Action.NAME, "Open Dynmap Command Window(D)...")
