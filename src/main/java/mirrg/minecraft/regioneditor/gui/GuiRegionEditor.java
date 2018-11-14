@@ -121,25 +121,25 @@ public class GuiRegionEditor extends GuiBase
 			}
 
 			actionScrollLeft = new Action1(e -> scroll(-4, 0))
-				.value(Action.NAME, "Scroll Left(&L)")
+				.value(Action.NAME, "Scroll Left(L)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_L)
 				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_A, 0))
 				.key(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0))
 				.register();
 			actionScrollRight = new Action1(e -> scroll(4, 0))
-				.value(Action.NAME, "Scroll Right")
+				.value(Action.NAME, "Scroll Right(R)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_R)
 				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_D, 0))
 				.key(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0))
 				.register();
 			actionScrollUp = new Action1(e -> scroll(0, -4))
-				.value(Action.NAME, "Scroll Up")
+				.value(Action.NAME, "Scroll Up(U)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_U)
 				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_W, 0))
 				.key(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0))
 				.register();
 			actionScrollDown = new Action1(e -> scroll(0, 4))
-				.value(Action.NAME, "Scroll Down")
+				.value(Action.NAME, "Scroll Down(D)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)
 				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, 0))
 				.key(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0))
@@ -148,11 +148,11 @@ public class GuiRegionEditor extends GuiBase
 
 		{
 			JMenuBar menuBar = get(new JMenuBar(), menuBar2 -> {
-				menuBar2.add(get(new JMenu("Data"), menu -> {
+				menuBar2.add(get(new JMenu("Data(D)"), menu -> {
 					menu.setMnemonic(KeyEvent.VK_D);
 
 				}));
-				menuBar2.add(get(new JMenu("Map"), menu -> {
+				menuBar2.add(get(new JMenu("Map(M)"), menu -> {
 					menu.setMnemonic(KeyEvent.VK_M);
 					menu.add(new JMenuItem(actionScrollLeft));
 					menu.add(new JMenuItem(actionScrollRight));
