@@ -9,7 +9,7 @@ import com.google.gson.JsonElement;
 public final class RegionInfo
 {
 
-	public static final RegionInfo DEFAULT = new RegionInfo("No Country", new Color(0xFF00FF), "No State", new Color(0x000000));
+	public static final RegionInfo DEFAULT = new RegionInfo("No Country", new Color(0xFF00FF), "No State", new Color(0xFF00FF));
 
 	public static RegionInfo decode(JsonElement json) throws ParseException
 	{
