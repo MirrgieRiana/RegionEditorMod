@@ -5,6 +5,7 @@ import static mirrg.minecraft.regioneditor.gui.SwingUtils.*;
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.FileDialog;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -229,13 +230,19 @@ public class GuiRegionEditor extends GuiBase
 					// 左ペイン：地図側
 					borderPanelUp(
 
-						button("↑", actionScrollUp),
+						get(button("↑", actionScrollUp), c -> {
+							c.setMargin(new Insets(0, 0, 0, 0));
+							c.setPreferredSize(new Dimension(32, 32));
+						}),
 
 						borderPanelDown(
 
 							borderPanelLeft(
 
-								button("←", actionScrollLeft),
+								get(button("←", actionScrollLeft), c -> {
+									c.setMargin(new Insets(0, 0, 0, 0));
+									c.setPreferredSize(new Dimension(32, 32));
+								}),
 
 								borderPanelRight(
 
@@ -270,13 +277,19 @@ public class GuiRegionEditor extends GuiBase
 										c.setPreferredSize(new Dimension(600, 600));
 									}),
 
-									button("→", actionScrollRight)
+									get(button("→", actionScrollRight), c -> {
+										c.setMargin(new Insets(0, 0, 0, 0));
+										c.setPreferredSize(new Dimension(32, 32));
+									})
 
 								)
 
 							),
 
-							button("↓", actionScrollDown)
+							get(button("↓", actionScrollDown), c -> {
+								c.setMargin(new Insets(0, 0, 0, 0));
+								c.setPreferredSize(new Dimension(32, 32));
+							})
 
 						)
 
