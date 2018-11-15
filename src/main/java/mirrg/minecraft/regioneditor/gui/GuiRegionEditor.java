@@ -85,6 +85,14 @@ public class GuiRegionEditor extends GuiBase
 	protected void initComponenets()
 	{
 
+		try (InputStream in = GuiRegionEditor.class.getResourceAsStream("icon2.png")) {
+			if (in != null) {
+				windowWrapper.getWindow().setIconImage(ImageIO.read(in));
+			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+
 		{
 			inputMap = new InputMap();
 			actionMap = new ActionMap();
