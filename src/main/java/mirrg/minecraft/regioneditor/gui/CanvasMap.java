@@ -631,7 +631,7 @@ public class CanvasMap extends Canvas
 
 	private void updateLayerRegion(ChunkPosition chunkPosition)
 	{
-		imageLayerRegion.update(imageLayerMap.getImage(), mapData, positionX, positionZ, chunkPosition.offset(-1, -1), chunkPosition.offset(1, 1));
+		imageLayerRegion.update(imageLayerMap.getImage(), mapData, positionX, positionZ, chunkPosition.plus(-1, -1), chunkPosition.plus(1, 1));
 		updateLayerBack();
 	}
 

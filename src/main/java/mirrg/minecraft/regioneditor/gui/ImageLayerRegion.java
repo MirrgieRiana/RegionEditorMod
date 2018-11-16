@@ -65,10 +65,10 @@ public class ImageLayerRegion extends ImageLayer
 						regionInfo,
 						x - positionX,
 						z - positionZ,
-						!mapData.regionMap.get(chunkPosition.offset(-1, 0)).equals(oRegionIdentifier),
-						!mapData.regionMap.get(chunkPosition.offset(1, 0)).equals(oRegionIdentifier),
-						!mapData.regionMap.get(chunkPosition.offset(0, -1)).equals(oRegionIdentifier),
-						!mapData.regionMap.get(chunkPosition.offset(0, 1)).equals(oRegionIdentifier));
+						!mapData.regionMap.get(chunkPosition.plus(-1, 0)).equals(oRegionIdentifier),
+						!mapData.regionMap.get(chunkPosition.plus(1, 0)).equals(oRegionIdentifier),
+						!mapData.regionMap.get(chunkPosition.plus(0, -1)).equals(oRegionIdentifier),
+						!mapData.regionMap.get(chunkPosition.plus(0, 1)).equals(oRegionIdentifier));
 
 				}
 

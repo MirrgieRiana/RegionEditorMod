@@ -12,7 +12,22 @@ public final class ChunkPosition implements Comparable<ChunkPosition>
 		this.z = z;
 	}
 
-	public ChunkPosition offset(int xi, int zi)
+	public ChunkPosition minus(ChunkPosition chunkPosition)
+	{
+		return minus(chunkPosition.x, chunkPosition.z);
+	}
+
+	public ChunkPosition minus(int xi, int zi)
+	{
+		return plus(-xi, -zi);
+	}
+
+	public ChunkPosition plus(ChunkPosition chunkPosition)
+	{
+		return plus(chunkPosition.x, chunkPosition.z);
+	}
+
+	public ChunkPosition plus(int xi, int zi)
 	{
 		return new ChunkPosition(x + xi, z + zi);
 	}
