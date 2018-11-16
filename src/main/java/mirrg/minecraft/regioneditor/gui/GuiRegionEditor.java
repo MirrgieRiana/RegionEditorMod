@@ -45,6 +45,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 
+import mirrg.minecraft.regioneditor.data.Area;
 import mirrg.minecraft.regioneditor.data.RegionEntry;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
@@ -161,7 +162,20 @@ public class GuiRegionEditor extends GuiBase
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_I)
 				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK))
 				.register();
-			actionOpenGuiCommand = new Action1(e -> new GuiCommand(windowWrapper).show())
+			actionOpenGuiCommand = new Action1(e -> {
+
+				StringBuilder sb = new StringBuilder();
+				sb.append("=====");
+				sb.append("\n");
+				for (Area area : canvasMap.mapData.getAreas()) {
+					sb.append(area.regionInfo);
+					sb.append("\n");
+					sb.append(area.vertexes);
+					sb.append("\n");
+				}
+
+				new GuiCommand(windowWrapper, sb.toString()).show();
+			})
 				.value(Action.NAME, "Open Dynmap Command Window(D)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)
 				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_DOWN_MASK))
