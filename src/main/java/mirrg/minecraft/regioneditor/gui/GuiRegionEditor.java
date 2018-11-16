@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -170,7 +171,9 @@ public class GuiRegionEditor extends GuiBase
 				for (Area area : canvasMap.mapData.getAreas()) {
 					sb.append(area.regionInfo);
 					sb.append("\n");
-					sb.append(area.vertexes);
+					sb.append(area.vertexes.stream()
+						.map(a -> a.x + "\t" + a.z)
+						.collect(Collectors.joining("\n")));
 					sb.append("\n");
 				}
 
