@@ -10,16 +10,14 @@ public abstract class GuiBase
 	public GuiBase(WindowWrapper owner, String title, ModalityType modalityType)
 	{
 		windowWrapper = WindowWrapper.createWindow(owner, title, modalityType);
-
-		initComponenets();
-
-		windowWrapper.getWindow().pack();
 	}
 
 	protected abstract void initComponenets();
 
 	public void show()
 	{
+		initComponenets();
+		windowWrapper.getWindow().pack();
 		windowWrapper.getWindow().setVisible(true);
 	}
 
