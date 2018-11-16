@@ -85,6 +85,7 @@ public class CanvasMap extends Canvas
 				RegionIdentifier.decode(new Gson().fromJson("[\"17\",\"1\"]", JsonElement.class)),
 				RegionInfo.decode(new Gson().fromJson("[\"宇宙航空研究開発機構\",\"#D89726\",\"金星探査機「あかつき28」墜落跡地\",\"#ff0000\"]", JsonElement.class)));
 
+			/*
 			for (int i = 0; i < 10000; i++) {
 				RegionIdentifier regionIdentifier;
 
@@ -99,6 +100,7 @@ public class CanvasMap extends Canvas
 					}
 				}
 			}
+			*/
 
 		} catch (Exception e) {
 			throw new RuntimeException(e);
