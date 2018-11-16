@@ -55,7 +55,7 @@ public class CanvasMap extends Canvas
 
 	private Optional<RegionIdentifier> oRegionIdentifierCurrent = Optional.empty();
 
-	private MapData mapData = new MapData();
+	public MapData mapData = new MapData();
 
 	// TODO
 	public void init()
