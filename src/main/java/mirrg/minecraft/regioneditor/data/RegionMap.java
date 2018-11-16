@@ -34,4 +34,19 @@ public final class RegionMap
 		map.clear();
 	}
 
+	public ChunkBoundingBox getBoundingBox()
+	{
+		int minX = 0;
+		int minZ = 0;
+		int maxX = 0;
+		int maxZ = 0;
+		for (ChunkPosition chunkPosition : map.keySet()) {
+			if (chunkPosition.x < minX) minX = chunkPosition.x;
+			if (chunkPosition.x > maxX) maxX = chunkPosition.x;
+			if (chunkPosition.z < minZ) minZ = chunkPosition.z;
+			if (chunkPosition.z > maxZ) maxZ = chunkPosition.z;
+		}
+		return new ChunkBoundingBox(new ChunkPosition(minX, minZ), new ChunkPosition(maxX, maxZ));
+	}
+
 }
