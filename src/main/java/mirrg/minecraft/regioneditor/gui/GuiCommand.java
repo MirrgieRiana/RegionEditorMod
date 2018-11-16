@@ -4,18 +4,35 @@ import static mirrg.minecraft.regioneditor.gui.SwingUtils.*;
 
 import java.awt.CardLayout;
 import java.awt.Dialog.ModalityType;
+import java.util.stream.Collectors;
 
 import javax.swing.JTextArea;
+
+import mirrg.minecraft.regioneditor.data.Area;
+import mirrg.minecraft.regioneditor.util.ImmutableArray;
 
 public class GuiCommand extends GuiBase
 {
 
 	private String dynmapCommand;
 
-	public GuiCommand(WindowWrapper owner, String dynmapCommand)
+	public GuiCommand(WindowWrapper owner, ImmutableArray<Area> list)
 	{
 		super(owner, "Command", ModalityType.MODELESS);
-		this.dynmapCommand = dynmapCommand;
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("=====");
+		sb.append("\n");
+		list.forEach((area, i) -> {
+			sb.append(area.regionInfo);
+			sb.append("\n");
+			sb.append(area.vertexes.stream()
+				.map(a -> a.x + "\t" + a.z)
+				.collect(Collectors.joining("\n")));
+			sb.append("\n");
+		});
+
+		this.dynmapCommand = sb.toString();
 	}
 
 	private JTextArea textArea;

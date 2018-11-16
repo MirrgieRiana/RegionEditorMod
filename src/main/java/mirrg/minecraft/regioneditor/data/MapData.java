@@ -4,7 +4,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -18,7 +17,7 @@ public class MapData
 	public RegionInfoTable regionInfoTable = new RegionInfoTable();
 	public RegionMap regionMap = new RegionMap();
 
-	public List<Area> getAreas()
+	public ImmutableArray<Area> getAreas()
 	{
 		ArrayList<Area> areas = new ArrayList<>();
 
@@ -47,7 +46,7 @@ public class MapData
 			}
 		}
 
-		return areas;
+		return ImmutableArray.fromIterable(areas);
 	}
 
 	/**
