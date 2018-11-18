@@ -67,6 +67,10 @@ public class GuiRegionEditor extends GuiBase
 	private Action actionScrollRight;
 	private Action actionScrollUp;
 	private Action actionScrollDown;
+	private Action actionCreateRegion;
+	private Action actionEditRegion;
+	private Action actionDeleteRegion;
+	private Action actionChangeRegionIdentifier;
 
 	private CanvasMap canvasMap;
 	private JLabel labelCoordX;
@@ -217,6 +221,35 @@ public class GuiRegionEditor extends GuiBase
 				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, 0))
 				.key(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0))
 				.register();
+
+			actionCreateRegion = new Action1(e -> {
+				System.out.println("A"); // TODO
+			})
+				.value(Action.NAME, "Create New Region(N)")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_N)
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK))
+				.register();
+			actionEditRegion = new Action1(e -> {
+				System.out.println("B"); // TODO
+			})
+				.value(Action.NAME, "Edit Region(E)")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_E)
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.SHIFT_DOWN_MASK))
+				.register();
+			actionDeleteRegion = new Action1(e -> {
+				System.out.println("C"); // TODO
+			})
+				.value(Action.NAME, "Delete Region(D)")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK | InputEvent.ALT_DOWN_MASK))
+				.register();
+			actionChangeRegionIdentifier = new Action1(e -> {
+				System.out.println("D"); // TODO
+			})
+				.value(Action.NAME, "Change Region Identifier(I)")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_I)
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK))
+				.register();
 		}
 
 		{
@@ -235,6 +268,14 @@ public class GuiRegionEditor extends GuiBase
 					menu.add(new JMenuItem(actionScrollRight));
 					menu.add(new JMenuItem(actionScrollUp));
 					menu.add(new JMenuItem(actionScrollDown));
+				}));
+				menuBar2.add(get(new JMenu("Region(R)"), menu -> {
+					menu.setMnemonic(KeyEvent.VK_R);
+					menu.add(new JMenuItem(actionCreateRegion));
+					menu.add(new JMenuItem(actionEditRegion));
+					menu.add(new JMenuItem(actionDeleteRegion));
+					menu.addSeparator();
+					menu.add(new JMenuItem(actionChangeRegionIdentifier));
 				}));
 			});
 			if (windowWrapper.frame != null) {
@@ -391,6 +432,14 @@ public class GuiRegionEditor extends GuiBase
 
 				// 操作ボタン
 				flowPanel(
+
+					button("New", actionCreateRegion),
+
+					button("Edit", actionEditRegion),
+
+					button("Delete", actionDeleteRegion),
+
+					button("Change ID", actionChangeRegionIdentifier),
 
 					button("B", e -> {
 						try {
