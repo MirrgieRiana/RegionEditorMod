@@ -36,6 +36,7 @@ public class GuiCommand extends GuiBase
 		});
 
 		this.dynmapCommand = sb.toString();
+		this.oSender = oSender;
 	}
 
 	private JTextArea textArea;
