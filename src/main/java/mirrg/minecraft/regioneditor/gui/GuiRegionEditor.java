@@ -55,6 +55,8 @@ import mirrg.minecraft.regioneditor.gui.GuiData.IDialogDataListener;
 public class GuiRegionEditor extends GuiBase
 {
 
+	private Optional<Consumer<List<String>>> oSender;
+
 	private InputMap inputMap;
 	private ActionMap actionMap;
 	private Action actionOpenGuiData;
@@ -76,9 +78,10 @@ public class GuiRegionEditor extends GuiBase
 	private JList<RegionEntry> tableRegionInfoTable;
 	private DefaultListModel<RegionEntry> modelTableRegionInfoTable;
 
-	public GuiRegionEditor(WindowWrapper owner)
+	public GuiRegionEditor(WindowWrapper owner, Optional<Consumer<List<String>>> oSender)
 	{
 		super(owner, "RegionEditor", ModalityType.MODELESS);
+		this.oSender = oSender;
 	}
 
 	@Override
@@ -162,7 +165,7 @@ public class GuiRegionEditor extends GuiBase
 				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK))
 				.register();
 			actionOpenGuiCommand = new Action1(e -> {
-				new GuiCommand(windowWrapper, canvasMap.mapData.getAreas()).show();
+				new GuiCommand(windowWrapper, canvasMap.mapData.getAreas(), oSender).show();
 			})
 				.value(Action.NAME, "Open Dynmap Command Window(D)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)

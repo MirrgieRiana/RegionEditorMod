@@ -1,5 +1,7 @@
 package mirrg.minecraft.regioneditor;
 
+import java.util.Optional;
+
 import javax.swing.UIManager;
 
 import mirrg.minecraft.regioneditor.gui.GuiRegionEditor;
@@ -15,7 +17,7 @@ public class MainRegionEditor
 			e.printStackTrace();
 		}
 
-		new GuiRegionEditor(null).show();
+		new GuiRegionEditor(null, Optional.empty()).show();
 	}
 
 }

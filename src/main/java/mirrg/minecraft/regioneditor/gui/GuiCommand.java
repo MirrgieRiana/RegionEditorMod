@@ -5,6 +5,9 @@ import static mirrg.minecraft.regioneditor.gui.SwingUtils.*;
 import java.awt.CardLayout;
 import java.awt.Dialog.ModalityType;
 import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 import javax.swing.JTextArea;
 
@@ -15,8 +18,9 @@ public class GuiCommand extends GuiBase
 {
 
 	private String dynmapCommand;
+	private Optional<Consumer<List<String>>> oSender;
 
-	public GuiCommand(WindowWrapper owner, ImmutableArray<Area> list)
+	public GuiCommand(WindowWrapper owner, ImmutableArray<Area> list, Optional<Consumer<List<String>>> oSender)
 	{
 		super(owner, "Command", ModalityType.MODELESS);
 

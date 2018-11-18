@@ -1,5 +1,7 @@
 package mirrg.minecraft.regioneditor;
 
+import java.util.Optional;
+
 import org.apache.logging.log4j.Logger;
 
 import mirrg.minecraft.regioneditor.gui.GuiRegionEditor;
@@ -42,7 +44,9 @@ public class ModRegionEditor
 						ItemStack itemStack = event.getItemStack();
 						if (itemStack.getItem() == Items.STICK) {
 							if (itemStack.getDisplayName().equals("RegionEditor.show")) {
-								new GuiRegionEditor(null).show();
+								new GuiRegionEditor(null, Optional.of(ss -> {
+
+								})).show();
 							}
 						}
 					}
