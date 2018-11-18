@@ -58,7 +58,23 @@ public class GuiCommand extends GuiBase
 	{
 		windowWrapper.getWindow().setLayout(new CardLayout());
 
-		windowWrapper.getWindow().add(scrollPane(textArea = new JTextArea(dynmapCommand), 600, 600));
+		windowWrapper.getWindow().add(borderPanelDown(
+
+			scrollPane(textArea = new JTextArea(dynmapCommand), 600, 600),
+
+			flowPanel(
+
+				get(button("Send", e -> {
+					if (oSender.isPresent()) {
+						oSender.get().accept(ISuppliterator.of(textArea.getText().trim().split("\\n")).toCollection());
+					}
+				}), c -> {
+					c.setEnabled(oSender.isPresent());
+				})
+
+			)
+
+		));
 	}
 
 }
