@@ -5,8 +5,10 @@ import java.util.Optional;
 import org.apache.logging.log4j.Logger;
 
 import mirrg.minecraft.regioneditor.gui.GuiRegionEditor;
+import net.minecraft.client.Minecraft;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -45,6 +47,14 @@ public class ModRegionEditor
 						if (itemStack.getItem() == Items.STICK) {
 							if (itemStack.getDisplayName().equals("RegionEditor.show")) {
 								new GuiRegionEditor(null, Optional.of(ss -> {
+
+									for (String s : ss) {
+										Minecraft.getMinecraft().ingameGUI.getChatGUI().addToSentMessages(s);
+										if (ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().player, s) != 0) {
+											return;
+										}
+										Minecraft.getMinecraft().player.sendChatMessage(s);
+									}
 
 								})).show();
 							}
