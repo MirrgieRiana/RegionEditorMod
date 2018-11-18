@@ -4,15 +4,18 @@ import static mirrg.minecraft.regioneditor.gui.SwingUtils.*;
 
 import java.awt.CardLayout;
 import java.awt.Dialog.ModalityType;
-import java.util.stream.Collectors;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
 import javax.swing.JTextArea;
 
 import mirrg.boron.util.struct.ImmutableArray;
+import mirrg.boron.util.suppliterator.ISuppliterator;
 import mirrg.minecraft.regioneditor.data.Area;
+import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 
 public class GuiCommand extends GuiBase
 {
@@ -24,14 +27,23 @@ public class GuiCommand extends GuiBase
 	{
 		super(owner, "Command", ModalityType.MODELESS);
 
+		Map<RegionIdentifier, Integer> areaIds = new HashMap<>();
+
 		StringBuilder sb = new StringBuilder();
-		sb.append("=====");
-		sb.append("\n");
 		list.forEach((area, i) -> {
+			sb.append("/dmarker clearcorners");
 			sb.append("\n");
-			sb.append(area.vertexes.stream()
-				.map(a -> a.x + "\t" + a.z)
-				.collect(Collectors.joining("\n")));
+			area.vertexes.stream()
+				.forEach(a -> {
+					sb.append("/dmarker addcorner " + (a.x * 16) + " 0 " + (a.z * 16) + " world");
+					sb.append("\n");
+				});
+			int areaId = areaIds.compute(area.regionEntry.regionIdentifier, (id2, i2) -> i2 == null ? 0 : i2 + 1);
+			sb.append(String.format("/dmarker addarea color:%06x fillcolor:%06x weight:4 opacity:0.8 fillopacity:0.4 label:\"%s\" id:\"%s\"",
+				area.regionEntry.regionInfo.countryColor.getRGB() & 0xFFFFFF,
+				area.regionEntry.regionInfo.stateColor.getRGB() & 0xFFFFFF,
+				area.regionEntry.regionInfo.countryName + "：" + area.regionEntry.regionInfo.stateName,
+				area.regionEntry.regionIdentifier.countryNumber + ":" + area.regionEntry.regionIdentifier.stateNumber + ":" + areaId));
 			sb.append("\n");
 		});
 
