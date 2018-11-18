@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 import javax.swing.JTextArea;
 
+import mirrg.boron.util.struct.ImmutableArray;
 import mirrg.minecraft.regioneditor.data.Area;
-import mirrg.minecraft.regioneditor.util.ImmutableArray;
 
 public class GuiCommand extends GuiBase
 {

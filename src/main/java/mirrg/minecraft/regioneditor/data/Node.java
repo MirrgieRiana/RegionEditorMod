@@ -3,7 +3,7 @@ package mirrg.minecraft.regioneditor.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import mirrg.minecraft.regioneditor.util.ImmutableArray;
+import mirrg.boron.util.struct.ImmutableArray;
 
 public class Node
 {
@@ -67,7 +67,7 @@ public class Node
 
 		}
 
-		return ImmutableArray.fromIterable(chunkPositions);
+		return ImmutableArray.ofIterable(chunkPositions);
 	}
 
 	/**

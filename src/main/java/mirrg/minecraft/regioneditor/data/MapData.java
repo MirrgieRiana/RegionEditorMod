@@ -8,8 +8,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
-import mirrg.minecraft.regioneditor.util.ImmutableArray;
-import net.minecraft.util.Tuple;
+import mirrg.boron.util.struct.ImmutableArray;
+import mirrg.boron.util.struct.Tuple;
 
 public class MapData
 {
@@ -46,7 +46,7 @@ public class MapData
 			}
 		}
 
-		return ImmutableArray.fromIterable(areas);
+		return ImmutableArray.ofIterable(areas);
 	}
 
 	/**
@@ -83,7 +83,7 @@ public class MapData
 				Tuple<ChunkPosition, Node> tuple = waitings.removeFirst();
 
 				// 隣接マスへの訪問を試みる
-				tryVisitNeighbor(tuple.getFirst(), chunkBoundingBox, regionType, visited, waitings, tuple.getSecond());
+				tryVisitNeighbor(tuple.x, chunkBoundingBox, regionType, visited, waitings, tuple.y);
 
 			}
 

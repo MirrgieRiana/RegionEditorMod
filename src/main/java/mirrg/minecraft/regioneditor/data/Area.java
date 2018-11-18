@@ -1,6 +1,6 @@
 package mirrg.minecraft.regioneditor.data;
 
-import mirrg.minecraft.regioneditor.util.ImmutableArray;
+import mirrg.boron.util.struct.ImmutableArray;
 
 public final class Area
 {

@@ -30,13 +30,13 @@ import com.google.gson.JsonStreamParser;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonWriter;
 
+import mirrg.boron.util.struct.Tuple;
 import mirrg.minecraft.regioneditor.data.ChunkPosition;
 import mirrg.minecraft.regioneditor.data.MapData;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
 import mirrg.minecraft.regioneditor.data.RegionInfoTable;
-import mirrg.minecraft.regioneditor.data.RegionMap;
-import net.minecraft.util.Tuple;
+import mirrg.minecraft.regioneditor.data.RegionMap;;
 
 public class CanvasMap extends Canvas
 {
@@ -604,13 +604,13 @@ public class CanvasMap extends Canvas
 	private static byte[] concatenate(ArrayList<Tuple<Integer, byte[]>> bytesList)
 	{
 		byte[] bytes = new byte[bytesList.stream()
-			.mapToInt(t -> t.getFirst())
+			.mapToInt(t -> t.x)
 			.sum()];
 		{
 			int start = 0;
 			for (Tuple<Integer, byte[]> buffer : bytesList) {
-				System.arraycopy(buffer.getSecond(), 0, bytes, start, buffer.getFirst());
-				start += buffer.getFirst();
+				System.arraycopy(buffer.y, 0, bytes, start, buffer.x);
+				start += buffer.x;
 			}
 		}
 		return bytes;
