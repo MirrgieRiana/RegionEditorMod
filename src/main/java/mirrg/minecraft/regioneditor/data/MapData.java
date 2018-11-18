@@ -38,7 +38,7 @@ public class MapData
 
 						// 一続きのマスをすべて訪問する
 						areas.add(new Area(
-							regionInfoTable.get(regionIdentifier),
+							new RegionEntry(regionIdentifier, regionInfoTable.get(regionIdentifier)),
 							visitRecursively(chunkPosition, chunkBoundingBox, visited)));
 
 					}

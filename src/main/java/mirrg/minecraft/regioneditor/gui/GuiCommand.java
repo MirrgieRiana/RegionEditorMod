@@ -24,7 +24,6 @@ public class GuiCommand extends GuiBase
 		sb.append("=====");
 		sb.append("\n");
 		list.forEach((area, i) -> {
-			sb.append(area.regionInfo);
 			sb.append("\n");
 			sb.append(area.vertexes.stream()
 				.map(a -> a.x + "\t" + a.z)

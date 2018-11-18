@@ -5,12 +5,12 @@ import mirrg.boron.util.struct.ImmutableArray;
 public final class Area
 {
 
-	public final RegionInfo regionInfo;
+	public final RegionEntry regionEntry;
 	public final ImmutableArray<ChunkPosition> vertexes;
 
-	public Area(RegionInfo regionInfo, ImmutableArray<ChunkPosition> vertexes)
+	public Area(RegionEntry regionEntry, ImmutableArray<ChunkPosition> vertexes)
 	{
-		this.regionInfo = regionInfo;
+		this.regionEntry = regionEntry;
 		this.vertexes = vertexes;
 	}
 
