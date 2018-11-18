@@ -437,7 +437,7 @@ public class CanvasMap extends Canvas
 		regionMapExpression = regionMapExpression.replaceAll("[\\r\\n\\t ]", "");
 
 		// 区切ってコマンド列にする
-		String[] commands = regionMapExpression.split(";");
+		String[] commands = regionMapExpression.isEmpty() ? new String[0] : regionMapExpression.split(";");
 
 		// コマンド列の処理
 		for (String command : commands) {
