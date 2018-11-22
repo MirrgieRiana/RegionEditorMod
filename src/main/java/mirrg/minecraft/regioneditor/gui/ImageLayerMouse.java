@@ -13,36 +13,40 @@ import mirrg.minecraft.regioneditor.data.RegionInfo;
 public class ImageLayerMouse extends ImageLayer
 {
 
+	public boolean showTooltip = true;
+
 	public void update(Image imageBackground, MapData mapData, Optional<Point> oMousePosition, Function<Point, ChunkPosition> function)
 	{
 		graphics.drawImage(imageBackground, 0, 0, null);
 
-		if (oMousePosition.isPresent()) {
+		if (showTooltip) {
+			if (oMousePosition.isPresent()) {
 
-			int height = graphics.getFontMetrics().getHeight();
+				int height = graphics.getFontMetrics().getHeight();
 
-			ChunkPosition chunkPosition = function.apply(oMousePosition.get());
-
-			graphics.drawString(
-				chunkPosition.x + ", " + chunkPosition.z,
-				oMousePosition.get().x + 2,
-				oMousePosition.get().y - height * 2 - 2);
-
-			Optional<RegionIdentifier> oRegionIdentifier = mapData.regionMap.get(chunkPosition);
-			if (oRegionIdentifier.isPresent()) {
-				RegionInfo regionInfo = mapData.regionInfoTable.get(oRegionIdentifier.get());
+				ChunkPosition chunkPosition = function.apply(oMousePosition.get());
 
 				graphics.drawString(
-					"Country: (" + oRegionIdentifier.get().countryNumber + ") " + regionInfo.countryName,
+					chunkPosition.x + ", " + chunkPosition.z,
 					oMousePosition.get().x + 2,
-					oMousePosition.get().y - height * 1 - 2);
-				graphics.drawString(
-					"State: (" + oRegionIdentifier.get().stateNumber + ") " + regionInfo.stateName,
-					oMousePosition.get().x + 2,
-					oMousePosition.get().y - height * 0 - 2);
+					oMousePosition.get().y - height * 2 - 2);
+
+				Optional<RegionIdentifier> oRegionIdentifier = mapData.regionMap.get(chunkPosition);
+				if (oRegionIdentifier.isPresent()) {
+					RegionInfo regionInfo = mapData.regionInfoTable.get(oRegionIdentifier.get());
+
+					graphics.drawString(
+						"Country: (" + oRegionIdentifier.get().countryNumber + ") " + regionInfo.countryName,
+						oMousePosition.get().x + 2,
+						oMousePosition.get().y - height * 1 - 2);
+					graphics.drawString(
+						"State: (" + oRegionIdentifier.get().stateNumber + ") " + regionInfo.stateName,
+						oMousePosition.get().x + 2,
+						oMousePosition.get().y - height * 0 - 2);
+
+				}
 
 			}
-
 		}
 
 	}

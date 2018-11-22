@@ -74,6 +74,12 @@ public class GuiRegionEditor extends GuiBase
 	private Action actionScrollUp;
 	private Action actionScrollDown;
 	private Action actionToggleShowMap;
+	private Action actionToggleShowTile;
+	private Action actionToggleShowTooltip;
+	private Action actionToggleShowArea;
+	private Action actionToggleShowBorder;
+	private Action actionToggleShowIdentifier;
+	private Action actionToggleShowGrid;
 
 	private Action actionClearMap;
 
@@ -280,6 +286,42 @@ public class GuiRegionEditor extends GuiBase
 				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0))
 				.register();
 			listenersPreInit.add(() -> canvasMap.setShowMap((Boolean) actionToggleShowMap.getValue(Action.SELECTED_KEY)));
+			actionToggleShowTile = new Action2(true, v -> canvasMap.setShowTile(v))
+				.value(Action.NAME, "Show Tile(T)")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_T)
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0))
+				.register();
+			listenersPreInit.add(() -> canvasMap.setShowTile((Boolean) actionToggleShowTile.getValue(Action.SELECTED_KEY)));
+			actionToggleShowTooltip = new Action2(true, v -> canvasMap.setShowTooltip(v))
+				.value(Action.NAME, "Show Tooltip(T)")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_T)
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0))
+				.register();
+			listenersPreInit.add(() -> canvasMap.setShowTooltip((Boolean) actionToggleShowTooltip.getValue(Action.SELECTED_KEY)));
+			actionToggleShowArea = new Action2(true, v -> canvasMap.setShowArea(v))
+				.value(Action.NAME, "Show Area(A)")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_A)
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0))
+				.register();
+			listenersPreInit.add(() -> canvasMap.setShowArea((Boolean) actionToggleShowArea.getValue(Action.SELECTED_KEY)));
+			actionToggleShowBorder = new Action2(true, v -> canvasMap.setShowBorder(v))
+				.value(Action.NAME, "Show Border(B)")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_B)
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0))
+				.register();
+			listenersPreInit.add(() -> canvasMap.setShowBorder((Boolean) actionToggleShowBorder.getValue(Action.SELECTED_KEY)));
+			actionToggleShowIdentifier = new Action2(true, v -> canvasMap.setShowIdentifier(v))
+				.value(Action.NAME, "Show Identifier(I)")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_I)
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0))
+				.register();
+			listenersPreInit.add(() -> canvasMap.setShowIdentifier((Boolean) actionToggleShowIdentifier.getValue(Action.SELECTED_KEY)));
+			actionToggleShowGrid = new Action2(true, v -> canvasMap.setShowGrid(v))
+				.value(Action.NAME, "Show Grid(G)")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_G)
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0))
+				.register();
+			listenersPreInit.add(() -> canvasMap.setShowGrid((Boolean) actionToggleShowGrid.getValue(Action.SELECTED_KEY)));
 
 			actionClearMap = new Action1(e -> {
 				if (JOptionPane.showConfirmDialog(
@@ -358,6 +400,13 @@ public class GuiRegionEditor extends GuiBase
 					menu.add(new JMenuItem(actionScrollDown));
 					menu.addSeparator();
 					menu.add(new JCheckBoxMenuItem(actionToggleShowMap));
+					menu.add(new JCheckBoxMenuItem(actionToggleShowTile));
+					menu.add(new JCheckBoxMenuItem(actionToggleShowTooltip));
+					menu.addSeparator();
+					menu.add(new JCheckBoxMenuItem(actionToggleShowArea));
+					menu.add(new JCheckBoxMenuItem(actionToggleShowBorder));
+					menu.add(new JCheckBoxMenuItem(actionToggleShowIdentifier));
+					menu.add(new JCheckBoxMenuItem(actionToggleShowGrid));
 				}));
 				menuBar2.add(get(new JMenu("Map(M)"), menu -> {
 					menu.setMnemonic(KeyEvent.VK_M);

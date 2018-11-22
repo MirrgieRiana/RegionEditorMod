@@ -643,7 +643,7 @@ public class CanvasMap extends Canvas
 
 	public void setShowMap(boolean showMap)
 	{
-		imageLayerMap.setShowMap(showMap);
+		imageLayerMap.showMap = showMap;
 		updateLayerMap();
 	}
 
@@ -659,10 +659,46 @@ public class CanvasMap extends Canvas
 		updateLayerBack();
 	}
 
+	public void setShowTile(boolean showTile)
+	{
+		imageLayerRegion.showTile = showTile;
+		updateLayerRegion();
+	}
+
+	public void setShowArea(boolean showArea)
+	{
+		imageLayerRegion.showArea = showArea;
+		updateLayerRegion();
+	}
+
+	public void setShowBorder(boolean showBorder)
+	{
+		imageLayerRegion.showBorder = showBorder;
+		updateLayerRegion();
+	}
+
+	public void setShowIdentifier(boolean showIdentifier)
+	{
+		imageLayerRegion.showIdentifier = showIdentifier;
+		updateLayerRegion();
+	}
+
+	public void setShowGrid(boolean showGrid)
+	{
+		imageLayerRegion.showGrid = showGrid;
+		updateLayerRegion();
+	}
+
 	private void updateLayerBack()
 	{
 		imageLayerMouse.update(imageLayerRegion.getImage(), mapData, oMousePosition, this::getChunkPosition);
 		repaint();
+	}
+
+	public void setShowTooltip(boolean showTooltip)
+	{
+		imageLayerMouse.showTooltip = showTooltip;
+		updateLayerBack();
 	}
 
 	private ChunkPosition getChunkPosition(Point point)

@@ -9,7 +9,7 @@ import mirrg.minecraft.regioneditor.data.MapData;
 public class ImageLayerMap extends ImageLayer
 {
 
-	private boolean showMap = true;
+	public boolean showMap = true;
 
 	public void update(Image imageMap, MapData mapData, int positionX, int positionZ, Point mapOrigin)
 	{
@@ -24,11 +24,6 @@ public class ImageLayerMap extends ImageLayer
 					null);
 			}
 		}
-	}
-
-	public void setShowMap(boolean showMap)
-	{
-		this.showMap = showMap;
 	}
 
 }

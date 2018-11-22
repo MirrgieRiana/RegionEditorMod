@@ -12,6 +12,12 @@ import mirrg.minecraft.regioneditor.data.RegionInfo;
 public class ImageLayerRegion extends ImageLayer
 {
 
+	public boolean showTile = true;
+	public boolean showArea = true;
+	public boolean showBorder = true;
+	public boolean showIdentifier = true;
+	public boolean showGrid = true;
+
 	public void update(Image imageBackground, MapData mapData, int positionX, int positionZ)
 	{
 		// width = 255, maptipWidth = 16 -> xRadius = (254 / 2 / 16 + 1) = (127 / 16 + 1) = (7 + 1) = 8
@@ -56,27 +62,31 @@ public class ImageLayerRegion extends ImageLayer
 			for (int z = chunkPositionStart.z; z <= chunkPositionEnd.z; z++) {
 				ChunkPosition chunkPosition = new ChunkPosition(x, z);
 
-				Optional<RegionIdentifier> oRegionIdentifier = mapData.regionMap.get(chunkPosition);
-				if (oRegionIdentifier.isPresent()) {
-					RegionInfo regionInfo = mapData.regionInfoTable.get(oRegionIdentifier.get());
+				if (showTile) {
+					Optional<RegionIdentifier> oRegionIdentifier = mapData.regionMap.get(chunkPosition);
+					if (oRegionIdentifier.isPresent()) {
+						RegionInfo regionInfo = mapData.regionInfoTable.get(oRegionIdentifier.get());
 
-					drawRegionInfo(
-						oRegionIdentifier.get(),
-						regionInfo,
-						x - positionX,
-						z - positionZ,
-						!mapData.regionMap.get(chunkPosition.plus(-1, 0)).equals(oRegionIdentifier),
-						!mapData.regionMap.get(chunkPosition.plus(1, 0)).equals(oRegionIdentifier),
-						!mapData.regionMap.get(chunkPosition.plus(0, -1)).equals(oRegionIdentifier),
-						!mapData.regionMap.get(chunkPosition.plus(0, 1)).equals(oRegionIdentifier));
+						drawRegionInfo(
+							oRegionIdentifier.get(),
+							regionInfo,
+							x - positionX,
+							z - positionZ,
+							!mapData.regionMap.get(chunkPosition.plus(-1, 0)).equals(oRegionIdentifier),
+							!mapData.regionMap.get(chunkPosition.plus(1, 0)).equals(oRegionIdentifier),
+							!mapData.regionMap.get(chunkPosition.plus(0, -1)).equals(oRegionIdentifier),
+							!mapData.regionMap.get(chunkPosition.plus(0, 1)).equals(oRegionIdentifier));
 
+					}
 				}
 
 				// グリッド
-				drawGrid(
-					positionX,
-					positionZ, (x - positionX) * 16 + width / 2,
-					(z - positionZ) * 16 + height / 2);
+				if (showGrid) {
+					drawGrid(
+						positionX,
+						positionZ, (x - positionX) * 16 + width / 2,
+						(z - positionZ) * 16 + height / 2);
+				}
 
 			}
 
@@ -96,49 +106,54 @@ public class ImageLayerRegion extends ImageLayer
 	{
 
 		// 背景半透明塗りつぶし
-		graphics.setColor(new Color(
-			regionInfo.getDynmapColor().getRed(),
-			regionInfo.getDynmapColor().getGreen(),
-			regionInfo.getDynmapColor().getBlue(),
-			64));
-
-		graphics.fillRect(x * 16 + width / 2, y * 16 + height / 2, 16, 16);
+		if (showArea) {
+			graphics.setColor(new Color(
+				regionInfo.stateColor.getRed(),
+				regionInfo.stateColor.getGreen(),
+				regionInfo.stateColor.getBlue(),
+				64));
+			graphics.fillRect(x * 16 + width / 2, y * 16 + height / 2, 16, 16);
+		}
 
 		// 領地輪郭線
-		graphics.setColor(new Color(
-			regionInfo.getDynmapColor().getRed(),
-			regionInfo.getDynmapColor().getGreen(),
-			regionInfo.getDynmapColor().getBlue()));
-		{
-			int w = 2;
+		if (showBorder) {
+			graphics.setColor(new Color(
+				regionInfo.countryColor.getRed(),
+				regionInfo.countryColor.getGreen(),
+				regionInfo.countryColor.getBlue()));
+			{
+				int w = 2;
 
-			// left
-			if (borderLeft) graphics.fillRect(x * 16 + 1 + 0 + width / 2, y * 16 + 1 + 0 + height / 2, w, 16);
+				// left
+				if (borderLeft) graphics.fillRect(x * 16 + 1 + 0 + width / 2, y * 16 + 1 + 0 + height / 2, w, 15);
 
-			// right
-			if (borderRight) graphics.fillRect(x * 16 + (16 - w) + width / 2, y * 16 + 1 + 0 + height / 2, w, 16);
+				// right
+				if (borderRight) graphics.fillRect(x * 16 + (16 - w) + width / 2, y * 16 + 1 + 0 + height / 2, w, 15);
 
-			// top
-			if (borderUp) graphics.fillRect(x * 16 + 1 + 0 + width / 2, y * 16 + 1 + 0 + height / 2, 16, w);
+				// top
+				if (borderUp) graphics.fillRect(x * 16 + 1 + 0 + width / 2, y * 16 + 1 + 0 + height / 2, 15, w);
 
-			// bottom
-			if (borderDown) graphics.fillRect(x * 16 + 1 + 0 + width / 2, y * 16 + (16 - w) + height / 2, 16, w);
+				// bottom
+				if (borderDown) graphics.fillRect(x * 16 + 1 + 0 + width / 2, y * 16 + (16 - w) + height / 2, 15, w);
 
+			}
 		}
 
 		// 数値
-		FontRenderer.drawString(
-			image,
-			"" + regionIdentifier.countryNumber,
-			x * 16 + 8 + width / 2,
-			y * 16 + 2 + height / 2,
-			regionInfo.countryColor);
-		FontRenderer.drawString(
-			image,
-			"" + regionIdentifier.stateNumber,
-			x * 16 + 8 + width / 2,
-			y * 16 + 8 + height / 2,
-			regionInfo.stateColor);
+		if (showIdentifier) {
+			FontRenderer.drawString(
+				image,
+				"" + regionIdentifier.countryNumber,
+				x * 16 + 8 + width / 2,
+				y * 16 + 2 + height / 2,
+				regionInfo.countryColor);
+			FontRenderer.drawString(
+				image,
+				"" + regionIdentifier.stateNumber,
+				x * 16 + 8 + width / 2,
+				y * 16 + 8 + height / 2,
+				regionInfo.stateColor);
+		}
 
 	}
 
