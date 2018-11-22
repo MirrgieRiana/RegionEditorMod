@@ -358,7 +358,11 @@ public class GuiRegionEditor extends GuiBase
 				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.SHIFT_DOWN_MASK))
 				.register();
 			actionDeleteRegion = new Action1(e -> {
-				System.out.println("C"); // TODO
+				Optional<RegionEntry> oRegionEntry = getSelectedRegionEntry();
+				if (oRegionEntry.isPresent()) {
+					canvasMap.mapData.regionInfoTable.remove(oRegionEntry.get().regionIdentifier);
+					updateRegionInfoTable();
+				}
 			})
 				.value(Action.NAME, "Delete Region(D)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)
@@ -460,10 +464,7 @@ public class GuiRegionEditor extends GuiBase
 										@Override
 										public void onRegionInfoTableChange(RegionInfoTable regionInfoTable)
 										{
-											modelTableRegionInfoTable.clear();
-											for (Entry<RegionIdentifier, RegionInfo> entry : regionInfoTable.entrySet()) {
-												modelTableRegionInfoTable.addElement(new RegionEntry(entry.getKey(), entry.getValue()));
-											}
+											updateRegionInfoTable();
 										}
 
 										@Override
@@ -705,6 +706,15 @@ public class GuiRegionEditor extends GuiBase
 		listenersPreInit.forEach(Runnable::run);
 		setPosition(0, 0);
 		canvasMap.init();
+	}
+
+	private void updateRegionInfoTable()
+	{
+		modelTableRegionInfoTable.clear();
+		for (Entry<RegionIdentifier, RegionInfo> entry : canvasMap.mapData.regionInfoTable.entrySet()) {
+			modelTableRegionInfoTable.addElement(new RegionEntry(entry.getKey(), entry.getValue()));
+		}
+		windowWrapper.getContentPane().revalidate();
 	}
 
 	private Optional<RegionEntry> getSelectedRegionEntry()

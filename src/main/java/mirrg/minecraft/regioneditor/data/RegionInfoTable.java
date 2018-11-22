@@ -30,6 +30,11 @@ public class RegionInfoTable
 		map.put(regionIdentifier, regionInfo);
 	}
 
+	public void remove(RegionIdentifier regionIdentifier)
+	{
+		map.remove(regionIdentifier);
+	}
+
 	public int size()
 	{
 		return map.size();
