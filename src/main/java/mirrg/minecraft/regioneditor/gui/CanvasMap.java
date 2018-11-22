@@ -10,6 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -26,8 +27,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonStreamParser;
 import com.google.gson.internal.Streams;
+import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 import mirrg.boron.util.struct.Tuple;
@@ -464,7 +465,9 @@ public class CanvasMap extends Canvas
 
 	private static JsonElement fromJson(String string) throws Exception
 	{
-		return new JsonStreamParser(string).next();
+		JsonReader jsonReader = new JsonReader(new StringReader(string));
+		jsonReader.setLenient(true);
+		return Streams.parse(jsonReader);
 	}
 
 	private static String toJson(JsonElement json) throws Exception
