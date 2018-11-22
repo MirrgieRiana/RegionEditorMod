@@ -623,6 +623,11 @@ public class CanvasMap extends Canvas
 
 	//
 
+	public void update()
+	{
+		updateLayerMap();
+	}
+
 	private void resizeLayer()
 	{
 		imageLayerMap.resize(getWidth(), getHeight());

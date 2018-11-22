@@ -41,10 +41,12 @@ import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 
+import mirrg.minecraft.regioneditor.data.ChunkPosition;
 import mirrg.minecraft.regioneditor.data.RegionEntry;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
@@ -67,6 +69,7 @@ public class GuiRegionEditor extends GuiBase
 	private Action actionScrollRight;
 	private Action actionScrollUp;
 	private Action actionScrollDown;
+	private Action actionClearMap;
 	private Action actionCreateRegion;
 	private Action actionEditRegion;
 	private Action actionDeleteRegion;
@@ -222,6 +225,26 @@ public class GuiRegionEditor extends GuiBase
 				.key(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0))
 				.register();
 
+			actionClearMap = new Action1(e -> {
+				if (JOptionPane.showConfirmDialog(
+					windowWrapper.getWindow(),
+					"All tiles on the map will be blank",
+					"Clear Map",
+					JOptionPane.OK_CANCEL_OPTION,
+					JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
+
+					ArrayList<ChunkPosition> list = new ArrayList<>(canvasMap.mapData.regionMap.getKeys());
+					for (ChunkPosition chunkPosition : list) {
+						canvasMap.mapData.regionMap.set(chunkPosition, Optional.empty());
+					}
+					canvasMap.update();
+
+				}
+			})
+				.value(Action.NAME, "Clear Map(C)")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_C)
+				.register();
+
 			actionCreateRegion = new Action1(e -> {
 				System.out.println("A"); // TODO
 			})
@@ -268,6 +291,10 @@ public class GuiRegionEditor extends GuiBase
 					menu.add(new JMenuItem(actionScrollRight));
 					menu.add(new JMenuItem(actionScrollUp));
 					menu.add(new JMenuItem(actionScrollDown));
+				}));
+				menuBar2.add(get(new JMenu("Map(M)"), menu -> {
+					menu.setMnemonic(KeyEvent.VK_M);
+					menu.add(new JMenuItem(actionClearMap));
 				}));
 				menuBar2.add(get(new JMenu("Region(R)"), menu -> {
 					menu.setMnemonic(KeyEvent.VK_R);
