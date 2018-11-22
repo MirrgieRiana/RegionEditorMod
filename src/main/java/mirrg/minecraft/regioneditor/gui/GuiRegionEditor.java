@@ -35,6 +35,7 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.DefaultListModel;
 import javax.swing.InputMap;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
@@ -72,6 +73,7 @@ public class GuiRegionEditor extends GuiBase
 	private Action actionScrollRight;
 	private Action actionScrollUp;
 	private Action actionScrollDown;
+	private Action actionToggleShowMap;
 
 	private Action actionClearMap;
 
@@ -100,6 +102,7 @@ public class GuiRegionEditor extends GuiBase
 	@Override
 	protected void initComponenets()
 	{
+		ArrayList<Runnable> listenersPreInit = new ArrayList<>();
 
 		try (InputStream in = GuiRegionEditor.class.getResourceAsStream("icon2.png")) {
 			if (in != null) {
@@ -145,6 +148,47 @@ public class GuiRegionEditor extends GuiBase
 				public void actionPerformed(ActionEvent e)
 				{
 					listener.accept(e);
+				}
+
+			}
+
+			class Action2 extends AbstractAction
+			{
+
+				private Consumer<ActionEvent> listener;
+
+				public Action2(boolean defaultValue, Consumer<Boolean> listener)
+				{
+					value(SELECTED_KEY, defaultValue);
+					addPropertyChangeListener(e -> {
+						if (e.getPropertyName().equals(Action.SELECTED_KEY)) {
+							listener.accept((Boolean) e.getNewValue());
+						}
+					});
+				}
+
+				public Action2 value(String key, Object value)
+				{
+					putValue(key, value);
+					return this;
+				}
+
+				public Action2 key(KeyStroke keyStroke)
+				{
+					inputMap.put(keyStroke, this);
+					return this;
+				}
+
+				public Action2 register()
+				{
+					actionMap.put(this, this);
+					return this;
+				}
+
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+
 				}
 
 			}
@@ -230,6 +274,12 @@ public class GuiRegionEditor extends GuiBase
 				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, 0))
 				.key(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0))
 				.register();
+			actionToggleShowMap = new Action2(true, v -> canvasMap.setShowMap(v))
+				.value(Action.NAME, "Show Map(M)")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_M)
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0))
+				.register();
+			listenersPreInit.add(() -> canvasMap.setShowMap((Boolean) actionToggleShowMap.getValue(Action.SELECTED_KEY)));
 
 			actionClearMap = new Action1(e -> {
 				if (JOptionPane.showConfirmDialog(
@@ -306,6 +356,8 @@ public class GuiRegionEditor extends GuiBase
 					menu.add(new JMenuItem(actionScrollRight));
 					menu.add(new JMenuItem(actionScrollUp));
 					menu.add(new JMenuItem(actionScrollDown));
+					menu.addSeparator();
+					menu.add(new JCheckBoxMenuItem(actionToggleShowMap));
 				}));
 				menuBar2.add(get(new JMenu("Map(M)"), menu -> {
 					menu.setMnemonic(KeyEvent.VK_M);
@@ -601,6 +653,7 @@ public class GuiRegionEditor extends GuiBase
 			c.getActionMap().setParent(actionMap);
 		}));
 
+		listenersPreInit.forEach(Runnable::run);
 		setPosition(0, 0);
 		canvasMap.init();
 	}

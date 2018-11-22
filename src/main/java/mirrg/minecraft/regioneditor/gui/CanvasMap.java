@@ -641,6 +641,12 @@ public class CanvasMap extends Canvas
 		updateLayerRegion();
 	}
 
+	public void setShowMap(boolean showMap)
+	{
+		imageLayerMap.setShowMap(showMap);
+		updateLayerMap();
+	}
+
 	private void updateLayerRegion(ChunkPosition chunkPosition)
 	{
 		imageLayerRegion.update(imageLayerMap.getImage(), mapData, positionX, positionZ, chunkPosition.plus(-1, -1), chunkPosition.plus(1, 1));
