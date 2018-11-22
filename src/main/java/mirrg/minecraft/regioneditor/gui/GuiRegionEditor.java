@@ -61,15 +61,19 @@ public class GuiRegionEditor extends GuiBase
 
 	private InputMap inputMap;
 	private ActionMap actionMap;
+
 	private Action actionOpenGuiData;
 	private Action actionOpenGuiCommand;
+
 	private Action actionLoadMapFromLocalFile;
 	private Action actionLoadMapFromUrl;
 	private Action actionScrollLeft;
 	private Action actionScrollRight;
 	private Action actionScrollUp;
 	private Action actionScrollDown;
+
 	private Action actionClearMap;
+
 	private Action actionCreateRegion;
 	private Action actionEditRegion;
 	private Action actionDeleteRegion;
