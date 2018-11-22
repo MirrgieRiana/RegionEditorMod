@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -78,6 +79,7 @@ public class GuiRegionEditor extends GuiBase
 	private Action actionEditRegion;
 	private Action actionDeleteRegion;
 	private Action actionChangeRegionIdentifier;
+	private Action actionScrollToRegion;
 
 	private CanvasMap canvasMap;
 	private JLabel labelCoordX;
@@ -277,6 +279,15 @@ public class GuiRegionEditor extends GuiBase
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_I)
 				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK))
 				.register();
+			actionScrollToRegion = new Action1(e -> {
+				Optional<RegionEntry> oRegionEntry = getSelectedRegionEntry();
+				if (oRegionEntry.isPresent()) {
+					scrollToRegion(oRegionEntry.get());
+				}
+			})
+				.value(Action.NAME, "Scroll To Region(S)")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_S)
+				.register();
 		}
 
 		{
@@ -307,6 +318,8 @@ public class GuiRegionEditor extends GuiBase
 					menu.add(new JMenuItem(actionDeleteRegion));
 					menu.addSeparator();
 					menu.add(new JMenuItem(actionChangeRegionIdentifier));
+					menu.addSeparator();
+					menu.add(new JMenuItem(actionScrollToRegion));
 				}));
 			});
 			if (windowWrapper.frame != null) {
@@ -456,7 +469,18 @@ public class GuiRegionEditor extends GuiBase
 						@Override
 						public void mouseReleased(MouseEvent e)
 						{
-							canvasMap.setRegionIdentifierCurrent(Optional.of(c.getModel().getElementAt(c.getSelectedIndex()).regionIdentifier));
+							if (e.getButton() == MouseEvent.BUTTON1) {
+								canvasMap.setRegionIdentifierCurrent(getSelectedRegionEntry().map(re -> re.regionIdentifier));
+							} else if (e.getButton() == MouseEvent.BUTTON3) {
+
+								int index = c.locationToIndex(e.getPoint());
+								if (index < 0) return;
+								if (index >= c.getModel().getSize()) return;
+								RegionEntry regionEntry = c.getModel().getElementAt(index);
+
+								scrollToRegion(regionEntry);
+
+							}
 						}
 					});
 				}), 300, 600),
@@ -581,6 +605,14 @@ public class GuiRegionEditor extends GuiBase
 		canvasMap.init();
 	}
 
+	private Optional<RegionEntry> getSelectedRegionEntry()
+	{
+		int index = tableRegionInfoTable.getSelectedIndex();
+		if (index < 0) return Optional.empty();
+		if (index >= tableRegionInfoTable.getModel().getSize()) return Optional.empty();
+		return Optional.of(tableRegionInfoTable.getModel().getElementAt(index));
+	}
+
 	private void loadMapFromLocal()
 	{
 		FileDialog fileDialog;
@@ -642,6 +674,24 @@ public class GuiRegionEditor extends GuiBase
 	private void scroll(int x, int z)
 	{
 		setPosition(canvasMap.getPositionX() + x, canvasMap.getPositionZ() + z);
+	}
+
+	private void scrollToRegion(RegionEntry regionEntry)
+	{
+		ArrayList<ChunkPosition> list = canvasMap.mapData.regionMap.getKeys().stream()
+			.filter(cp -> regionEntry.regionIdentifier.equals(canvasMap.mapData.regionMap.get(cp).orElse(null)))
+			.collect(Collectors.toCollection(ArrayList::new));
+		if (list.size() <= 0) return;
+
+		setPosition(
+			(int) Math.floor(list.stream()
+				.mapToInt(cp -> cp.x)
+				.average()
+				.getAsDouble()),
+			(int) Math.floor(list.stream()
+				.mapToInt(cp -> cp.z)
+				.average()
+				.getAsDouble()));
 	}
 
 }
