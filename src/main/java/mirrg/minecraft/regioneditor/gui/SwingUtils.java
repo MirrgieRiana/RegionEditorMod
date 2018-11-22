@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.border.EmptyBorder;
 
 public class SwingUtils
 {
@@ -26,6 +27,13 @@ public class SwingUtils
 	public static JSplitPane splitPaneHorizontal(double resizeWeight, Component left, Component right)
 	{
 		JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, left, right);
+		splitPane.setResizeWeight(resizeWeight);
+		return splitPane;
+	}
+
+	public static JSplitPane splitPaneVertical(double resizeWeight, Component up, Component down)
+	{
+		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, up, down);
 		splitPane.setResizeWeight(resizeWeight);
 		return splitPane;
 	}
@@ -80,6 +88,14 @@ public class SwingUtils
 		for (Component component : components) {
 			panel.add(component);
 		}
+		return panel;
+	}
+
+	public static JPanel marginPanel(int border, Component component)
+	{
+		JPanel panel = new JPanel(new CardLayout());
+		panel.setBorder(new EmptyBorder(border, border, border, border));
+		panel.add(component);
 		return panel;
 	}
 

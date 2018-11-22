@@ -9,8 +9,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import javax.swing.JLabel;
-import javax.swing.JTextField;
+import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 
 public class GuiUrl extends GuiBase
 {
@@ -20,8 +20,8 @@ public class GuiUrl extends GuiBase
 		super(owner, "Url", ModalityType.DOCUMENT_MODAL);
 	}
 
-	private JTextField textField;
-	private JLabel label;
+	private JTextArea textArea;
+	private JTextPane textPaneResult;
 
 	public boolean ok = false;
 	public URI uri = null;
@@ -34,19 +34,19 @@ public class GuiUrl extends GuiBase
 
 		windowWrapper.getWindow().add(borderPanelDown(
 
-			borderPanelDown(
+			splitPaneVertical(1,
 
-				scrollPane(
+				scrollPane(textArea = get(new JTextArea(), c -> {
+					c.setLineWrap(true);
+				}), 400, 80),
 
-					textField = new JTextField(30)
-
-				),
-
-				flowPanel(
-
-					label = new JLabel("...")
-
-				)
+				get(scrollPane(textPaneResult = get(new JTextPane(), c -> {
+					c.setEditable(false);
+					c.setOpaque(false);
+				}), 400, 40), c -> {
+					c.setBorder(null);
+					c.setOpaque(false);
+				})
 
 			),
 
@@ -54,12 +54,12 @@ public class GuiUrl extends GuiBase
 
 				button("OK", e -> {
 					try {
-						uri = new URI(textField.getText());
-						url = new URL(textField.getText());
+						uri = new URI(textArea.getText());
+						url = new URL(textArea.getText());
 						ok = true;
 						windowWrapper.getWindow().setVisible(false);
 					} catch (URISyntaxException | MalformedURLException e1) {
-						label.setText(e1.getMessage());
+						textPaneResult.setText(e1.getClass().getSimpleName() + "\n" + e1.getMessage());
 					}
 				}),
 
