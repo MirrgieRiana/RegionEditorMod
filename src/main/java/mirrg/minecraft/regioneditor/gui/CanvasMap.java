@@ -277,10 +277,12 @@ public class CanvasMap extends Canvas
 				JsonArray infos = json.get("infos").getAsJsonArray();
 
 				for (JsonElement info : infos) {
-					JsonArray entry = info.getAsJsonArray();
-					mapData.regionInfoTable.put(
-						RegionIdentifier.decode(entry.get(0)),
-						RegionInfo.decode(entry.get(1)));
+					if (info.isJsonArray()) {
+						JsonArray entry = info.getAsJsonArray();
+						mapData.regionInfoTable.put(
+							RegionIdentifier.decode(entry.get(0)),
+							RegionInfo.decode(entry.get(1)));
+					}
 				}
 
 			}
