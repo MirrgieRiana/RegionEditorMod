@@ -6,6 +6,10 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -116,6 +120,7 @@ public class CanvasMap extends Canvas
 
 	private Optional<Point> oMousePosition = Optional.empty();
 	private boolean[] mouseButtons = new boolean[8];
+	private boolean[] keys = new boolean[2048];
 
 	public CanvasMap(ICanvasMapListener listener)
 	{
@@ -127,6 +132,33 @@ public class CanvasMap extends Canvas
 			{
 				resizeLayer();
 				updateLayerMap();
+			}
+		});
+		addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusLost(FocusEvent e)
+			{
+				for (int i = 0; i < mouseButtons.length; i++) {
+					mouseButtons[i] = false;
+				}
+				for (int i = 0; i < keys.length; i++) {
+					keys[i] = false;
+				}
+			}
+		});
+		addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e)
+			{
+				keys[Math.min(e.getKeyCode(), keys.length - 1)] = true;
+				updateLayerOverlay();
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e)
+			{
+				keys[Math.min(e.getKeyCode(), keys.length - 1)] = false;
+				updateLayerOverlay();
 			}
 		});
 		addMouseListener(new MouseAdapter() {
@@ -141,15 +173,9 @@ public class CanvasMap extends Canvas
 				if (e.getButton() == MouseEvent.BUTTON2) {
 					setRegionIdentifierCurrent(mapData.regionMap.get(chunkPosition));
 				} else if (e.getButton() == MouseEvent.BUTTON1) {
-					if (!mapData.regionMap.get(chunkPosition).equals(oRegionIdentifierCurrent)) {
-						mapData.regionMap.set(chunkPosition, oRegionIdentifierCurrent);
-						updateLayerTile(chunkPosition);
-					}
+					setTile(chunkPosition, oRegionIdentifierCurrent, keys[KeyEvent.VK_SHIFT] ? 3 : 0);
 				} else if (e.getButton() == MouseEvent.BUTTON3) {
-					if (!mapData.regionMap.get(chunkPosition).equals(Optional.empty())) {
-						mapData.regionMap.set(chunkPosition, Optional.empty());
-						updateLayerTile(chunkPosition);
-					}
+					setTile(chunkPosition, Optional.empty(), keys[KeyEvent.VK_SHIFT] ? 3 : 0);
 				}
 			}
 
@@ -191,15 +217,9 @@ public class CanvasMap extends Canvas
 
 				ChunkPosition chunkPosition = getChunkPosition(e.getPoint());
 				if (mouseButtons[MouseEvent.BUTTON1]) {
-					if (!mapData.regionMap.get(chunkPosition).equals(oRegionIdentifierCurrent)) {
-						mapData.regionMap.set(chunkPosition, oRegionIdentifierCurrent);
-						updateLayerTile(chunkPosition);
-					}
+					setTile(chunkPosition, oRegionIdentifierCurrent, keys[KeyEvent.VK_SHIFT] ? 3 : 0);
 				} else if (mouseButtons[MouseEvent.BUTTON3]) {
-					if (!mapData.regionMap.get(chunkPosition).equals(Optional.empty())) {
-						mapData.regionMap.set(chunkPosition, Optional.empty());
-						updateLayerTile(chunkPosition);
-					}
+					setTile(chunkPosition, Optional.empty(), keys[KeyEvent.VK_SHIFT] ? 3 : 0);
 				}
 			}
 		});
@@ -207,6 +227,23 @@ public class CanvasMap extends Canvas
 		setSize(1, 1);
 		resizeLayer();
 		updateLayerMap();
+	}
+
+	private void setTile(ChunkPosition chunkPosition, Optional<RegionIdentifier> oRegionIdentifier, int radius)
+	{
+		for (int xi = -radius; xi <= radius; xi++) {
+			for (int zi = -radius; zi <= radius; zi++) {
+				setTile(chunkPosition.plus(xi, zi), oRegionIdentifier);
+			}
+		}
+	}
+
+	private void setTile(ChunkPosition chunkPosition, Optional<RegionIdentifier> oRegionIdentifier)
+	{
+		if (!mapData.regionMap.get(chunkPosition).equals(oRegionIdentifier)) {
+			mapData.regionMap.set(chunkPosition, oRegionIdentifier);
+			updateLayerTile(chunkPosition);
+		}
 	}
 
 	public void setRegionIdentifierCurrent(Optional<RegionIdentifier> oRegionIdentifierCurrent)
