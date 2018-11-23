@@ -48,8 +48,8 @@ public class CanvasMap extends Canvas
 	private Point mapOrigin = null;
 
 	private ImageLayerMap imageLayerMap = new ImageLayerMap();
-	private ImageLayerRegion imageLayerRegion = new ImageLayerRegion();
-	private ImageLayerMouse imageLayerMouse = new ImageLayerMouse();
+	private ImageLayerTile imageLayerTile = new ImageLayerTile();
+	private ImageLayerOverlay imageLayerOverlay = new ImageLayerOverlay();
 
 	private int positionX = 0;
 	private int positionZ = 0;
@@ -135,7 +135,7 @@ public class CanvasMap extends Canvas
 			{
 				oMousePosition = Optional.of(e.getPoint());
 				mouseButtons[Math.min(e.getButton(), mouseButtons.length - 1)] = true;
-				updateLayerBack();
+				updateLayerOverlay();
 
 				ChunkPosition chunkPosition = getChunkPosition(e.getPoint());
 				if (e.getButton() == MouseEvent.BUTTON2) {
@@ -143,12 +143,12 @@ public class CanvasMap extends Canvas
 				} else if (e.getButton() == MouseEvent.BUTTON1) {
 					if (!mapData.regionMap.get(chunkPosition).equals(oRegionIdentifierCurrent)) {
 						mapData.regionMap.set(chunkPosition, oRegionIdentifierCurrent);
-						updateLayerRegion(chunkPosition);
+						updateLayerTile(chunkPosition);
 					}
 				} else if (e.getButton() == MouseEvent.BUTTON3) {
 					if (!mapData.regionMap.get(chunkPosition).equals(Optional.empty())) {
 						mapData.regionMap.set(chunkPosition, Optional.empty());
-						updateLayerRegion(chunkPosition);
+						updateLayerTile(chunkPosition);
 					}
 				}
 			}
@@ -158,21 +158,21 @@ public class CanvasMap extends Canvas
 			{
 				oMousePosition = Optional.of(e.getPoint());
 				mouseButtons[Math.min(e.getButton(), mouseButtons.length - 1)] = false;
-				updateLayerBack();
+				updateLayerOverlay();
 			}
 
 			@Override
 			public void mouseEntered(MouseEvent e)
 			{
 				oMousePosition = Optional.of(e.getPoint());
-				updateLayerBack();
+				updateLayerOverlay();
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e)
 			{
 				oMousePosition = Optional.empty();
-				updateLayerBack();
+				updateLayerOverlay();
 			}
 		});
 		addMouseMotionListener(new MouseMotionAdapter() {
@@ -180,25 +180,25 @@ public class CanvasMap extends Canvas
 			public void mouseMoved(MouseEvent e)
 			{
 				oMousePosition = Optional.of(e.getPoint());
-				updateLayerBack();
+				updateLayerOverlay();
 			}
 
 			@Override
 			public void mouseDragged(MouseEvent e)
 			{
 				oMousePosition = Optional.of(e.getPoint());
-				updateLayerBack();
+				updateLayerOverlay();
 
 				ChunkPosition chunkPosition = getChunkPosition(e.getPoint());
 				if (mouseButtons[MouseEvent.BUTTON1]) {
 					if (!mapData.regionMap.get(chunkPosition).equals(oRegionIdentifierCurrent)) {
 						mapData.regionMap.set(chunkPosition, oRegionIdentifierCurrent);
-						updateLayerRegion(chunkPosition);
+						updateLayerTile(chunkPosition);
 					}
 				} else if (mouseButtons[MouseEvent.BUTTON3]) {
 					if (!mapData.regionMap.get(chunkPosition).equals(Optional.empty())) {
 						mapData.regionMap.set(chunkPosition, Optional.empty());
-						updateLayerRegion(chunkPosition);
+						updateLayerTile(chunkPosition);
 					}
 				}
 			}
@@ -213,7 +213,7 @@ public class CanvasMap extends Canvas
 	{
 		this.oRegionIdentifierCurrent = oRegionIdentifierCurrent;
 		listener.onRegionIdentifierCurrentChange(oRegionIdentifierCurrent);
-		updateLayerBack();
+		updateLayerOverlay();
 	}
 
 	public static interface ICanvasMapListener
@@ -253,7 +253,7 @@ public class CanvasMap extends Canvas
 	{
 		this.mapData = mapData;
 		listener.onRegionInfoTableChange(this.mapData.regionInfoTable);
-		updateLayerRegion();
+		updateLayerTile();
 	}
 
 	public void setExpression(String string) throws Exception
@@ -631,14 +631,14 @@ public class CanvasMap extends Canvas
 	private void resizeLayer()
 	{
 		imageLayerMap.resize(getWidth(), getHeight());
-		imageLayerRegion.resize(getWidth(), getHeight());
-		imageLayerMouse.resize(getWidth(), getHeight());
+		imageLayerTile.resize(getWidth(), getHeight());
+		imageLayerOverlay.resize(getWidth(), getHeight());
 	}
 
 	private void updateLayerMap()
 	{
 		imageLayerMap.update(imageMap, mapData, positionX, positionZ, mapOrigin);
-		updateLayerRegion();
+		updateLayerTile();
 	}
 
 	public void setShowMap(boolean showMap)
@@ -647,58 +647,58 @@ public class CanvasMap extends Canvas
 		updateLayerMap();
 	}
 
-	private void updateLayerRegion(ChunkPosition chunkPosition)
+	private void updateLayerTile(ChunkPosition chunkPosition)
 	{
-		imageLayerRegion.update(imageLayerMap.getImage(), mapData, positionX, positionZ, chunkPosition.plus(-1, -1), chunkPosition.plus(1, 1));
-		updateLayerBack();
+		imageLayerTile.update(imageLayerMap.getImage(), mapData, positionX, positionZ, chunkPosition.plus(-1, -1), chunkPosition.plus(1, 1));
+		updateLayerOverlay();
 	}
 
-	private void updateLayerRegion()
+	private void updateLayerTile()
 	{
-		imageLayerRegion.update(imageLayerMap.getImage(), mapData, positionX, positionZ);
-		updateLayerBack();
+		imageLayerTile.update(imageLayerMap.getImage(), mapData, positionX, positionZ);
+		updateLayerOverlay();
 	}
 
 	public void setShowTile(boolean showTile)
 	{
-		imageLayerRegion.showTile = showTile;
-		updateLayerRegion();
+		imageLayerTile.showTile = showTile;
+		updateLayerTile();
 	}
 
 	public void setShowArea(boolean showArea)
 	{
-		imageLayerRegion.showArea = showArea;
-		updateLayerRegion();
+		imageLayerTile.showArea = showArea;
+		updateLayerTile();
 	}
 
 	public void setShowBorder(boolean showBorder)
 	{
-		imageLayerRegion.showBorder = showBorder;
-		updateLayerRegion();
+		imageLayerTile.showBorder = showBorder;
+		updateLayerTile();
 	}
 
 	public void setShowIdentifier(boolean showIdentifier)
 	{
-		imageLayerRegion.showIdentifier = showIdentifier;
-		updateLayerRegion();
+		imageLayerTile.showIdentifier = showIdentifier;
+		updateLayerTile();
 	}
 
 	public void setShowGrid(boolean showGrid)
 	{
-		imageLayerRegion.showGrid = showGrid;
-		updateLayerRegion();
+		imageLayerTile.showGrid = showGrid;
+		updateLayerTile();
 	}
 
-	private void updateLayerBack()
+	private void updateLayerOverlay()
 	{
-		imageLayerMouse.update(imageLayerRegion.getImage(), mapData, oMousePosition, this::getChunkPosition);
+		imageLayerOverlay.update(imageLayerTile.getImage(), mapData, oMousePosition, this::getChunkPosition);
 		repaint();
 	}
 
 	public void setShowTooltip(boolean showTooltip)
 	{
-		imageLayerMouse.showTooltip = showTooltip;
-		updateLayerBack();
+		imageLayerOverlay.showTooltip = showTooltip;
+		updateLayerOverlay();
 	}
 
 	private ChunkPosition getChunkPosition(Point point)
@@ -719,7 +719,7 @@ public class CanvasMap extends Canvas
 	@Override
 	public void paint(Graphics g)
 	{
-		g.drawImage(imageLayerMouse.getImage(), 0, 0, null);
+		g.drawImage(imageLayerOverlay.getImage(), 0, 0, null);
 	}
 
 }

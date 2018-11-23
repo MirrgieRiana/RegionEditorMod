@@ -11,14 +11,14 @@ public class ImageLayerMap extends ImageLayer
 
 	public boolean showMap = true;
 
-	public void update(Image imageMap, MapData mapData, int positionX, int positionZ, Point mapOrigin)
+	public void update(Image imageBackground, MapData mapData, int positionX, int positionZ, Point mapOrigin)
 	{
 		graphics.setBackground(new Color(128, 128, 128));
 		graphics.clearRect(0, 0, width, height);
 		if (showMap) {
-			if (imageMap != null) {
+			if (imageBackground != null) {
 				graphics.drawImage(
-					imageMap,
+					imageBackground,
 					0 - positionX * 16 - mapOrigin.x + width / 2,
 					0 - positionZ * 16 - mapOrigin.y + height / 2,
 					null);

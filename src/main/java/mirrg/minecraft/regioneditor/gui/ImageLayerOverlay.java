@@ -10,7 +10,7 @@ import mirrg.minecraft.regioneditor.data.MapData;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
 
-public class ImageLayerMouse extends ImageLayer
+public class ImageLayerOverlay extends ImageLayer
 {
 
 	public boolean showTooltip = true;

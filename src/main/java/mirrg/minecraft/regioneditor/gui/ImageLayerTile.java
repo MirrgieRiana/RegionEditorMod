@@ -9,7 +9,7 @@ import mirrg.minecraft.regioneditor.data.MapData;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
 
-public class ImageLayerRegion extends ImageLayer
+public class ImageLayerTile extends ImageLayer
 {
 
 	public boolean showTile = true;
