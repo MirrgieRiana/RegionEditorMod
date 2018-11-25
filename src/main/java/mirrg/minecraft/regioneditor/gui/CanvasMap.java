@@ -58,7 +58,7 @@ public class CanvasMap extends Canvas
 	private int positionX = 0;
 	private int positionZ = 0;
 
-	public ITool tool;
+	public ITool tool; // TODO
 	public ITool toolPencil = new ITool() {};
 	public ITool toolBrush = new ITool() {};
 	public ITool toolFill = new ITool() {};
