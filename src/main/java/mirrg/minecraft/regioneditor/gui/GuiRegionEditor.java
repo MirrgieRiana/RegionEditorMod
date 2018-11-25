@@ -8,6 +8,8 @@ import java.awt.FileDialog;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -35,7 +37,6 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.DefaultListModel;
 import javax.swing.InputMap;
-import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
@@ -65,35 +66,35 @@ public class GuiRegionEditor extends GuiBase
 	private InputMap inputMap;
 	private ActionMap actionMap;
 
-	private Action actionOpenGuiData;
-	private Action actionOpenGuiCommand;
+	private ActionButton actionOpenGuiData;
+	private ActionButton actionOpenGuiCommand;
 
-	private Action actionLoadMapFromLocalFile;
-	private Action actionLoadMapFromUrl;
-	private Action actionScrollLeft;
-	private Action actionScrollRight;
-	private Action actionScrollUp;
-	private Action actionScrollDown;
-	private Action actionToggleShowMap;
-	private Action actionToggleShowTile;
-	private Action actionToggleShowTooltip;
-	private Action actionToggleShowArea;
-	private Action actionToggleShowBorder;
-	private Action actionToggleShowIdentifier;
-	private Action actionToggleShowGrid;
+	private ActionButton actionLoadMapFromLocalFile;
+	private ActionButton actionLoadMapFromUrl;
+	private ActionButton actionScrollLeft;
+	private ActionButton actionScrollRight;
+	private ActionButton actionScrollUp;
+	private ActionButton actionScrollDown;
+	private ActionToggle actionToggleShowMap;
+	private ActionToggle actionToggleShowTile;
+	private ActionToggle actionToggleShowTooltip;
+	private ActionToggle actionToggleShowArea;
+	private ActionToggle actionToggleShowBorder;
+	private ActionToggle actionToggleShowIdentifier;
+	private ActionToggle actionToggleShowGrid;
 
-	private Action actionToolPencil;
-	private Action actionToolBrush;
-	private Action actionToolFill;
-	private Action actionToolSpuit;
+	private ActionRadio actionToolPencil;
+	private ActionRadio actionToolBrush;
+	private ActionRadio actionToolFill;
+	private ActionRadio actionToolSpuit;
 
-	private Action actionClearMap;
+	private ActionButton actionClearMap;
 
-	private Action actionCreateRegion;
-	private Action actionEditRegion;
-	private Action actionDeleteRegion;
-	private Action actionChangeRegionIdentifier;
-	private Action actionScrollToRegion;
+	private ActionButton actionCreateRegion;
+	private ActionButton actionEditRegion;
+	private ActionButton actionDeleteRegion;
+	private ActionButton actionChangeRegionIdentifier;
+	private ActionButton actionScrollToRegion;
 
 	private CanvasMap canvasMap;
 	private JLabel labelCoordX;
@@ -128,129 +129,7 @@ public class GuiRegionEditor extends GuiBase
 			inputMap = new InputMap();
 			actionMap = new ActionMap();
 
-			class Action1 extends AbstractAction
-			{
-
-				private Consumer<ActionEvent> listener;
-
-				public Action1(Consumer<ActionEvent> listener)
-				{
-					this.listener = listener;
-				}
-
-				public Action1 value(String key, Object value)
-				{
-					putValue(key, value);
-					return this;
-				}
-
-				public Action1 key(KeyStroke keyStroke)
-				{
-					inputMap.put(keyStroke, this);
-					return this;
-				}
-
-				public Action1 register()
-				{
-					actionMap.put(this, this);
-					return this;
-				}
-
-				@Override
-				public void actionPerformed(ActionEvent e)
-				{
-					listener.accept(e);
-				}
-
-			}
-
-			class Action2 extends AbstractAction
-			{
-
-				private Consumer<ActionEvent> listener;
-
-				public Action2(boolean defaultValue, Consumer<Boolean> listener)
-				{
-					value(SELECTED_KEY, defaultValue);
-					addPropertyChangeListener(e -> {
-						if (e.getPropertyName().equals(Action.SELECTED_KEY)) {
-							listener.accept((Boolean) e.getNewValue());
-						}
-					});
-				}
-
-				public Action2 value(String key, Object value)
-				{
-					putValue(key, value);
-					return this;
-				}
-
-				public Action2 key(KeyStroke keyStroke)
-				{
-					inputMap.put(keyStroke, this);
-					return this;
-				}
-
-				public Action2 register()
-				{
-					actionMap.put(this, this);
-					return this;
-				}
-
-				@Override
-				public void actionPerformed(ActionEvent e)
-				{
-
-				}
-
-			}
-
-			class Action3 extends AbstractAction // TODO
-			{
-
-				private Consumer<ActionEvent> listener;
-
-				public Action3(List<? super Action3> group, Runnable listener)
-				{
-					group.add(this);
-					addPropertyChangeListener(e -> {
-						if (e.getPropertyName().equals(Action.SELECTED_KEY)) {
-							if ((Boolean) e.getNewValue()) {
-								listener.run();
-							}
-						}
-					});
-				}
-
-				public Action3 value(String key, Object value)
-				{
-					putValue(key, value);
-					return this;
-				}
-
-				public Action3 key(KeyStroke keyStroke)
-				{
-					inputMap.put(keyStroke, this);
-					return this;
-				}
-
-				public Action3 register()
-				{
-					actionMap.put(this, this);
-					return this;
-				}
-
-				@Override
-				public void actionPerformed(ActionEvent e)
-				{
-
-				}
-
-			}
-
-			//
-
-			actionOpenGuiData = new Action1(e -> new GuiData(windowWrapper, new IDialogDataListener() {
+			actionOpenGuiData = new ActionBuilder<>(new ActionButton(e -> new GuiData(windowWrapper, new IDialogDataListener() {
 				@Override
 				public void onImport(String string)
 				{
@@ -271,25 +150,25 @@ public class GuiRegionEditor extends GuiBase
 						return "Error";
 					}
 				}
-			}).show())
+			}).show()))
 				.value(Action.NAME, "Open Import/Export Window(I)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_I)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK))
+				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK))
 				.register();
-			actionOpenGuiCommand = new Action1(e -> {
+			actionOpenGuiCommand = new ActionBuilder<>(new ActionButton(e -> {
 				new GuiCommand(windowWrapper, canvasMap.mapData.getAreas(), oSender).show();
-			})
+			}))
 				.value(Action.NAME, "Open Dynmap Command Window(D)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_DOWN_MASK))
+				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_DOWN_MASK))
 				.register();
 
-			actionLoadMapFromLocalFile = new Action1(e -> loadMapFromLocal())
+			actionLoadMapFromLocalFile = new ActionBuilder<>(new ActionButton(e -> loadMapFromLocal()))
 				.value(Action.NAME, "Load Map From Local File(F)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_F)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK))
+				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK))
 				.register();
-			actionLoadMapFromUrl = new Action1(e -> {
+			actionLoadMapFromUrl = new ActionBuilder<>(new ActionButton(e -> {
 				GuiUrl guiUrl = new GuiUrl(windowWrapper);
 				guiUrl.show();
 				if (guiUrl.ok) {
@@ -299,113 +178,121 @@ public class GuiRegionEditor extends GuiBase
 						e1.printStackTrace();
 					}
 				}
-			})
+			}))
 				.value(Action.NAME, "Load Map From URL(U)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_U)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK))
+				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK))
 				.register();
 
-			actionScrollLeft = new Action1(e -> scroll(-4, 0))
+			actionScrollLeft = new ActionBuilder<>(new ActionButton(e -> scroll(-4, 0)))
 				.value(Action.NAME, "Scroll Left(L)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_L)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_A, 0))
-				.key(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0))
+				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_A, 0), KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0))
 				.register();
-			actionScrollRight = new Action1(e -> scroll(4, 0))
+			actionScrollRight = new ActionBuilder<>(new ActionButton(e -> scroll(4, 0)))
 				.value(Action.NAME, "Scroll Right(R)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_R)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_D, 0))
-				.key(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0))
+				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_D, 0), KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0))
 				.register();
-			actionScrollUp = new Action1(e -> scroll(0, -4))
+			actionScrollUp = new ActionBuilder<>(new ActionButton(e -> scroll(0, -4)))
 				.value(Action.NAME, "Scroll Up(U)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_U)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_W, 0))
-				.key(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0))
+				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_W, 0), KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0))
 				.register();
-			actionScrollDown = new Action1(e -> scroll(0, 4))
+			actionScrollDown = new ActionBuilder<>(new ActionButton(e -> scroll(0, 4)))
 				.value(Action.NAME, "Scroll Down(D)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_S, 0))
-				.key(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0))
+				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_S, 0), KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0))
 				.register();
-			actionToggleShowMap = new Action2(true, v -> canvasMap.setShowMap(v))
-				.value(Action.NAME, "Show Map(M)")
-				.value(Action.MNEMONIC_KEY, KeyEvent.VK_M)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0))
-				.register();
-			listenersPreInit.add(() -> canvasMap.setShowMap((Boolean) actionToggleShowMap.getValue(Action.SELECTED_KEY)));
-			actionToggleShowTile = new Action2(true, v -> canvasMap.setShowTile(v))
-				.value(Action.NAME, "Show Tile(T)")
-				.value(Action.MNEMONIC_KEY, KeyEvent.VK_T)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0))
-				.register();
-			listenersPreInit.add(() -> canvasMap.setShowTile((Boolean) actionToggleShowTile.getValue(Action.SELECTED_KEY)));
-			actionToggleShowTooltip = new Action2(true, v -> canvasMap.setShowTooltip(v))
-				.value(Action.NAME, "Show Tooltip(T)")
-				.value(Action.MNEMONIC_KEY, KeyEvent.VK_T)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0))
-				.register();
-			listenersPreInit.add(() -> canvasMap.setShowTooltip((Boolean) actionToggleShowTooltip.getValue(Action.SELECTED_KEY)));
-			actionToggleShowArea = new Action2(true, v -> canvasMap.setShowArea(v))
-				.value(Action.NAME, "Show Area(A)")
-				.value(Action.MNEMONIC_KEY, KeyEvent.VK_A)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0))
-				.register();
-			listenersPreInit.add(() -> canvasMap.setShowArea((Boolean) actionToggleShowArea.getValue(Action.SELECTED_KEY)));
-			actionToggleShowBorder = new Action2(true, v -> canvasMap.setShowBorder(v))
-				.value(Action.NAME, "Show Border(B)")
-				.value(Action.MNEMONIC_KEY, KeyEvent.VK_B)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0))
-				.register();
-			listenersPreInit.add(() -> canvasMap.setShowBorder((Boolean) actionToggleShowBorder.getValue(Action.SELECTED_KEY)));
-			actionToggleShowIdentifier = new Action2(true, v -> canvasMap.setShowIdentifier(v))
-				.value(Action.NAME, "Show Identifier(I)")
-				.value(Action.MNEMONIC_KEY, KeyEvent.VK_I)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0))
-				.register();
-			listenersPreInit.add(() -> canvasMap.setShowIdentifier((Boolean) actionToggleShowIdentifier.getValue(Action.SELECTED_KEY)));
-			actionToggleShowGrid = new Action2(true, v -> canvasMap.setShowGrid(v))
-				.value(Action.NAME, "Show Grid(G)")
-				.value(Action.MNEMONIC_KEY, KeyEvent.VK_G)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0))
-				.register();
-			listenersPreInit.add(() -> canvasMap.setShowGrid((Boolean) actionToggleShowGrid.getValue(Action.SELECTED_KEY)));
+			{
+				ActionToggle action = actionToggleShowMap = new ActionBuilder<>(new ActionToggle(v -> canvasMap.setShowMap(v)))
+					.value(Action.NAME, "Show Map(M)")
+					.value(Action.MNEMONIC_KEY, KeyEvent.VK_M)
+					.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0))
+					.register();
+				listenersPreInit.add(() -> action.setSelected(true));
+			}
+			{
+				ActionToggle action = actionToggleShowTile = new ActionBuilder<>(new ActionToggle(v -> canvasMap.setShowTile(v)))
+					.value(Action.NAME, "Show Tile(T)")
+					.value(Action.MNEMONIC_KEY, KeyEvent.VK_T)
+					.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0))
+					.register();
+				listenersPreInit.add(() -> action.setSelected(true));
+			}
+			{
+				ActionToggle action = actionToggleShowTooltip = new ActionBuilder<>(new ActionToggle(v -> canvasMap.setShowTooltip(v)))
+					.value(Action.NAME, "Show Tooltip(T)")
+					.value(Action.MNEMONIC_KEY, KeyEvent.VK_T)
+					.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0))
+					.register();
+				listenersPreInit.add(() -> action.setSelected(true));
+			}
+			{
+				ActionToggle action = actionToggleShowArea = new ActionBuilder<>(new ActionToggle(v -> canvasMap.setShowArea(v)))
+					.value(Action.NAME, "Show Area(A)")
+					.value(Action.MNEMONIC_KEY, KeyEvent.VK_A)
+					.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0))
+					.register();
+				listenersPreInit.add(() -> action.setSelected(true));
+			}
+			{
+				ActionToggle action = actionToggleShowBorder = new ActionBuilder<>(new ActionToggle(v -> canvasMap.setShowBorder(v)))
+					.value(Action.NAME, "Show Border(B)")
+					.value(Action.MNEMONIC_KEY, KeyEvent.VK_B)
+					.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0))
+					.register();
+				listenersPreInit.add(() -> action.setSelected(true));
+			}
+			{
+				ActionToggle action = actionToggleShowIdentifier = new ActionBuilder<>(new ActionToggle(v -> canvasMap.setShowIdentifier(v)))
+					.value(Action.NAME, "Show Identifier(I)")
+					.value(Action.MNEMONIC_KEY, KeyEvent.VK_I)
+					.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0))
+					.register();
+				listenersPreInit.add(() -> action.setSelected(true));
+			}
+			{
+				ActionToggle action = actionToggleShowGrid = new ActionBuilder<>(new ActionToggle(v -> canvasMap.setShowGrid(v)))
+					.value(Action.NAME, "Show Grid(G)")
+					.value(Action.MNEMONIC_KEY, KeyEvent.VK_G)
+					.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0))
+					.register();
+				listenersPreInit.add(() -> action.setSelected(true));
+			}
 
-			List<Action3> groupTool = new ArrayList<>(); // TODO
-			actionToolPencil = new Action3(groupTool, () -> {
-				//canvasMap.tool = canvasMap.toolPencil;
-			})
+			List<ActionRadio> groupTool = new ArrayList<>();
+			actionToolPencil = new ActionBuilder<>(new ActionRadio(groupTool, v -> {
+				canvasMap.tool = canvasMap.toolPencil;
+			}))
 				.value(Action.NAME, "Pencil Tool(P)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_P)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_P, 0))
+				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_P, 0))
 				.register();
-			actionToolBrush = new Action3(groupTool, () -> {
-				//canvasMap.tool = canvasMap.toolBrush;
-			})
+			actionToolBrush = new ActionBuilder<>(new ActionRadio(groupTool, v -> {
+				canvasMap.tool = canvasMap.toolBrush;
+			}))
 				.value(Action.NAME, "Brush Tool(B)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_B)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_B, 0))
+				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_B, 0))
 				.register();
-			actionToolFill = new Action3(groupTool, () -> {
-				//canvasMap.tool = canvasMap.toolFill;
-			})
+			actionToolFill = new ActionBuilder<>(new ActionRadio(groupTool, v -> {
+				canvasMap.tool = canvasMap.toolFill;
+			}))
 				.value(Action.NAME, "Fill Tool(F)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_F)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F, 0))
+				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_F, 0))
 				.register();
-			actionToolSpuit = new Action3(groupTool, () -> {
-				//canvasMap.tool = canvasMap.toolSpuit;
-			})
+			actionToolSpuit = new ActionBuilder<>(new ActionRadio(groupTool, v -> {
+				canvasMap.tool = canvasMap.toolSpuit;
+			}))
 				.value(Action.NAME, "Spuit Tool(K)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_K)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_K, 0))
+				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_K, 0))
 				.register();
-			listenersPreInit.add(() -> {
-				new JButton(actionToolPencil).doClick();
-			});
+			listenersPreInit.add(() -> actionToolPencil.setSelected(true));
 
-			actionClearMap = new Action1(e -> {
+			actionClearMap = new ActionBuilder<>(new ActionButton(e -> {
 				if (JOptionPane.showConfirmDialog(
 					windowWrapper.getWindow(),
 					"All tiles on the map will be blank",
@@ -420,100 +307,145 @@ public class GuiRegionEditor extends GuiBase
 					canvasMap.update();
 
 				}
-			})
+			}))
 				.value(Action.NAME, "Clear Map(C)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_C)
 				.register();
 
-			actionCreateRegion = new Action1(e -> {
+			actionCreateRegion = new ActionBuilder<>(new ActionButton(e -> {
 				System.out.println("A"); // TODO
-			})
+			}))
 				.value(Action.NAME, "Create New Region(N)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_N)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK))
+				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK))
 				.register();
-			actionEditRegion = new Action1(e -> {
+			actionEditRegion = new ActionBuilder<>(new ActionButton(e -> {
 				System.out.println("B"); // TODO
-			})
+			}))
 				.value(Action.NAME, "Edit Region(E)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_E)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.SHIFT_DOWN_MASK))
+				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.SHIFT_DOWN_MASK))
 				.register();
-			actionDeleteRegion = new Action1(e -> {
+			actionDeleteRegion = new ActionBuilder<>(new ActionButton(e -> {
 				Optional<RegionEntry> oRegionEntry = getSelectedRegionEntry();
 				if (oRegionEntry.isPresent()) {
 					canvasMap.mapData.regionInfoTable.remove(oRegionEntry.get().regionIdentifier);
 					updateRegionInfoTable();
 				}
-			})
+			}))
 				.value(Action.NAME, "Delete Region(D)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK | InputEvent.ALT_DOWN_MASK))
+				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK | InputEvent.ALT_DOWN_MASK))
 				.register();
-			actionChangeRegionIdentifier = new Action1(e -> {
+			actionChangeRegionIdentifier = new ActionBuilder<>(new ActionButton(e -> {
 				System.out.println("D"); // TODO
-			})
+			}))
 				.value(Action.NAME, "Change Region Identifier(I)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_I)
-				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK))
+				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK))
 				.register();
-			actionScrollToRegion = new Action1(e -> {
+			actionScrollToRegion = new ActionBuilder<>(new ActionButton(e -> {
 				Optional<RegionEntry> oRegionEntry = getSelectedRegionEntry();
 				if (oRegionEntry.isPresent()) {
 					scrollToRegion(oRegionEntry.get());
 				}
-			})
+			}))
 				.value(Action.NAME, "Scroll To Region(S)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_S)
 				.register();
 		}
 
 		{
+
+			class MenuItem extends JMenuItem
+			{
+
+				public MenuItem(Action action)
+				{
+					super(action);
+				}
+
+				@Override
+				protected boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed)
+				{
+					return false;
+				}
+
+			}
+
+			class CheckBoxMenuItem extends JCheckBoxMenuItem
+			{
+
+				public CheckBoxMenuItem(Action action)
+				{
+					super(action);
+				}
+
+				@Override
+				protected boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed)
+				{
+					return false;
+				}
+
+				@Override
+				protected ItemListener createItemListener()
+				{
+					return new ItemListener() {
+						@Override
+						public void itemStateChanged(ItemEvent event)
+						{
+							fireItemStateChanged(event);
+						}
+					};
+				}
+
+			}
+
 			JMenuBar menuBar = get(new JMenuBar(), menuBar2 -> {
 				menuBar2.add(get(new JMenu("Data(D)"), menu -> {
 					menu.setMnemonic(KeyEvent.VK_D);
-					menu.add(new JMenuItem(actionOpenGuiData));
-					menu.add(new JMenuItem(actionOpenGuiCommand));
+					menu.add(new MenuItem(actionOpenGuiData));
+					menu.add(new MenuItem(actionOpenGuiCommand));
 				}));
 				menuBar2.add(get(new JMenu("View(V)"), menu -> {
 					menu.setMnemonic(KeyEvent.VK_V);
-					menu.add(new JMenuItem(actionLoadMapFromLocalFile));
-					menu.add(new JMenuItem(actionLoadMapFromUrl));
+					menu.add(new MenuItem(actionLoadMapFromLocalFile));
+					menu.add(new MenuItem(actionLoadMapFromUrl));
 					menu.addSeparator();
-					menu.add(new JMenuItem(actionScrollLeft));
-					menu.add(new JMenuItem(actionScrollRight));
-					menu.add(new JMenuItem(actionScrollUp));
-					menu.add(new JMenuItem(actionScrollDown));
+					menu.add(new MenuItem(actionScrollLeft));
+					menu.add(new MenuItem(actionScrollRight));
+					menu.add(new MenuItem(actionScrollUp));
+					menu.add(new MenuItem(actionScrollDown));
 					menu.addSeparator();
-					menu.add(new JCheckBoxMenuItem(actionToggleShowMap));
-					menu.add(new JCheckBoxMenuItem(actionToggleShowTile));
-					menu.add(new JCheckBoxMenuItem(actionToggleShowTooltip));
+					menu.add(new CheckBoxMenuItem(actionToggleShowMap));
+					menu.add(new CheckBoxMenuItem(actionToggleShowTile));
+					menu.add(new CheckBoxMenuItem(actionToggleShowTooltip));
 					menu.addSeparator();
-					menu.add(new JCheckBoxMenuItem(actionToggleShowArea));
-					menu.add(new JCheckBoxMenuItem(actionToggleShowBorder));
-					menu.add(new JCheckBoxMenuItem(actionToggleShowIdentifier));
-					menu.add(new JCheckBoxMenuItem(actionToggleShowGrid));
+					menu.add(new CheckBoxMenuItem(actionToggleShowArea));
+					menu.add(new CheckBoxMenuItem(actionToggleShowBorder));
+					menu.add(new CheckBoxMenuItem(actionToggleShowIdentifier));
+					menu.add(new CheckBoxMenuItem(actionToggleShowGrid));
 				}));
 				menuBar2.add(get(new JMenu("Map(M)"), menu -> {
 					menu.setMnemonic(KeyEvent.VK_M);
-					menu.add(new JMenuItem(actionClearMap));
+					menu.add(new MenuItem(actionClearMap));
 				}));
 				menuBar2.add(get(new JMenu("Tool(T)"), menu -> {
 					menu.setMnemonic(KeyEvent.VK_T);
-					menu.add(new JMenuItem(actionToolPencil));
-					menu.add(new JMenuItem(actionToolBrush));
-					menu.add(new JMenuItem(actionToolFill));
-					menu.add(new JMenuItem(actionToolSpuit));
+					menu.add(new CheckBoxMenuItem(actionToolPencil));
+					menu.add(new CheckBoxMenuItem(actionToolBrush));
+					menu.add(new CheckBoxMenuItem(actionToolFill));
+					menu.add(new CheckBoxMenuItem(actionToolSpuit));
 				}));
 				menuBar2.add(get(new JMenu("Region(R)"), menu -> {
 					menu.setMnemonic(KeyEvent.VK_R);
-					menu.add(new JMenuItem(actionCreateRegion));
-					menu.add(new JMenuItem(actionEditRegion));
-					menu.add(new JMenuItem(actionDeleteRegion));
+					menu.add(new MenuItem(actionCreateRegion));
+					menu.add(new MenuItem(actionEditRegion));
+					menu.add(new MenuItem(actionDeleteRegion));
 					menu.addSeparator();
-					menu.add(new JMenuItem(actionChangeRegionIdentifier));
+					menu.add(new MenuItem(actionChangeRegionIdentifier));
 					menu.addSeparator();
-					menu.add(new JMenuItem(actionScrollToRegion));
+					menu.add(new MenuItem(actionScrollToRegion));
 				}));
 			});
 			if (windowWrapper.frame != null) {
@@ -795,6 +727,145 @@ public class GuiRegionEditor extends GuiBase
 		listenersPreInit.forEach(Runnable::run);
 		setPosition(0, 0);
 		canvasMap.init();
+	}
+
+	private class ActionBuilder<A extends ActionBase>
+	{
+
+		private final A action;
+
+		public ActionBuilder(A action)
+		{
+			this.action = action;
+		}
+
+		public ActionBuilder<A> value(String key, Object value)
+		{
+			action.putValue(key, value);
+			return this;
+		}
+
+		public ActionBuilder<A> keyStroke(KeyStroke keyStrokeMain, KeyStroke... keyStrokes)
+		{
+			action.putValue(Action.ACCELERATOR_KEY, keyStrokeMain);
+			inputMap.put(keyStrokeMain, action);
+			for (KeyStroke keyStroke : keyStrokes) {
+				inputMap.put(keyStroke, action);
+			}
+			return this;
+		}
+
+		public A register()
+		{
+			actionMap.put(action, action);
+			action.register();
+			return action;
+		}
+
+	}
+
+	private abstract class ActionBase extends AbstractAction
+	{
+
+		public void register()
+		{
+
+		}
+
+	}
+
+	private class ActionButton extends ActionBase
+	{
+
+		private Consumer<ActionEvent> listener;
+
+		public ActionButton(Consumer<ActionEvent> listener)
+		{
+			this.listener = listener;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			listener.accept(e);
+		}
+
+	}
+
+	private abstract class ActionToggleBase extends ActionBase
+	{
+
+		public ActionToggleBase()
+		{
+			setSelected(false);
+		}
+
+		public boolean isSelected()
+		{
+			return (Boolean) getValue(SELECTED_KEY);
+		}
+
+		public void setSelected(boolean selected)
+		{
+			putValue(SELECTED_KEY, selected);
+		}
+
+	}
+
+	private class ActionToggle extends ActionToggleBase
+	{
+
+		public ActionToggle(Consumer<Boolean> listener)
+		{
+			addPropertyChangeListener(e -> {
+				if (e.getPropertyName().equals(SELECTED_KEY)) {
+					listener.accept((Boolean) e.getNewValue());
+				}
+			});
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			setSelected(!isSelected());
+		}
+
+	}
+
+	private class ActionRadio extends ActionToggleBase
+	{
+
+		private List<ActionRadio> group;
+
+		public ActionRadio(List<ActionRadio> group, Consumer<Boolean> listener)
+		{
+			this.group = group;
+			addPropertyChangeListener(e -> {
+				if (e.getPropertyName().equals(SELECTED_KEY)) {
+					listener.accept((Boolean) e.getNewValue());
+				}
+			});
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			if (!isSelected()) {
+				for (ActionRadio actionRadio : group) {
+					if (actionRadio.isSelected()) {
+						actionRadio.setSelected(false);
+					}
+				}
+				setSelected(true);
+			}
+		}
+
+		@Override
+		public void register()
+		{
+			group.add(this);
+		}
+
 	}
 
 	private void updateRegionInfoTable()
