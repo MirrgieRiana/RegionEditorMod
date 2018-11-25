@@ -21,25 +21,25 @@ public class MapData
 	{
 		ArrayList<Area> areas = new ArrayList<>();
 
-		Set<ChunkPosition> visited = new HashSet<>();
+		Set<TilePosition> visited = new HashSet<>();
 
-		ChunkBoundingBox chunkBoundingBox = regionMap.getBoundingBox();
-		int minX = chunkBoundingBox.min.x;
-		int minZ = chunkBoundingBox.min.z;
-		int maxX = chunkBoundingBox.max.x;
-		int maxZ = chunkBoundingBox.max.z;
+		TileBoundingBox tileBoundingBox = regionMap.getBoundingBox();
+		int minX = tileBoundingBox.min.x;
+		int minZ = tileBoundingBox.min.z;
+		int maxX = tileBoundingBox.max.x;
+		int maxZ = tileBoundingBox.max.z;
 		for (int z = minZ; z <= maxZ; z++) { // 左上から順に見ていき、
 			for (int x = minX; x <= maxX; x++) {
-				ChunkPosition chunkPosition = new ChunkPosition(x, z);
-				Optional<RegionIdentifier> oRegionIdentifier = regionMap.get(chunkPosition);
+				TilePosition tilePosition = new TilePosition(x, z);
+				Optional<RegionIdentifier> oRegionIdentifier = regionMap.get(tilePosition);
 				if (oRegionIdentifier.isPresent()) { // 空白地ではなく、
 					RegionIdentifier regionIdentifier = oRegionIdentifier.get();
-					if (!visited.contains(chunkPosition)) { // 未訪問の場合、
+					if (!visited.contains(tilePosition)) { // 未訪問の場合、
 
 						// 一続きのマスをすべて訪問する
 						areas.add(new Area(
 							new RegionEntry(regionIdentifier, regionInfoTable.get(regionIdentifier)),
-							visitRecursively(chunkPosition, chunkBoundingBox, visited)));
+							visitRecursively(tilePosition, tileBoundingBox, visited)));
 
 					}
 				}
@@ -52,38 +52,38 @@ public class MapData
 	/**
 	 * 起点マスに接続している一つながりの領地をすべて訪問する。
 	 */
-	private ImmutableArray<ChunkPosition> visitRecursively(
-		ChunkPosition chunkPosition,
-		ChunkBoundingBox chunkBoundingBox,
-		Set<ChunkPosition> visited)
+	private ImmutableArray<TilePosition> visitRecursively(
+		TilePosition tilePosition,
+		TileBoundingBox tileBoundingBox,
+		Set<TilePosition> visited)
 	{
 
 		// 今調査している領地の識別番号（空白地の場合は空白地を調査中）
-		Optional<RegionIdentifier> regionType = regionMap.get(chunkPosition);
+		Optional<RegionIdentifier> regionType = regionMap.get(tilePosition);
 
 		if (regionType.isPresent()) {
 
 		}
 
 		// ツリーの生成をしながら訪問を進めていく処理
-		Node node = new Node(chunkPosition, null);
+		Node node = new Node(tilePosition, null);
 		{
 
 			// 訪問予定地
-			Deque<Tuple<ChunkPosition, Node>> waitings = new ArrayDeque<>();
+			Deque<Tuple<TilePosition, Node>> waitings = new ArrayDeque<>();
 
 			// 起点を最初の訪問予定地に追加する
-			waitings.addLast(new Tuple<>(chunkPosition, node));
-			visited.add(chunkPosition);
+			waitings.addLast(new Tuple<>(tilePosition, node));
+			visited.add(tilePosition);
 
 			// 訪問予定地が残っている限り次々と訪問する
 			while (!waitings.isEmpty()) {
 
 				// 訪問予定地から除去
-				Tuple<ChunkPosition, Node> tuple = waitings.removeFirst();
+				Tuple<TilePosition, Node> tuple = waitings.removeFirst();
 
 				// 隣接マスへの訪問を試みる
-				tryVisitNeighbor(tuple.x, chunkBoundingBox, regionType, visited, waitings, tuple.y);
+				tryVisitNeighbor(tuple.x, tileBoundingBox, regionType, visited, waitings, tuple.y);
 
 			}
 
@@ -94,57 +94,57 @@ public class MapData
 
 	/**
 	 * 起点マスから四方に
-	 * {@link #tryVisit(ChunkPosition, Optional, Set, Deque, Node, BiConsumer)}
+	 * {@link #tryVisit(TilePosition, Optional, Set, Deque, Node, BiConsumer)}
 	 * を試みる。
 	 */
 	private void tryVisitNeighbor(
-		ChunkPosition chunkPosition,
-		ChunkBoundingBox chunkBoundingBox,
+		TilePosition tilePosition,
+		TileBoundingBox tileBoundingBox,
 		Optional<RegionIdentifier> regionType,
-		Set<ChunkPosition> visited,
-		Deque<Tuple<ChunkPosition, Node>> waitings,
+		Set<TilePosition> visited,
+		Deque<Tuple<TilePosition, Node>> waitings,
 		Node parent)
 	{
-		tryVisit(chunkPosition.plus(0, -1), chunkBoundingBox, regionType, visited, waitings, parent, (p, n) -> p.up = n);
-		tryVisit(chunkPosition.plus(1, 0), chunkBoundingBox, regionType, visited, waitings, parent, (p, n) -> p.right = n);
-		tryVisit(chunkPosition.plus(0, 1), chunkBoundingBox, regionType, visited, waitings, parent, (p, n) -> p.down = n);
-		tryVisit(chunkPosition.plus(-1, 0), chunkBoundingBox, regionType, visited, waitings, parent, (p, n) -> p.left = n);
+		tryVisit(tilePosition.plus(0, -1), tileBoundingBox, regionType, visited, waitings, parent, (p, n) -> p.up = n);
+		tryVisit(tilePosition.plus(1, 0), tileBoundingBox, regionType, visited, waitings, parent, (p, n) -> p.right = n);
+		tryVisit(tilePosition.plus(0, 1), tileBoundingBox, regionType, visited, waitings, parent, (p, n) -> p.down = n);
+		tryVisit(tilePosition.plus(-1, 0), tileBoundingBox, regionType, visited, waitings, parent, (p, n) -> p.left = n);
 	}
 
 	/**
 	 * そのマスが同じ領地で未訪問なら訪問予定地に追加する。
 	 */
 	private void tryVisit(
-		ChunkPosition chunkPosition,
-		ChunkBoundingBox chunkBoundingBox,
+		TilePosition tilePosition,
+		TileBoundingBox tileBoundingBox,
 		Optional<RegionIdentifier> regionType,
-		Set<ChunkPosition> visited,
-		Deque<Tuple<ChunkPosition, Node>> waitings,
+		Set<TilePosition> visited,
+		Deque<Tuple<TilePosition, Node>> waitings,
 		Node parent,
 		BiConsumer<Node, Node> setter)
 	{
-		if (canVisit(chunkPosition, chunkBoundingBox, regionType, visited)) {
+		if (canVisit(tilePosition, tileBoundingBox, regionType, visited)) {
 
 			// ぶら下がるノードを生成
-			Node node = new Node(chunkPosition, parent);
+			Node node = new Node(tilePosition, parent);
 			setter.accept(parent, node);
 
 			// 訪問予定地に追加
-			waitings.addLast(new Tuple<>(chunkPosition, node));
-			visited.add(chunkPosition);
+			waitings.addLast(new Tuple<>(tilePosition, node));
+			visited.add(tilePosition);
 
 		}
 	}
 
 	private boolean canVisit(
-		ChunkPosition chunkPosition,
-		ChunkBoundingBox chunkBoundingBox,
+		TilePosition tilePosition,
+		TileBoundingBox tileBoundingBox,
 		Optional<RegionIdentifier> regionType,
-		Set<ChunkPosition> visited)
+		Set<TilePosition> visited)
 	{
-		return chunkBoundingBox.contains(chunkPosition)
-			&& regionMap.get(chunkPosition).equals(regionType)
-			&& !visited.contains(chunkPosition);
+		return tileBoundingBox.contains(tilePosition)
+			&& regionMap.get(tilePosition).equals(regionType)
+			&& !visited.contains(tilePosition);
 	}
 
 }

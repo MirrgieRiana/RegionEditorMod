@@ -8,7 +8,7 @@ import mirrg.boron.util.struct.ImmutableArray;
 public class Node
 {
 
-	public final ChunkPosition chunkPosition;
+	public final TilePosition tilePosition;
 	public final Node parent;
 
 	public Node left = null;
@@ -16,9 +16,9 @@ public class Node
 	public Node up = null;
 	public Node down = null;
 
-	public Node(ChunkPosition chunkPosition, Node parent)
+	public Node(TilePosition tilePosition, Node parent)
 	{
-		this.chunkPosition = chunkPosition;
+		this.tilePosition = tilePosition;
 		this.parent = parent;
 	}
 
@@ -26,7 +26,7 @@ public class Node
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
-		sb.append("[" + chunkPosition.toString() + "]");
+		sb.append("[" + tilePosition.toString() + "]");
 		if (left != null) sb.append(left.toString());
 		if (right != null) sb.append(right.toString());
 		if (up != null) sb.append(up.toString());
@@ -34,40 +34,40 @@ public class Node
 		return sb.toString();
 	}
 
-	public ImmutableArray<ChunkPosition> getOutline()
+	public ImmutableArray<TilePosition> getOutline()
 	{
-		List<ChunkPosition> chunkPositions = new ArrayList<>();
+		List<TilePosition> tilePositions = new ArrayList<>();
 
 		if (up != null) {
-			up.addOutlineFromDown(chunkPositions);
+			up.addOutlineFromDown(tilePositions);
 		} else {
-			chunkPositions.add(chunkPosition.plus(1, 0));
+			tilePositions.add(tilePosition.plus(1, 0));
 		}
 		if (right != null) {
-			right.addOutlineFromLeft(chunkPositions);
+			right.addOutlineFromLeft(tilePositions);
 		} else {
-			chunkPositions.add(chunkPosition.plus(1, 1));
+			tilePositions.add(tilePosition.plus(1, 1));
 		}
 		if (down != null) {
-			down.addOutlineFromUp(chunkPositions);
+			down.addOutlineFromUp(tilePositions);
 		} else {
-			chunkPositions.add(chunkPosition.plus(0, 1));
+			tilePositions.add(tilePosition.plus(0, 1));
 		}
 		if (left != null) {
-			left.addOutlineFromRight(chunkPositions);
+			left.addOutlineFromRight(tilePositions);
 		} else {
-			chunkPositions.add(chunkPosition.plus(0, 0));
+			tilePositions.add(tilePosition.plus(0, 0));
 		}
 
-		while (simplify1(chunkPositions)) {
-
-		}
-
-		while (simplify2(chunkPositions)) {
+		while (simplify1(tilePositions)) {
 
 		}
 
-		return ImmutableArray.ofIterable(chunkPositions);
+		while (simplify2(tilePositions)) {
+
+		}
+
+		return ImmutableArray.ofIterable(tilePositions);
 	}
 
 	/**
@@ -75,16 +75,16 @@ public class Node
 	 *
 	 * @return Uターンが見つかった場合に真
 	 */
-	private boolean simplify1(List<ChunkPosition> chunkPositions)
+	private boolean simplify1(List<TilePosition> tilePositions)
 	{
 		// [4,3],[4,2],[4,3] のような場合に [4,3] にまとめる
 
-		for (int i = 2; i < chunkPositions.size(); i++) { // 添え字2以上のすべての頂点において、
-			if (chunkPositions.get(i - 2).equals(chunkPositions.get(i))) { // 2個前の頂点と同一の座標であった場合、
+		for (int i = 2; i < tilePositions.size(); i++) { // 添え字2以上のすべての頂点において、
+			if (tilePositions.get(i - 2).equals(tilePositions.get(i))) { // 2個前の頂点と同一の座標であった場合、
 
 				// 1個前とそこの要素を削除する
-				chunkPositions.remove(i - 0);
-				chunkPositions.remove(i - 1);
+				tilePositions.remove(i - 0);
+				tilePositions.remove(i - 1);
 
 				return true;
 			}
@@ -98,27 +98,27 @@ public class Node
 	 *
 	 * @return Uターンが見つかった場合に真
 	 */
-	private boolean simplify2(List<ChunkPosition> chunkPositions)
+	private boolean simplify2(List<TilePosition> tilePositions)
 	{
 		// [4,3],[4,4],[4,5] のような場合に [4,3],[4,5] にまとめる
 
-		for (int i = 2; i < chunkPositions.size(); i++) { // 添え字2以上のすべての頂点において、
+		for (int i = 2; i < tilePositions.size(); i++) { // 添え字2以上のすべての頂点において、
 
-			ChunkPosition a1 = chunkPositions.get(i - 2);
-			ChunkPosition a2 = chunkPositions.get(i - 1);
-			ChunkPosition a3 = chunkPositions.get(i - 0);
+			TilePosition a1 = tilePositions.get(i - 2);
+			TilePosition a2 = tilePositions.get(i - 1);
+			TilePosition a3 = tilePositions.get(i - 0);
 
 			// 隣合った辺の向きが同じならば、
 			if (a1.x == a2.x && a2.x == a3.x) {
 
 				// 1個前の要素を削除する
-				chunkPositions.remove(i - 1);
+				tilePositions.remove(i - 1);
 
 				return true;
 			} else if (a1.z == a2.z && a2.z == a3.z) {
 
 				// 1個前の要素を削除する
-				chunkPositions.remove(i - 1);
+				tilePositions.remove(i - 1);
 
 				return true;
 			}
@@ -128,79 +128,79 @@ public class Node
 		return false;
 	}
 
-	private void addOutlineFromDown(List<ChunkPosition> chunkPositions)
+	private void addOutlineFromDown(List<TilePosition> tilePositions)
 	{
 		if (left != null) {
-			left.addOutlineFromRight(chunkPositions);
+			left.addOutlineFromRight(tilePositions);
 		} else {
-			chunkPositions.add(chunkPosition.plus(0, 0));
+			tilePositions.add(tilePosition.plus(0, 0));
 		}
 		if (up != null) {
-			up.addOutlineFromDown(chunkPositions);
+			up.addOutlineFromDown(tilePositions);
 		} else {
-			chunkPositions.add(chunkPosition.plus(1, 0));
+			tilePositions.add(tilePosition.plus(1, 0));
 		}
 		if (right != null) {
-			right.addOutlineFromLeft(chunkPositions);
+			right.addOutlineFromLeft(tilePositions);
 		} else {
-			chunkPositions.add(chunkPosition.plus(1, 1));
+			tilePositions.add(tilePosition.plus(1, 1));
 		}
 	}
 
-	private void addOutlineFromLeft(List<ChunkPosition> chunkPositions)
+	private void addOutlineFromLeft(List<TilePosition> tilePositions)
 	{
 		if (up != null) {
-			up.addOutlineFromDown(chunkPositions);
+			up.addOutlineFromDown(tilePositions);
 		} else {
-			chunkPositions.add(chunkPosition.plus(1, 0));
+			tilePositions.add(tilePosition.plus(1, 0));
 		}
 		if (right != null) {
-			right.addOutlineFromLeft(chunkPositions);
+			right.addOutlineFromLeft(tilePositions);
 		} else {
-			chunkPositions.add(chunkPosition.plus(1, 1));
+			tilePositions.add(tilePosition.plus(1, 1));
 		}
 		if (down != null) {
-			down.addOutlineFromUp(chunkPositions);
+			down.addOutlineFromUp(tilePositions);
 		} else {
-			chunkPositions.add(chunkPosition.plus(0, 1));
+			tilePositions.add(tilePosition.plus(0, 1));
 		}
 	}
 
-	private void addOutlineFromUp(List<ChunkPosition> chunkPositions)
+	private void addOutlineFromUp(List<TilePosition> tilePositions)
 	{
 		if (right != null) {
-			right.addOutlineFromLeft(chunkPositions);
+			right.addOutlineFromLeft(tilePositions);
 		} else {
-			chunkPositions.add(chunkPosition.plus(1, 1));
+			tilePositions.add(tilePosition.plus(1, 1));
 		}
 		if (down != null) {
-			down.addOutlineFromUp(chunkPositions);
+			down.addOutlineFromUp(tilePositions);
 		} else {
-			chunkPositions.add(chunkPosition.plus(0, 1));
+			tilePositions.add(tilePosition.plus(0, 1));
 		}
 		if (left != null) {
-			left.addOutlineFromRight(chunkPositions);
+			left.addOutlineFromRight(tilePositions);
 		} else {
-			chunkPositions.add(chunkPosition.plus(0, 0));
+			tilePositions.add(tilePosition.plus(0, 0));
 		}
 	}
 
-	private void addOutlineFromRight(List<ChunkPosition> chunkPositions)
+	private void addOutlineFromRight(List<TilePosition> tilePositions)
 	{
 		if (down != null) {
-			down.addOutlineFromUp(chunkPositions);
+			down.addOutlineFromUp(tilePositions);
 		} else {
-			chunkPositions.add(chunkPosition.plus(0, 1));
+			tilePositions.add(tilePosition.plus(0, 1));
 		}
 		if (left != null) {
-			left.addOutlineFromRight(chunkPositions);
+			left.addOutlineFromRight(tilePositions);
 		} else {
-			chunkPositions.add(chunkPosition.plus(0, 0));
+			tilePositions.add(tilePosition.plus(0, 0));
 		}
 		if (up != null) {
-			up.addOutlineFromDown(chunkPositions);
+			up.addOutlineFromDown(tilePositions);
 		} else {
-			chunkPositions.add(chunkPosition.plus(1, 0));
+			tilePositions.add(tilePosition.plus(1, 0));
 		}
 	}
 

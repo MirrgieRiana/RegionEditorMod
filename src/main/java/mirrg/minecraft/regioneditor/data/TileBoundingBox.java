@@ -1,12 +1,12 @@
 package mirrg.minecraft.regioneditor.data;
 
-public final class ChunkBoundingBox
+public final class TileBoundingBox
 {
 
-	public final ChunkPosition min;
-	public final ChunkPosition max;
+	public final TilePosition min;
+	public final TilePosition max;
 
-	public ChunkBoundingBox(ChunkPosition min, ChunkPosition max)
+	public TileBoundingBox(TilePosition min, TilePosition max)
 	{
 		this.min = min;
 		this.max = max;
@@ -34,18 +34,18 @@ public final class ChunkBoundingBox
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
-		ChunkBoundingBox other = (ChunkBoundingBox) obj;
+		TileBoundingBox other = (TileBoundingBox) obj;
 		if (!min.equals(other.min)) return false;
 		if (!max.equals(other.max)) return false;
 		return true;
 	}
 
-	public boolean contains(ChunkPosition chunkPosition)
+	public boolean contains(TilePosition tilePosition)
 	{
-		if (chunkPosition.x < min.x) return false;
-		if (chunkPosition.x > max.x) return false;
-		if (chunkPosition.z < min.z) return false;
-		if (chunkPosition.z > max.z) return false;
+		if (tilePosition.x < min.x) return false;
+		if (tilePosition.x > max.x) return false;
+		if (tilePosition.z < min.z) return false;
+		if (tilePosition.z > max.z) return false;
 		return true;
 	}
 

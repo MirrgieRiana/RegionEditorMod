@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Image;
 import java.util.Optional;
 
-import mirrg.minecraft.regioneditor.data.ChunkPosition;
+import mirrg.minecraft.regioneditor.data.TilePosition;
 import mirrg.minecraft.regioneditor.data.MapData;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
@@ -32,38 +32,38 @@ public class ImageLayerTile extends ImageLayer
 			mapData,
 			positionX,
 			positionZ,
-			new ChunkPosition(
+			new TilePosition(
 				positionX - xRadius,
 				positionZ - zRadius),
-			new ChunkPosition(
+			new TilePosition(
 				positionX + xRadius,
 				positionZ + zRadius));
 	}
 
 	/**
-	 * @param chunkPositionEnd
+	 * @param tilePositionEnd
 	 *            このチャンクまでが描画範囲に含まれる。
 	 */
-	public void update(Image imageBackground, MapData mapData, int positionX, int positionZ, ChunkPosition chunkPositionStart, ChunkPosition chunkPositionEnd)
+	public void update(Image imageBackground, MapData mapData, int positionX, int positionZ, TilePosition tilePositionStart, TilePosition tilePositionEnd)
 	{
 		graphics.drawImage(
 			imageBackground,
-			(chunkPositionStart.x - positionX) * 16 + width / 2,
-			(chunkPositionStart.z - positionZ) * 16 + height / 2,
-			(chunkPositionEnd.x - positionX) * 16 + width / 2 + 16,
-			(chunkPositionEnd.z - positionZ) * 16 + height / 2 + 16,
-			(chunkPositionStart.x - positionX) * 16 + width / 2,
-			(chunkPositionStart.z - positionZ) * 16 + height / 2,
-			(chunkPositionEnd.x - positionX) * 16 + width / 2 + 16,
-			(chunkPositionEnd.z - positionZ) * 16 + height / 2 + 16,
+			(tilePositionStart.x - positionX) * 16 + width / 2,
+			(tilePositionStart.z - positionZ) * 16 + height / 2,
+			(tilePositionEnd.x - positionX) * 16 + width / 2 + 16,
+			(tilePositionEnd.z - positionZ) * 16 + height / 2 + 16,
+			(tilePositionStart.x - positionX) * 16 + width / 2,
+			(tilePositionStart.z - positionZ) * 16 + height / 2,
+			(tilePositionEnd.x - positionX) * 16 + width / 2 + 16,
+			(tilePositionEnd.z - positionZ) * 16 + height / 2 + 16,
 			null);
 
-		for (int x = chunkPositionStart.x; x <= chunkPositionEnd.x; x++) {
-			for (int z = chunkPositionStart.z; z <= chunkPositionEnd.z; z++) {
-				ChunkPosition chunkPosition = new ChunkPosition(x, z);
+		for (int x = tilePositionStart.x; x <= tilePositionEnd.x; x++) {
+			for (int z = tilePositionStart.z; z <= tilePositionEnd.z; z++) {
+				TilePosition tilePosition = new TilePosition(x, z);
 
 				if (showTile) {
-					Optional<RegionIdentifier> oRegionIdentifier = mapData.regionMap.get(chunkPosition);
+					Optional<RegionIdentifier> oRegionIdentifier = mapData.regionMap.get(tilePosition);
 					if (oRegionIdentifier.isPresent()) {
 						RegionInfo regionInfo = mapData.regionInfoTable.get(oRegionIdentifier.get());
 
@@ -72,10 +72,10 @@ public class ImageLayerTile extends ImageLayer
 							regionInfo,
 							x - positionX,
 							z - positionZ,
-							!mapData.regionMap.get(chunkPosition.plus(-1, 0)).equals(oRegionIdentifier),
-							!mapData.regionMap.get(chunkPosition.plus(1, 0)).equals(oRegionIdentifier),
-							!mapData.regionMap.get(chunkPosition.plus(0, -1)).equals(oRegionIdentifier),
-							!mapData.regionMap.get(chunkPosition.plus(0, 1)).equals(oRegionIdentifier));
+							!mapData.regionMap.get(tilePosition.plus(-1, 0)).equals(oRegionIdentifier),
+							!mapData.regionMap.get(tilePosition.plus(1, 0)).equals(oRegionIdentifier),
+							!mapData.regionMap.get(tilePosition.plus(0, -1)).equals(oRegionIdentifier),
+							!mapData.regionMap.get(tilePosition.plus(0, 1)).equals(oRegionIdentifier));
 
 					}
 				}

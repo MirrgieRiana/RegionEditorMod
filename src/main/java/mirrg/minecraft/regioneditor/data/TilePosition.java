@@ -1,35 +1,35 @@
 package mirrg.minecraft.regioneditor.data;
 
-public final class ChunkPosition implements Comparable<ChunkPosition>
+public final class TilePosition implements Comparable<TilePosition>
 {
 
 	public final int x;
 	public final int z;
 
-	public ChunkPosition(int x, int z)
+	public TilePosition(int x, int z)
 	{
 		this.x = x;
 		this.z = z;
 	}
 
-	public ChunkPosition minus(ChunkPosition chunkPosition)
+	public TilePosition minus(TilePosition tilePosition)
 	{
-		return minus(chunkPosition.x, chunkPosition.z);
+		return minus(tilePosition.x, tilePosition.z);
 	}
 
-	public ChunkPosition minus(int xi, int zi)
+	public TilePosition minus(int xi, int zi)
 	{
 		return plus(-xi, -zi);
 	}
 
-	public ChunkPosition plus(ChunkPosition chunkPosition)
+	public TilePosition plus(TilePosition tilePosition)
 	{
-		return plus(chunkPosition.x, chunkPosition.z);
+		return plus(tilePosition.x, tilePosition.z);
 	}
 
-	public ChunkPosition plus(int xi, int zi)
+	public TilePosition plus(int xi, int zi)
 	{
-		return new ChunkPosition(x + xi, z + zi);
+		return new TilePosition(x + xi, z + zi);
 	}
 
 	@Override
@@ -54,14 +54,14 @@ public final class ChunkPosition implements Comparable<ChunkPosition>
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
-		ChunkPosition other = (ChunkPosition) obj;
+		TilePosition other = (TilePosition) obj;
 		if (x != other.x) return false;
 		if (z != other.z) return false;
 		return true;
 	}
 
 	@Override
-	public int compareTo(ChunkPosition other)
+	public int compareTo(TilePosition other)
 	{
 		int a;
 

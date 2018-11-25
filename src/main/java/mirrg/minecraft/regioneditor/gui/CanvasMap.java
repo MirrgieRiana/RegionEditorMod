@@ -36,12 +36,12 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 import mirrg.boron.util.struct.Tuple;
-import mirrg.minecraft.regioneditor.data.ChunkPosition;
 import mirrg.minecraft.regioneditor.data.MapData;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
 import mirrg.minecraft.regioneditor.data.RegionInfoTable;
-import mirrg.minecraft.regioneditor.data.RegionMap;;
+import mirrg.minecraft.regioneditor.data.RegionMap;
+import mirrg.minecraft.regioneditor.data.TilePosition;
 
 public class CanvasMap extends Canvas
 {
@@ -101,7 +101,7 @@ public class CanvasMap extends Canvas
 				int s = random.nextInt(5);
 				for (int xi = -s; xi <= s; xi++) {
 					for (int zi = -s; zi <= s; zi++) {
-						mapData.regionMap.set(new ChunkPosition(x + xi, z + zi), Optional.of(regionIdentifier));
+						mapData.regionMap.set(new TilePosition(x + xi, z + zi), Optional.of(regionIdentifier));
 					}
 				}
 			}
@@ -169,13 +169,13 @@ public class CanvasMap extends Canvas
 				mouseButtons[Math.min(e.getButton(), mouseButtons.length - 1)] = true;
 				updateLayerOverlay();
 
-				ChunkPosition chunkPosition = getChunkPosition(e.getPoint());
+				TilePosition tilePosition = getTilePosition(e.getPoint());
 				if (e.getButton() == MouseEvent.BUTTON2) {
-					setRegionIdentifierCurrent(mapData.regionMap.get(chunkPosition));
+					setRegionIdentifierCurrent(mapData.regionMap.get(tilePosition));
 				} else if (e.getButton() == MouseEvent.BUTTON1) {
-					setTile(chunkPosition, oRegionIdentifierCurrent, keys[KeyEvent.VK_SHIFT] ? 3 : 0);
+					setTile(tilePosition, oRegionIdentifierCurrent, keys[KeyEvent.VK_SHIFT] ? 3 : 0);
 				} else if (e.getButton() == MouseEvent.BUTTON3) {
-					setTile(chunkPosition, Optional.empty(), keys[KeyEvent.VK_SHIFT] ? 3 : 0);
+					setTile(tilePosition, Optional.empty(), keys[KeyEvent.VK_SHIFT] ? 3 : 0);
 				}
 			}
 
@@ -215,11 +215,11 @@ public class CanvasMap extends Canvas
 				oMousePosition = Optional.of(e.getPoint());
 				updateLayerOverlay();
 
-				ChunkPosition chunkPosition = getChunkPosition(e.getPoint());
+				TilePosition tilePosition = getTilePosition(e.getPoint());
 				if (mouseButtons[MouseEvent.BUTTON1]) {
-					setTile(chunkPosition, oRegionIdentifierCurrent, keys[KeyEvent.VK_SHIFT] ? 3 : 0);
+					setTile(tilePosition, oRegionIdentifierCurrent, keys[KeyEvent.VK_SHIFT] ? 3 : 0);
 				} else if (mouseButtons[MouseEvent.BUTTON3]) {
-					setTile(chunkPosition, Optional.empty(), keys[KeyEvent.VK_SHIFT] ? 3 : 0);
+					setTile(tilePosition, Optional.empty(), keys[KeyEvent.VK_SHIFT] ? 3 : 0);
 				}
 			}
 		});
@@ -229,20 +229,20 @@ public class CanvasMap extends Canvas
 		updateLayerMap();
 	}
 
-	private void setTile(ChunkPosition chunkPosition, Optional<RegionIdentifier> oRegionIdentifier, int radius)
+	private void setTile(TilePosition tilePosition, Optional<RegionIdentifier> oRegionIdentifier, int radius)
 	{
 		for (int xi = -radius; xi <= radius; xi++) {
 			for (int zi = -radius; zi <= radius; zi++) {
-				setTile(chunkPosition.plus(xi, zi), oRegionIdentifier);
+				setTile(tilePosition.plus(xi, zi), oRegionIdentifier);
 			}
 		}
 	}
 
-	private void setTile(ChunkPosition chunkPosition, Optional<RegionIdentifier> oRegionIdentifier)
+	private void setTile(TilePosition tilePosition, Optional<RegionIdentifier> oRegionIdentifier)
 	{
-		if (!mapData.regionMap.get(chunkPosition).equals(oRegionIdentifier)) {
-			mapData.regionMap.set(chunkPosition, oRegionIdentifier);
-			updateLayerTile(chunkPosition);
+		if (!mapData.regionMap.get(tilePosition).equals(oRegionIdentifier)) {
+			mapData.regionMap.set(tilePosition, oRegionIdentifier);
+			updateLayerTile(tilePosition);
 		}
 	}
 
@@ -403,23 +403,23 @@ public class CanvasMap extends Canvas
 	{
 		StringBuilder sb = new StringBuilder();
 
-		ChunkPosition chunkPositionLast = null;
+		TilePosition tilePositionLast = null;
 		RegionIdentifier regionIdentifierLast = null;
 		int length = 0;
 
-		for (ChunkPosition chunkPosition : regionMap.getKeys()) {
-			RegionIdentifier regionIdentifier = regionMap.get(chunkPosition).get();
+		for (TilePosition tilePosition : regionMap.getKeys()) {
+			RegionIdentifier regionIdentifier = regionMap.get(tilePosition).get();
 
-			if (chunkPositionLast != null) {
+			if (tilePositionLast != null) {
 				// 1個前の領地がある場合
 
-				if (chunkPositionLast.x + 1 == chunkPosition.x
-					&& chunkPositionLast.z == chunkPosition.z
+				if (tilePositionLast.x + 1 == tilePosition.x
+					&& tilePositionLast.z == tilePosition.z
 					&& regionIdentifierLast.equals(regionIdentifier)) {
 					// 1個前の領地のすぐ右で同じ領地情報の場合
 
 					// この領地を飛ばす
-					chunkPositionLast = chunkPosition;
+					tilePositionLast = tilePosition;
 					length++;
 
 				} else {
@@ -429,13 +429,13 @@ public class CanvasMap extends Canvas
 					sb.append(String.format("%s,%s,%s,%s,%s",
 						regionIdentifierLast.countryNumber,
 						regionIdentifierLast.stateNumber,
-						chunkPositionLast.x - length + 1,
-						chunkPositionLast.z,
+						tilePositionLast.x - length + 1,
+						tilePositionLast.z,
 						length));
 					sb.append(";\n");
 
 					// この領地を飛ばす
-					chunkPositionLast = chunkPosition;
+					tilePositionLast = tilePosition;
 					regionIdentifierLast = regionIdentifier;
 					length = 1;
 
@@ -445,7 +445,7 @@ public class CanvasMap extends Canvas
 				// 1個前の領地がない場合
 
 				// この領地を飛ばす
-				chunkPositionLast = chunkPosition;
+				tilePositionLast = tilePosition;
 				regionIdentifierLast = regionIdentifier;
 				length = 1;
 
@@ -453,15 +453,15 @@ public class CanvasMap extends Canvas
 
 		}
 
-		if (chunkPositionLast != null) {
+		if (tilePositionLast != null) {
 			// 1個前の領地がある場合
 
 			// 前の領地を出力する
 			sb.append(String.format("%s,%s,%s,%s,%s",
 				regionIdentifierLast.countryNumber,
 				regionIdentifierLast.stateNumber,
-				chunkPositionLast.x - length + 1,
-				chunkPositionLast.z,
+				tilePositionLast.x - length + 1,
+				tilePositionLast.z,
 				length));
 			sb.append(";\n");
 
@@ -495,7 +495,7 @@ public class CanvasMap extends Canvas
 
 			// 配置実行
 			for (int xi = 0; xi < length; xi++) {
-				regionMap.set(new ChunkPosition(x + xi, z), Optional.of(regionIdentifier));
+				regionMap.set(new TilePosition(x + xi, z), Optional.of(regionIdentifier));
 			}
 
 		}
@@ -684,9 +684,9 @@ public class CanvasMap extends Canvas
 		updateLayerMap();
 	}
 
-	private void updateLayerTile(ChunkPosition chunkPosition)
+	private void updateLayerTile(TilePosition tilePosition)
 	{
-		imageLayerTile.update(imageLayerMap.getImage(), mapData, positionX, positionZ, chunkPosition.plus(-1, -1), chunkPosition.plus(1, 1));
+		imageLayerTile.update(imageLayerMap.getImage(), mapData, positionX, positionZ, tilePosition.plus(-1, -1), tilePosition.plus(1, 1));
 		updateLayerOverlay();
 	}
 
@@ -728,7 +728,7 @@ public class CanvasMap extends Canvas
 
 	private void updateLayerOverlay()
 	{
-		imageLayerOverlay.update(imageLayerTile.getImage(), mapData, oMousePosition, this::getChunkPosition);
+		imageLayerOverlay.update(imageLayerTile.getImage(), mapData, oMousePosition, this::getTilePosition);
 		repaint();
 	}
 
@@ -738,9 +738,9 @@ public class CanvasMap extends Canvas
 		updateLayerOverlay();
 	}
 
-	private ChunkPosition getChunkPosition(Point point)
+	private TilePosition getTilePosition(Point point)
 	{
-		return new ChunkPosition(
+		return new TilePosition(
 			positionX + (int) Math.floor(((double) point.x - getWidth() / 2) / 16),
 			positionZ + (int) Math.floor(((double) point.y - getHeight() / 2) / 16));
 	}

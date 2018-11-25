@@ -5,17 +5,17 @@ import java.awt.Point;
 import java.util.Optional;
 import java.util.function.Function;
 
-import mirrg.minecraft.regioneditor.data.ChunkPosition;
 import mirrg.minecraft.regioneditor.data.MapData;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
+import mirrg.minecraft.regioneditor.data.TilePosition;
 
 public class ImageLayerOverlay extends ImageLayer
 {
 
 	public boolean showTooltip = true;
 
-	public void update(Image imageBackground, MapData mapData, Optional<Point> oMousePosition, Function<Point, ChunkPosition> function)
+	public void update(Image imageBackground, MapData mapData, Optional<Point> oMousePosition, Function<Point, TilePosition> function)
 	{
 		graphics.drawImage(imageBackground, 0, 0, null);
 
@@ -24,14 +24,14 @@ public class ImageLayerOverlay extends ImageLayer
 
 				int height = graphics.getFontMetrics().getHeight();
 
-				ChunkPosition chunkPosition = function.apply(oMousePosition.get());
+				TilePosition tilePosition = function.apply(oMousePosition.get());
 
 				graphics.drawString(
-					chunkPosition.x + ", " + chunkPosition.z,
+					tilePosition.x + ", " + tilePosition.z,
 					oMousePosition.get().x + 2,
 					oMousePosition.get().y - height * 2 - 2);
 
-				Optional<RegionIdentifier> oRegionIdentifier = mapData.regionMap.get(chunkPosition);
+				Optional<RegionIdentifier> oRegionIdentifier = mapData.regionMap.get(tilePosition);
 				if (oRegionIdentifier.isPresent()) {
 					RegionInfo regionInfo = mapData.regionInfoTable.get(oRegionIdentifier.get());
 

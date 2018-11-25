@@ -48,11 +48,11 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 
-import mirrg.minecraft.regioneditor.data.ChunkPosition;
 import mirrg.minecraft.regioneditor.data.RegionEntry;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
 import mirrg.minecraft.regioneditor.data.RegionInfoTable;
+import mirrg.minecraft.regioneditor.data.TilePosition;
 import mirrg.minecraft.regioneditor.gui.CanvasMap.ICanvasMapListener;
 import mirrg.minecraft.regioneditor.gui.GuiData.IDialogDataListener;
 
@@ -92,8 +92,8 @@ public class GuiRegionEditor extends GuiBase
 	private CanvasMap canvasMap;
 	private JLabel labelCoordX;
 	private JLabel labelCoordZ;
-	private JLabel labelChunkX;
-	private JLabel labelChunkZ;
+	private JLabel labelTileX;
+	private JLabel labelTileZ;
 	private JFormattedTextField textFieldX;
 	private JFormattedTextField textFieldZ;
 	private JList<RegionEntry> tableRegionInfoTable;
@@ -331,9 +331,9 @@ public class GuiRegionEditor extends GuiBase
 					JOptionPane.OK_CANCEL_OPTION,
 					JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
 
-					ArrayList<ChunkPosition> list = new ArrayList<>(canvasMap.mapData.regionMap.getKeys());
-					for (ChunkPosition chunkPosition : list) {
-						canvasMap.mapData.regionMap.set(chunkPosition, Optional.empty());
+					ArrayList<TilePosition> list = new ArrayList<>(canvasMap.mapData.regionMap.getKeys());
+					for (TilePosition tilePosition : list) {
+						canvasMap.mapData.regionMap.set(tilePosition, Optional.empty());
 					}
 					canvasMap.update();
 
@@ -515,13 +515,13 @@ public class GuiRegionEditor extends GuiBase
 
 						labelCoordZ = new JLabel("???"),
 
-						new JLabel("Chunk:"),
+						new JLabel("Tile:"),
 
-						labelChunkX = new JLabel("???"),
+						labelTileX = new JLabel("???"),
 
 						new JLabel(","),
 
-						labelChunkZ = new JLabel("???")
+						labelTileZ = new JLabel("???")
 
 					)
 
@@ -551,7 +551,7 @@ public class GuiRegionEditor extends GuiBase
 							((Number) textFieldZ.getValue()).intValue() / 16);
 					}),
 
-					button("Jump to chunk position", e -> {
+					button("Jump to tile position", e -> {
 						setPosition(
 							((Number) textFieldX.getValue()).intValue(),
 							((Number) textFieldZ.getValue()).intValue());
@@ -779,8 +779,8 @@ public class GuiRegionEditor extends GuiBase
 		canvasMap.setPosition(x, z);
 		labelCoordX.setText("" + canvasMap.getPositionX() * 16);
 		labelCoordZ.setText("" + canvasMap.getPositionZ() * 16);
-		labelChunkX.setText("" + canvasMap.getPositionX());
-		labelChunkZ.setText("" + canvasMap.getPositionZ());
+		labelTileX.setText("" + canvasMap.getPositionX());
+		labelTileZ.setText("" + canvasMap.getPositionZ());
 	}
 
 	private void scroll(int x, int z)
@@ -790,7 +790,7 @@ public class GuiRegionEditor extends GuiBase
 
 	private void scrollToRegion(RegionEntry regionEntry)
 	{
-		ArrayList<ChunkPosition> list = canvasMap.mapData.regionMap.getKeys().stream()
+		ArrayList<TilePosition> list = canvasMap.mapData.regionMap.getKeys().stream()
 			.filter(cp -> regionEntry.regionIdentifier.equals(canvasMap.mapData.regionMap.get(cp).orElse(null)))
 			.collect(Collectors.toCollection(ArrayList::new));
 		if (list.size() <= 0) return;
