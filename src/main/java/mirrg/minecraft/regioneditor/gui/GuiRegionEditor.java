@@ -35,6 +35,7 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.DefaultListModel;
 import javax.swing.InputMap;
+import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
@@ -80,6 +81,11 @@ public class GuiRegionEditor extends GuiBase
 	private Action actionToggleShowBorder;
 	private Action actionToggleShowIdentifier;
 	private Action actionToggleShowGrid;
+
+	private Action actionToolPencil;
+	private Action actionToolBrush;
+	private Action actionToolFill;
+	private Action actionToolSpuit;
 
 	private Action actionClearMap;
 
@@ -186,6 +192,49 @@ public class GuiRegionEditor extends GuiBase
 				}
 
 				public Action2 register()
+				{
+					actionMap.put(this, this);
+					return this;
+				}
+
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+
+				}
+
+			}
+
+			class Action3 extends AbstractAction // TODO
+			{
+
+				private Consumer<ActionEvent> listener;
+
+				public Action3(List<? super Action3> group, Runnable listener)
+				{
+					group.add(this);
+					addPropertyChangeListener(e -> {
+						if (e.getPropertyName().equals(Action.SELECTED_KEY)) {
+							if ((Boolean) e.getNewValue()) {
+								listener.run();
+							}
+						}
+					});
+				}
+
+				public Action3 value(String key, Object value)
+				{
+					putValue(key, value);
+					return this;
+				}
+
+				public Action3 key(KeyStroke keyStroke)
+				{
+					inputMap.put(keyStroke, this);
+					return this;
+				}
+
+				public Action3 register()
 				{
 					actionMap.put(this, this);
 					return this;
@@ -323,6 +372,39 @@ public class GuiRegionEditor extends GuiBase
 				.register();
 			listenersPreInit.add(() -> canvasMap.setShowGrid((Boolean) actionToggleShowGrid.getValue(Action.SELECTED_KEY)));
 
+			List<Action3> groupTool = new ArrayList<>(); // TODO
+			actionToolPencil = new Action3(groupTool, () -> {
+				//canvasMap.tool = canvasMap.toolPencil;
+			})
+				.value(Action.NAME, "Pencil Tool(P)")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_P)
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_P, 0))
+				.register();
+			actionToolBrush = new Action3(groupTool, () -> {
+				//canvasMap.tool = canvasMap.toolBrush;
+			})
+				.value(Action.NAME, "Brush Tool(B)")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_B)
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_B, 0))
+				.register();
+			actionToolFill = new Action3(groupTool, () -> {
+				//canvasMap.tool = canvasMap.toolFill;
+			})
+				.value(Action.NAME, "Fill Tool(F)")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_F)
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F, 0))
+				.register();
+			actionToolSpuit = new Action3(groupTool, () -> {
+				//canvasMap.tool = canvasMap.toolSpuit;
+			})
+				.value(Action.NAME, "Spuit Tool(K)")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_K)
+				.value(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_K, 0))
+				.register();
+			listenersPreInit.add(() -> {
+				new JButton(actionToolPencil).doClick();
+			});
+
 			actionClearMap = new Action1(e -> {
 				if (JOptionPane.showConfirmDialog(
 					windowWrapper.getWindow(),
@@ -415,6 +497,13 @@ public class GuiRegionEditor extends GuiBase
 				menuBar2.add(get(new JMenu("Map(M)"), menu -> {
 					menu.setMnemonic(KeyEvent.VK_M);
 					menu.add(new JMenuItem(actionClearMap));
+				}));
+				menuBar2.add(get(new JMenu("Tool(T)"), menu -> {
+					menu.setMnemonic(KeyEvent.VK_T);
+					menu.add(new JMenuItem(actionToolPencil));
+					menu.add(new JMenuItem(actionToolBrush));
+					menu.add(new JMenuItem(actionToolFill));
+					menu.add(new JMenuItem(actionToolSpuit));
 				}));
 				menuBar2.add(get(new JMenu("Region(R)"), menu -> {
 					menu.setMnemonic(KeyEvent.VK_R);
