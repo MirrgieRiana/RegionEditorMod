@@ -48,14 +48,6 @@ public final class RegionInfo
 		this.stateColor = stateColor;
 	}
 
-	public Color getDynmapColor()
-	{
-		return new Color(
-			(countryColor.getRed() * 3 + stateColor.getRed() * 1) / 4,
-			(countryColor.getGreen() * 3 + stateColor.getGreen() * 1) / 4,
-			(countryColor.getBlue() * 3 + stateColor.getBlue() * 1) / 4);
-	}
-
 	@Override
 	public String toString()
 	{
