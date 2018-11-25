@@ -1,0 +1,194 @@
+package mirrg.minecraft.regioneditor.gui;
+
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
+import java.util.Optional;
+import java.util.function.Function;
+
+import mirrg.minecraft.regioneditor.data.RegionIdentifier;
+import mirrg.minecraft.regioneditor.data.RegionInfo;
+import mirrg.minecraft.regioneditor.data.TilePosition;
+
+public class ToolPencil implements ITool
+{
+
+	protected final IToolContext toolContext;
+
+	private boolean[] mouseButtons = new boolean[8];
+	private boolean[] keys = new boolean[2048];
+	private Optional<Point> oMousePosition = Optional.empty();
+
+	public ToolPencil(IToolContext toolContext)
+	{
+		this.toolContext = toolContext;
+	}
+
+	private FocusListener focusListener = new FocusAdapter() {
+		@Override
+		public void focusLost(FocusEvent e)
+		{
+			for (int i = 0; i < mouseButtons.length; i++) {
+				mouseButtons[i] = false;
+			}
+			for (int i = 0; i < keys.length; i++) {
+				keys[i] = false;
+			}
+		}
+	};
+	private KeyListener keyListener = new KeyAdapter() {
+		@Override
+		public void keyPressed(KeyEvent e)
+		{
+			keys[Math.min(e.getKeyCode(), keys.length - 1)] = true;
+			toolContext.repaintOverlay();
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e)
+		{
+			keys[Math.min(e.getKeyCode(), keys.length - 1)] = false;
+			toolContext.repaintOverlay();
+		}
+	};
+	private MouseListener mouseListener = new MouseAdapter() {
+		@Override
+		public void mousePressed(MouseEvent e)
+		{
+			oMousePosition = Optional.of(e.getPoint());
+			mouseButtons[Math.min(e.getButton(), mouseButtons.length - 1)] = true;
+			toolContext.repaintOverlay();
+
+			TilePosition tilePosition = toolContext.getTilePosition(e.getPoint());
+			if (e.getButton() == MouseEvent.BUTTON2) {
+				toolContext.setCurrentRegionIdentifier(toolContext.getMapData().regionMap.get(tilePosition));
+			} else if (e.getButton() == MouseEvent.BUTTON1) {
+				setTile(tilePosition, toolContext.getCurrentRegionIdentifier(), keys[KeyEvent.VK_SHIFT] ? 3 : 0);
+			} else if (e.getButton() == MouseEvent.BUTTON3) {
+				setTile(tilePosition, Optional.empty(), keys[KeyEvent.VK_SHIFT] ? 3 : 0);
+			}
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e)
+		{
+			oMousePosition = Optional.of(e.getPoint());
+			mouseButtons[Math.min(e.getButton(), mouseButtons.length - 1)] = false;
+			toolContext.repaintOverlay();
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e)
+		{
+			oMousePosition = Optional.of(e.getPoint());
+			toolContext.repaintOverlay();
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e)
+		{
+			oMousePosition = Optional.empty();
+			toolContext.repaintOverlay();
+		}
+	};
+	private MouseMotionListener mouseMotionListener = new MouseMotionAdapter() {
+		@Override
+		public void mouseMoved(MouseEvent e)
+		{
+			oMousePosition = Optional.of(e.getPoint());
+			toolContext.repaintOverlay();
+		}
+
+		@Override
+		public void mouseDragged(MouseEvent e)
+		{
+			oMousePosition = Optional.of(e.getPoint());
+			toolContext.repaintOverlay();
+
+			TilePosition tilePosition = toolContext.getTilePosition(e.getPoint());
+			if (mouseButtons[MouseEvent.BUTTON1]) {
+				setTile(tilePosition, toolContext.getCurrentRegionIdentifier(), keys[KeyEvent.VK_SHIFT] ? 3 : 0);
+			} else if (mouseButtons[MouseEvent.BUTTON3]) {
+				setTile(tilePosition, Optional.empty(), keys[KeyEvent.VK_SHIFT] ? 3 : 0);
+			}
+		}
+	};
+
+	@Override
+	public void on()
+	{
+		toolContext.getComponent().addFocusListener(focusListener);
+		toolContext.getComponent().addKeyListener(keyListener);
+		toolContext.getComponent().addMouseListener(mouseListener);
+		toolContext.getComponent().addMouseMotionListener(mouseMotionListener);
+	}
+
+	@Override
+	public void off()
+	{
+		toolContext.getComponent().removeFocusListener(focusListener);
+		toolContext.getComponent().removeKeyListener(keyListener);
+		toolContext.getComponent().removeMouseListener(mouseListener);
+		toolContext.getComponent().removeMouseMotionListener(mouseMotionListener);
+	}
+
+	@Override
+	public void drawTooltip(Graphics2D graphics, Function<Point, TilePosition> function)
+	{
+		if (oMousePosition.isPresent()) {
+
+			int height = graphics.getFontMetrics().getHeight();
+
+			TilePosition tilePosition = function.apply(oMousePosition.get());
+
+			graphics.drawString(
+				tilePosition.x + ", " + tilePosition.z,
+				oMousePosition.get().x + 2,
+				oMousePosition.get().y - height * 2 - 2);
+
+			Optional<RegionIdentifier> oRegionIdentifier = toolContext.getMapData().regionMap.get(tilePosition);
+			if (oRegionIdentifier.isPresent()) {
+				RegionInfo regionInfo = toolContext.getMapData().regionInfoTable.get(oRegionIdentifier.get());
+
+				graphics.drawString(
+					"Country: (" + oRegionIdentifier.get().countryNumber + ") " + regionInfo.countryName,
+					oMousePosition.get().x + 2,
+					oMousePosition.get().y - height * 1 - 2);
+				graphics.drawString(
+					"State: (" + oRegionIdentifier.get().stateNumber + ") " + regionInfo.stateName,
+					oMousePosition.get().x + 2,
+					oMousePosition.get().y - height * 0 - 2);
+
+			}
+
+		}
+	}
+
+	private void setTile(TilePosition tilePosition, Optional<RegionIdentifier> oRegionIdentifier, int radius)
+	{
+		for (int xi = -radius; xi <= radius; xi++) {
+			for (int zi = -radius; zi <= radius; zi++) {
+				setTile(tilePosition.plus(xi, zi), oRegionIdentifier);
+			}
+		}
+	}
+
+	private void setTile(TilePosition tilePosition, Optional<RegionIdentifier> oRegionIdentifier)
+	{
+		if (!toolContext.getMapData().regionMap.get(tilePosition).equals(oRegionIdentifier)) {
+			toolContext.getMapData().regionMap.set(tilePosition, oRegionIdentifier);
+			toolContext.repaintTile(tilePosition);
+		}
+	}
+
+}

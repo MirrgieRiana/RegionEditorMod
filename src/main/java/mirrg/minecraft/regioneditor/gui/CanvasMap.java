@@ -2,17 +2,11 @@ package mirrg.minecraft.regioneditor.gui;
 
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -58,11 +52,70 @@ public class CanvasMap extends Canvas
 	private int positionX = 0;
 	private int positionZ = 0;
 
-	public ITool tool; // TODO
-	public ITool toolPencil = new ITool() {};
-	public ITool toolBrush = new ITool() {};
-	public ITool toolFill = new ITool() {};
-	public ITool toolSpuit = new ITool() {};
+	private Optional<ITool> oTool = Optional.empty();
+
+	public void setTool(Optional<ITool> oTool)
+	{
+		if (this.oTool.isPresent()) this.oTool.get().off();
+		this.oTool = oTool;
+		if (this.oTool.isPresent()) this.oTool.get().on();
+	}
+
+	private IToolContext toolContext = new IToolContext() {
+		@Override
+		public Component getComponent()
+		{
+			return CanvasMap.this;
+		}
+
+		@Override
+		public MapData getMapData()
+		{
+			return CanvasMap.this.mapData;
+		}
+
+		@Override
+		public TilePosition getTilePosition(Point point)
+		{
+			return CanvasMap.this.getTilePosition(point);
+		}
+
+		@Override
+		public Optional<RegionIdentifier> getCurrentRegionIdentifier()
+		{
+			return CanvasMap.this.oRegionIdentifierCurrent;
+		}
+
+		@Override
+		public void setCurrentRegionIdentifier(Optional<RegionIdentifier> oRegionIdentifierCurrent)
+		{
+			CanvasMap.this.setRegionIdentifierCurrent(oRegionIdentifierCurrent);
+
+		}
+
+		@Override
+		public void repaintTile()
+		{
+			CanvasMap.this.updateLayerTile();
+		}
+
+		@Override
+		public void repaintTile(TilePosition tilePosition)
+		{
+			CanvasMap.this.updateLayerTile(tilePosition);
+		}
+
+		@Override
+		public void repaintOverlay()
+		{
+			CanvasMap.this.updateLayerOverlay();
+		}
+	};
+
+	public IToolContext getToolContext()
+	{
+		return toolContext;
+	}
 
 	private Optional<RegionIdentifier> oRegionIdentifierCurrent = Optional.empty();
 
@@ -124,10 +177,6 @@ public class CanvasMap extends Canvas
 		listener.onRegionInfoTableChange(mapData.regionInfoTable);
 	}
 
-	private Optional<Point> oMousePosition = Optional.empty();
-	private boolean[] mouseButtons = new boolean[8];
-	private boolean[] keys = new boolean[2048];
-
 	public CanvasMap(ICanvasMapListener listener)
 	{
 		this.listener = listener;
@@ -140,116 +189,10 @@ public class CanvasMap extends Canvas
 				updateLayerMap();
 			}
 		});
-		addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusLost(FocusEvent e)
-			{
-				for (int i = 0; i < mouseButtons.length; i++) {
-					mouseButtons[i] = false;
-				}
-				for (int i = 0; i < keys.length; i++) {
-					keys[i] = false;
-				}
-			}
-		});
-		addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e)
-			{
-				keys[Math.min(e.getKeyCode(), keys.length - 1)] = true;
-				updateLayerOverlay();
-			}
-
-			@Override
-			public void keyReleased(KeyEvent e)
-			{
-				keys[Math.min(e.getKeyCode(), keys.length - 1)] = false;
-				updateLayerOverlay();
-			}
-		});
-		addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e)
-			{
-				oMousePosition = Optional.of(e.getPoint());
-				mouseButtons[Math.min(e.getButton(), mouseButtons.length - 1)] = true;
-				updateLayerOverlay();
-
-				TilePosition tilePosition = getTilePosition(e.getPoint());
-				if (e.getButton() == MouseEvent.BUTTON2) {
-					setRegionIdentifierCurrent(mapData.regionMap.get(tilePosition));
-				} else if (e.getButton() == MouseEvent.BUTTON1) {
-					setTile(tilePosition, oRegionIdentifierCurrent, keys[KeyEvent.VK_SHIFT] ? 3 : 0);
-				} else if (e.getButton() == MouseEvent.BUTTON3) {
-					setTile(tilePosition, Optional.empty(), keys[KeyEvent.VK_SHIFT] ? 3 : 0);
-				}
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e)
-			{
-				oMousePosition = Optional.of(e.getPoint());
-				mouseButtons[Math.min(e.getButton(), mouseButtons.length - 1)] = false;
-				updateLayerOverlay();
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e)
-			{
-				oMousePosition = Optional.of(e.getPoint());
-				updateLayerOverlay();
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e)
-			{
-				oMousePosition = Optional.empty();
-				updateLayerOverlay();
-			}
-		});
-		addMouseMotionListener(new MouseMotionAdapter() {
-			@Override
-			public void mouseMoved(MouseEvent e)
-			{
-				oMousePosition = Optional.of(e.getPoint());
-				updateLayerOverlay();
-			}
-
-			@Override
-			public void mouseDragged(MouseEvent e)
-			{
-				oMousePosition = Optional.of(e.getPoint());
-				updateLayerOverlay();
-
-				TilePosition tilePosition = getTilePosition(e.getPoint());
-				if (mouseButtons[MouseEvent.BUTTON1]) {
-					setTile(tilePosition, oRegionIdentifierCurrent, keys[KeyEvent.VK_SHIFT] ? 3 : 0);
-				} else if (mouseButtons[MouseEvent.BUTTON3]) {
-					setTile(tilePosition, Optional.empty(), keys[KeyEvent.VK_SHIFT] ? 3 : 0);
-				}
-			}
-		});
 
 		setSize(1, 1);
 		resizeLayer();
 		updateLayerMap();
-	}
-
-	private void setTile(TilePosition tilePosition, Optional<RegionIdentifier> oRegionIdentifier, int radius)
-	{
-		for (int xi = -radius; xi <= radius; xi++) {
-			for (int zi = -radius; zi <= radius; zi++) {
-				setTile(tilePosition.plus(xi, zi), oRegionIdentifier);
-			}
-		}
-	}
-
-	private void setTile(TilePosition tilePosition, Optional<RegionIdentifier> oRegionIdentifier)
-	{
-		if (!mapData.regionMap.get(tilePosition).equals(oRegionIdentifier)) {
-			mapData.regionMap.set(tilePosition, oRegionIdentifier);
-			updateLayerTile(tilePosition);
-		}
 	}
 
 	public void setRegionIdentifierCurrent(Optional<RegionIdentifier> oRegionIdentifierCurrent)
@@ -734,7 +677,7 @@ public class CanvasMap extends Canvas
 
 	private void updateLayerOverlay()
 	{
-		imageLayerOverlay.update(imageLayerTile.getImage(), mapData, oMousePosition, this::getTilePosition);
+		imageLayerOverlay.update(imageLayerTile.getImage(), mapData, oTool, this::getTilePosition);
 		repaint();
 	}
 

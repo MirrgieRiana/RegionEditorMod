@@ -263,28 +263,64 @@ public class GuiRegionEditor extends GuiBase
 
 			List<ActionRadio> groupTool = new ArrayList<>();
 			actionToolPencil = new ActionBuilder<>(new ActionRadio(groupTool, v -> {
-				canvasMap.tool = canvasMap.toolPencil;
+				canvasMap.setTool(Optional.of(new ToolPencil(canvasMap.getToolContext())));
 			}))
 				.value(Action.NAME, "Pencil Tool(P)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_P)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_P, 0))
 				.register();
 			actionToolBrush = new ActionBuilder<>(new ActionRadio(groupTool, v -> {
-				canvasMap.tool = canvasMap.toolBrush;
+				canvasMap.setTool(Optional.of(new ITool() { // TODO
+					@Override
+					public void on()
+					{
+
+					}
+
+					@Override
+					public void off()
+					{
+
+					}
+				}));
 			}))
 				.value(Action.NAME, "Brush Tool(B)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_B)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_B, 0))
 				.register();
 			actionToolFill = new ActionBuilder<>(new ActionRadio(groupTool, v -> {
-				canvasMap.tool = canvasMap.toolFill;
+				canvasMap.setTool(Optional.of(new ITool() { // TODO
+					@Override
+					public void on()
+					{
+
+					}
+
+					@Override
+					public void off()
+					{
+
+					}
+				}));
 			}))
 				.value(Action.NAME, "Fill Tool(F)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_F)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_F, 0))
 				.register();
 			actionToolSpuit = new ActionBuilder<>(new ActionRadio(groupTool, v -> {
-				canvasMap.tool = canvasMap.toolSpuit;
+				canvasMap.setTool(Optional.of(new ITool() { // TODO
+					@Override
+					public void on()
+					{
+
+					}
+
+					@Override
+					public void off()
+					{
+
+					}
+				}));
 			}))
 				.value(Action.NAME, "Spuit Tool(K)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_K)
