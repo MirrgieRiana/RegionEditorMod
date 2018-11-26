@@ -83,6 +83,7 @@ public class GuiRegionEditor extends GuiBase
 	private ActionToggle actionToggleShowIdentifier;
 	private ActionToggle actionToggleShowGrid;
 
+	private ActionRadio actionToolNothing;
 	private ActionRadio actionToolPencil;
 	private ActionRadio actionToolBrush;
 	private ActionRadio actionToolFill;
@@ -262,6 +263,13 @@ public class GuiRegionEditor extends GuiBase
 			}
 
 			List<ActionRadio> groupTool = new ArrayList<>();
+			actionToolNothing = new ActionBuilder<>(new ActionRadio(groupTool, v -> {
+				canvasMap.setTool(Optional.of(new ToolNothing(canvasMap.getToolContext())));
+			}))
+				.value(Action.NAME, "Do Nothing(N)")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_N)
+				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0))
+				.register();
 			actionToolPencil = new ActionBuilder<>(new ActionRadio(groupTool, v -> {
 				canvasMap.setTool(Optional.of(new ToolPencil(canvasMap.getToolContext())));
 			}))
@@ -468,6 +476,8 @@ public class GuiRegionEditor extends GuiBase
 				}));
 				menuBar2.add(get(new JMenu("Tool(T)"), menu -> {
 					menu.setMnemonic(KeyEvent.VK_T);
+					menu.add(new CheckBoxMenuItem(actionToolNothing));
+					menu.addSeparator();
 					menu.add(new CheckBoxMenuItem(actionToolPencil));
 					menu.add(new CheckBoxMenuItem(actionToolBrush));
 					menu.add(new CheckBoxMenuItem(actionToolFill));
