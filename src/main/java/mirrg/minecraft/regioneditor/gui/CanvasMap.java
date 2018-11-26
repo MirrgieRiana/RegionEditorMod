@@ -59,6 +59,7 @@ public class CanvasMap extends Canvas
 		if (this.oTool.isPresent()) this.oTool.get().off();
 		this.oTool = oTool;
 		if (this.oTool.isPresent()) this.oTool.get().on();
+		updateLayerOverlay();
 	}
 
 	private IToolContext toolContext = new IToolContext() {
