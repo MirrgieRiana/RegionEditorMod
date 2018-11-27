@@ -35,7 +35,7 @@ import mirrg.minecraft.regioneditor.data.RegionInfo;
 import mirrg.minecraft.regioneditor.data.RegionMapModel;
 import mirrg.minecraft.regioneditor.data.RegionTableModel;
 import mirrg.minecraft.regioneditor.data.TileIndex;
-import mirrg.minecraft.regioneditor.data.TileMap;
+import mirrg.minecraft.regioneditor.data.TileMapModel;
 
 public class CanvasMap extends Canvas
 {
@@ -190,7 +190,7 @@ public class CanvasMap extends Canvas
 					int s = random.nextInt(5);
 					for (int xi = -s; xi <= s; xi++) {
 						for (int zi = -s; zi <= s; zi++) {
-							regionMapModel.tileMap.set(new TileIndex(x + xi, z + zi), Optional.of(regionIdentifier));
+							regionMapModel.tileMapModel.set(new TileIndex(x + xi, z + zi), Optional.of(regionIdentifier));
 						}
 					}
 				}
@@ -317,7 +317,7 @@ public class CanvasMap extends Canvas
 				String tileMapExpression = decompress(stringZipEncodeBase64, "UTF-8");
 
 				// 地図データに入れる
-				setTileMapExpression(regionMapModel.tileMap, tileMapExpression);
+				setTileMapExpression(regionMapModel.tileMapModel, tileMapExpression);
 
 			}
 
@@ -360,7 +360,7 @@ public class CanvasMap extends Canvas
 			JsonArray map = new JsonArray();
 
 			// 地図データの文字列表現の取得
-			String tileMapExpression = getTileMapExpression(regionMapModel.tileMap);
+			String tileMapExpression = getTileMapExpression(regionMapModel.tileMapModel);
 
 			// 圧縮
 			List<String> list = compress(tileMapExpression, "UTF-8");
@@ -378,7 +378,7 @@ public class CanvasMap extends Canvas
 		return string;
 	}
 
-	private static String getTileMapExpression(TileMap tileMap)
+	private static String getTileMapExpression(TileMapModel tileMapModel)
 	{
 		StringBuilder sb = new StringBuilder();
 
@@ -386,8 +386,8 @@ public class CanvasMap extends Canvas
 		RegionIdentifier regionIdentifierLast = null;
 		int length = 0;
 
-		for (TileIndex tileIndex : tileMap.getKeys()) {
-			RegionIdentifier regionIdentifier = tileMap.get(tileIndex).get();
+		for (TileIndex tileIndex : tileMapModel.getKeys()) {
+			RegionIdentifier regionIdentifier = tileMapModel.get(tileIndex).get();
 
 			if (tileIndexLast != null) {
 				// 1個前の領地がある場合
@@ -449,7 +449,7 @@ public class CanvasMap extends Canvas
 		return sb.toString();
 	}
 
-	private static void setTileMapExpression(TileMap tileMap, String tileMapExpression)
+	private static void setTileMapExpression(TileMapModel tileMapModel, String tileMapExpression)
 	{
 
 		// 空白文字無視
@@ -474,7 +474,7 @@ public class CanvasMap extends Canvas
 
 			// 配置実行
 			for (int xi = 0; xi < length; xi++) {
-				tileMap.set(new TileIndex(x + xi, z), Optional.of(regionIdentifier));
+				tileMapModel.set(new TileIndex(x + xi, z), Optional.of(regionIdentifier));
 			}
 
 		}

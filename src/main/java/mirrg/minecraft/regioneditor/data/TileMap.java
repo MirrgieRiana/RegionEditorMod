@@ -2,8 +2,10 @@ package mirrg.minecraft.regioneditor.data;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.TreeMap;
+
+import mirrg.boron.util.struct.Tuple;
+import mirrg.boron.util.suppliterator.ISuppliterator;
 
 public class TileMap
 {
@@ -15,23 +17,15 @@ public class TileMap
 		return Optional.ofNullable(map.get(tileIndex));
 	}
 
-	public void set(TileIndex tileIndex, Optional<RegionIdentifier> oRegionInfo)
+	public ISuppliterator<TileIndex> getKeys()
 	{
-		if (oRegionInfo.isPresent()) {
-			map.put(tileIndex, oRegionInfo.get());
-		} else {
-			map.remove(tileIndex);
-		}
+		return ISuppliterator.ofIterable(map.keySet());
 	}
 
-	public Set<TileIndex> getKeys()
+	public ISuppliterator<Tuple<TileIndex, RegionIdentifier>> getEntries()
 	{
-		return map.keySet();
-	}
-
-	public void clear()
-	{
-		map.clear();
+		return ISuppliterator.ofIterable(map.entrySet())
+			.map(e -> new Tuple<>(e.getKey(), e.getValue()));
 	}
 
 	public TileBoundingBox getBoundingBox()
@@ -47,6 +41,20 @@ public class TileMap
 			if (tileIndex.z > maxZ) maxZ = tileIndex.z;
 		}
 		return new TileBoundingBox(new TileIndex(minX, minZ), new TileIndex(maxX, maxZ));
+	}
+
+	public void set(TileIndex tileIndex, Optional<RegionIdentifier> oRegionInfo)
+	{
+		if (oRegionInfo.isPresent()) {
+			map.put(tileIndex, oRegionInfo.get());
+		} else {
+			map.remove(tileIndex);
+		}
+	}
+
+	public void clear()
+	{
+		map.clear();
 	}
 
 }

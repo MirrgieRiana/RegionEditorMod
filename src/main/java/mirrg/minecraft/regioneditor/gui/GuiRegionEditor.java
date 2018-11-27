@@ -344,9 +344,8 @@ public class GuiRegionEditor extends GuiBase
 					JOptionPane.OK_CANCEL_OPTION,
 					JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
 
-					ArrayList<TileIndex> list = new ArrayList<>(canvasMap.regionMapModel.tileMap.getKeys());
-					for (TileIndex tileIndex : list) {
-						canvasMap.regionMapModel.tileMap.set(tileIndex, Optional.empty());
+					for (TileIndex tileIndex : canvasMap.regionMapModel.tileMapModel.getKeys().toCollection()) {
+						canvasMap.regionMapModel.tileMapModel.set(tileIndex, Optional.empty());
 					}
 					canvasMap.update();
 
@@ -996,8 +995,8 @@ public class GuiRegionEditor extends GuiBase
 
 	private void scrollToRegion(RegionEntry regionEntry)
 	{
-		ArrayList<TileIndex> list = canvasMap.regionMapModel.tileMap.getKeys().stream()
-			.filter(cp -> regionEntry.regionIdentifier.equals(canvasMap.regionMapModel.tileMap.get(cp).orElse(null)))
+		ArrayList<TileIndex> list = canvasMap.regionMapModel.tileMapModel.getKeys().stream()
+			.filter(cp -> regionEntry.regionIdentifier.equals(canvasMap.regionMapModel.tileMapModel.get(cp).orElse(null)))
 			.collect(Collectors.toCollection(ArrayList::new));
 		if (list.size() <= 0) return;
 
