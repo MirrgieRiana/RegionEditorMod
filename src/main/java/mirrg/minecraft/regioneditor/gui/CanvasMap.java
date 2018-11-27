@@ -76,6 +76,18 @@ public class CanvasMap extends Canvas
 		}
 
 		@Override
+		public int getWidth()
+		{
+			return CanvasMap.this.getWidth();
+		}
+
+		@Override
+		public int getHeight()
+		{
+			return CanvasMap.this.getHeight();
+		}
+
+		@Override
 		public TileIndex getTileIndex(Point point)
 		{
 			return CanvasMap.this.getTileIndex(point);

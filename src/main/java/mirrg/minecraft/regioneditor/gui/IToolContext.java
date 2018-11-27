@@ -15,6 +15,10 @@ public interface IToolContext
 
 	public MapData getMapData();
 
+	public int getWidth();
+
+	public int getHeight();
+
 	public TileIndex getTileIndex(Point point);
 
 	public Point getTilePosition(TileIndex tileIndex);
