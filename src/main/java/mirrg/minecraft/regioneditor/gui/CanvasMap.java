@@ -90,19 +90,23 @@ public class CanvasMap extends Canvas
 		@Override
 		public TileIndex getTileIndex(Point point)
 		{
-			return CanvasMap.this.getTileIndex(point);
+			return new TileIndex(
+				positionX + (int) Math.floor(((double) point.x - getWidth() / 2) / getTileSize()),
+				positionZ + (int) Math.floor(((double) point.y - getHeight() / 2) / getTileSize()));
 		}
 
 		@Override
 		public Point getTilePosition(TileIndex tileIndex)
 		{
-			return CanvasMap.this.getTilePosition(tileIndex);
+			return new Point(
+				(tileIndex.x - positionX) * getTileSize() + getWidth() / 2,
+				(tileIndex.z - positionZ) * getTileSize() + getHeight() / 2);
 		}
 
 		@Override
 		public int getTileSize()
 		{
-			return CanvasMap.this.getTileSize();
+			return 16;
 		}
 
 		@Override
@@ -710,25 +714,6 @@ public class CanvasMap extends Canvas
 	{
 		imageLayerOverlay.showTooltip = showTooltip;
 		updateLayerOverlay();
-	}
-
-	private TileIndex getTileIndex(Point point)
-	{
-		return new TileIndex(
-			positionX + (int) Math.floor(((double) point.x - getWidth() / 2) / getTileSize()),
-			positionZ + (int) Math.floor(((double) point.y - getHeight() / 2) / getTileSize()));
-	}
-
-	private Point getTilePosition(TileIndex tileIndex)
-	{
-		return new Point(
-			(tileIndex.x - positionX) * getTileSize() + getWidth() / 2,
-			(tileIndex.z - positionZ) * getTileSize() + getHeight() / 2);
-	}
-
-	private int getTileSize()
-	{
-		return 16;
 	}
 
 	//
