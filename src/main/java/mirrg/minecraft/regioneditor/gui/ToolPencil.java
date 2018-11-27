@@ -186,7 +186,7 @@ public class ToolPencil implements ITool
 
 			Optional<RegionIdentifier> oRegionIdentifier = toolContext.getMapData().tileMap.get(tileIndex);
 			if (oRegionIdentifier.isPresent()) {
-				RegionInfo regionInfo = toolContext.getMapData().regionInfoTable.get(oRegionIdentifier.get());
+				RegionInfo regionInfo = toolContext.getMapData().regionTable.get(oRegionIdentifier.get());
 
 				graphics.drawString(
 					"Country: (" + oRegionIdentifier.get().countryNumber + ") " + regionInfo.countryName,

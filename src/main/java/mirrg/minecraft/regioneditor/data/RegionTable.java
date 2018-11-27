@@ -5,7 +5,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 
-public class RegionInfoTable
+public class RegionTable
 {
 
 	private Map<RegionIdentifier, RegionInfo> map = new TreeMap<>();

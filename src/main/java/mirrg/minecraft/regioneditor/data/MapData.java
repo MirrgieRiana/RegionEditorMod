@@ -14,7 +14,7 @@ import mirrg.boron.util.struct.Tuple;
 public class MapData
 {
 
-	public RegionInfoTable regionInfoTable = new RegionInfoTable();
+	public RegionTable regionTable = new RegionTable();
 	public TileMap tileMap = new TileMap();
 
 	public ImmutableArray<Area> getAreas()
@@ -38,7 +38,7 @@ public class MapData
 
 						// 一続きのマスをすべて訪問する
 						areas.add(new Area(
-							new RegionEntry(regionIdentifier, regionInfoTable.get(regionIdentifier)),
+							new RegionEntry(regionIdentifier, regionTable.get(regionIdentifier)),
 							visitRecursively(tileIndex, tileBoundingBox, visited)));
 
 					}
