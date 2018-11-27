@@ -12,7 +12,7 @@ import java.util.function.BiConsumer;
 import mirrg.boron.util.struct.ImmutableArray;
 import mirrg.boron.util.struct.Tuple;
 
-public class MapData
+public class RegionMapModel
 {
 
 	public RegionTable regionTable = new RegionTable();

@@ -3,14 +3,14 @@ package mirrg.minecraft.regioneditor.gui;
 import java.awt.Image;
 import java.util.Optional;
 
-import mirrg.minecraft.regioneditor.data.MapData;
+import mirrg.minecraft.regioneditor.data.RegionMapModel;
 
 public class ImageLayerOverlay extends ImageLayer
 {
 
 	public boolean showTooltip = true;
 
-	public void update(Image imageBackground, MapData mapData, Optional<ITool> oTool)
+	public void update(Image imageBackground, RegionMapModel regionMapModel, Optional<ITool> oTool)
 	{
 		graphics.drawImage(imageBackground, 0, 0, null);
 

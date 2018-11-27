@@ -4,9 +4,9 @@ import java.awt.Color;
 import java.awt.Image;
 import java.util.Optional;
 
-import mirrg.minecraft.regioneditor.data.MapData;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
+import mirrg.minecraft.regioneditor.data.RegionMapModel;
 import mirrg.minecraft.regioneditor.data.TileIndex;
 
 public class ImageLayerTile extends ImageLayer
@@ -18,7 +18,7 @@ public class ImageLayerTile extends ImageLayer
 	public boolean showIdentifier = true;
 	public boolean showGrid = true;
 
-	public void update(Image imageBackground, MapData mapData, int positionX, int positionZ)
+	public void update(Image imageBackground, RegionMapModel regionMapModel, int positionX, int positionZ)
 	{
 		// width = 255, maptipWidth = 16 -> xRadius = (254 / 2 / 16 + 1) = (127 / 16 + 1) = (7 + 1) = 8
 		// width = 256, maptipWidth = 16 -> xRadius = (255 / 2 / 16 + 1) = (127 / 16 + 1) = (7 + 1) = 8
@@ -29,7 +29,7 @@ public class ImageLayerTile extends ImageLayer
 
 		update(
 			imageBackground,
-			mapData,
+			regionMapModel,
 			positionX,
 			positionZ,
 			new TileIndex(
@@ -44,7 +44,7 @@ public class ImageLayerTile extends ImageLayer
 	 * @param tileIndexEnd
 	 *            このチャンクまでが描画範囲に含まれる。
 	 */
-	public void update(Image imageBackground, MapData mapData, int positionX, int positionZ, TileIndex tileIndexStart, TileIndex tileIndexEnd)
+	public void update(Image imageBackground, RegionMapModel regionMapModel, int positionX, int positionZ, TileIndex tileIndexStart, TileIndex tileIndexEnd)
 	{
 		graphics.drawImage(
 			imageBackground,
@@ -63,19 +63,19 @@ public class ImageLayerTile extends ImageLayer
 				TileIndex tileIndex = new TileIndex(x, z);
 
 				if (showTile) {
-					Optional<RegionIdentifier> oRegionIdentifier = mapData.tileMap.get(tileIndex);
+					Optional<RegionIdentifier> oRegionIdentifier = regionMapModel.tileMap.get(tileIndex);
 					if (oRegionIdentifier.isPresent()) {
-						RegionInfo regionInfo = mapData.regionTable.get(oRegionIdentifier.get());
+						RegionInfo regionInfo = regionMapModel.regionTable.get(oRegionIdentifier.get());
 
 						drawRegionInfo(
 							oRegionIdentifier.get(),
 							regionInfo,
 							x - positionX,
 							z - positionZ,
-							!mapData.tileMap.get(tileIndex.plus(-1, 0)).equals(oRegionIdentifier),
-							!mapData.tileMap.get(tileIndex.plus(1, 0)).equals(oRegionIdentifier),
-							!mapData.tileMap.get(tileIndex.plus(0, -1)).equals(oRegionIdentifier),
-							!mapData.tileMap.get(tileIndex.plus(0, 1)).equals(oRegionIdentifier));
+							!regionMapModel.tileMap.get(tileIndex.plus(-1, 0)).equals(oRegionIdentifier),
+							!regionMapModel.tileMap.get(tileIndex.plus(1, 0)).equals(oRegionIdentifier),
+							!regionMapModel.tileMap.get(tileIndex.plus(0, -1)).equals(oRegionIdentifier),
+							!regionMapModel.tileMap.get(tileIndex.plus(0, 1)).equals(oRegionIdentifier));
 
 					}
 				}

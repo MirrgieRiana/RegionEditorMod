@@ -30,9 +30,9 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 import mirrg.boron.util.struct.Tuple;
-import mirrg.minecraft.regioneditor.data.MapData;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
+import mirrg.minecraft.regioneditor.data.RegionMapModel;
 import mirrg.minecraft.regioneditor.data.RegionTable;
 import mirrg.minecraft.regioneditor.data.TileIndex;
 import mirrg.minecraft.regioneditor.data.TileMap;
@@ -70,9 +70,9 @@ public class CanvasMap extends Canvas
 		}
 
 		@Override
-		public MapData getMapData()
+		public RegionMapModel getRegionMapModel()
 		{
-			return CanvasMap.this.mapData;
+			return CanvasMap.this.regionMapModel;
 		}
 
 		@Override
@@ -148,7 +148,7 @@ public class CanvasMap extends Canvas
 
 	private Optional<RegionIdentifier> oRegionIdentifierCurrent = Optional.empty();
 
-	public MapData mapData = new MapData();
+	public RegionMapModel regionMapModel = new RegionMapModel();
 
 	// TODO
 	public void init()
@@ -178,22 +178,22 @@ public class CanvasMap extends Canvas
 				RegionIdentifier.decode(new Gson().fromJson("[\"17\",\"1\"]", JsonElement.class)),
 				RegionInfo.decode(new Gson().fromJson("[\"宇宙航空研究開発機構\",\"#D89726\",\"金星探査機「あかつき28」墜落跡地\",\"#ff0000\"]", JsonElement.class)));
 
-			/*
-			for (int i = 0; i < 10000; i++) {
-				RegionIdentifier regionIdentifier;
+			if (false) {
+				for (int i = 0; i < 10000; i++) {
+					RegionIdentifier regionIdentifier;
 
-				regionIdentifier = new ArrayList<>(mapData.regionTable.keySet()).get(random.nextInt(mapData.regionTable.size()));
+					regionIdentifier = new ArrayList<>(regionMapModel.regionTable.keySet()).get(random.nextInt(regionMapModel.regionTable.size()));
 
-				int x = random.nextInt(1000);
-				int z = random.nextInt(1000);
-				int s = random.nextInt(5);
-				for (int xi = -s; xi <= s; xi++) {
-					for (int zi = -s; zi <= s; zi++) {
-						mapData.tileMap.set(new TileIndex(x + xi, z + zi), Optional.of(regionIdentifier));
+					int x = random.nextInt(1000);
+					int z = random.nextInt(1000);
+					int s = random.nextInt(5);
+					for (int xi = -s; xi <= s; xi++) {
+						for (int zi = -s; zi <= s; zi++) {
+							regionMapModel.tileMap.set(new TileIndex(x + xi, z + zi), Optional.of(regionIdentifier));
+						}
 					}
 				}
 			}
-			*/
 
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -202,8 +202,8 @@ public class CanvasMap extends Canvas
 
 	public void addRegionInfo(RegionIdentifier regionIdentifier, RegionInfo regionInfo)
 	{
-		mapData.regionTable.put(regionIdentifier, regionInfo);
-		listener.onRegionTableChange(mapData.regionTable);
+		regionMapModel.regionTable.put(regionIdentifier, regionInfo);
+		listener.onRegionTableChange(regionMapModel.regionTable);
 	}
 
 	public CanvasMap(ICanvasMapListener listener)
@@ -264,26 +264,26 @@ public class CanvasMap extends Canvas
 		updateLayerMap();
 	}
 
-	public void setMapData(MapData mapData)
+	public void setRegionMapModel(RegionMapModel regionMapModel)
 	{
-		this.mapData = mapData;
-		listener.onRegionTableChange(this.mapData.regionTable);
+		this.regionMapModel = regionMapModel;
+		listener.onRegionTableChange(this.regionMapModel.regionTable);
 		updateLayerTile();
 	}
 
 	public void setExpression(String string) throws Exception
 	{
-		setMapData(fromExpression(string));
+		setRegionMapModel(fromExpression(string));
 	}
 
 	public String getExpression() throws Exception
 	{
-		return toExpression(mapData);
+		return toExpression(regionMapModel);
 	}
 
-	private static MapData fromExpression(String string) throws Exception
+	private static RegionMapModel fromExpression(String string) throws Exception
 	{
-		MapData mapData = new MapData();
+		RegionMapModel regionMapModel = new RegionMapModel();
 
 		{
 			JsonObject json = fromJson(string).getAsJsonObject();
@@ -294,7 +294,7 @@ public class CanvasMap extends Canvas
 				for (JsonElement info : infos) {
 					if (info.isJsonArray()) {
 						JsonArray entry = info.getAsJsonArray();
-						mapData.regionTable.put(
+						regionMapModel.regionTable.put(
 							RegionIdentifier.decode(entry.get(0)),
 							RegionInfo.decode(entry.get(1)));
 					}
@@ -316,16 +316,16 @@ public class CanvasMap extends Canvas
 				String tileMapExpression = decompress(stringZipEncodeBase64, "UTF-8");
 
 				// 地図データに入れる
-				setTileMapExpression(mapData.tileMap, tileMapExpression);
+				setTileMapExpression(regionMapModel.tileMap, tileMapExpression);
 
 			}
 
 		}
 
-		return mapData;
+		return regionMapModel;
 	}
 
-	private static String toExpression(MapData mapData) throws Exception
+	private static String toExpression(RegionMapModel regionMapModel) throws Exception
 	{
 		Map<String, String> replaceTable = new HashMap<>();
 		int replaceIndex = 0;
@@ -334,7 +334,7 @@ public class CanvasMap extends Canvas
 		{
 			JsonArray infos = new JsonArray();
 
-			for (Entry<RegionIdentifier, RegionInfo> entry : mapData.regionTable.entrySet()) {
+			for (Entry<RegionIdentifier, RegionInfo> entry : regionMapModel.regionTable.entrySet()) {
 
 				// RegionEntryのJson表現の生成
 				String string;
@@ -359,7 +359,7 @@ public class CanvasMap extends Canvas
 			JsonArray map = new JsonArray();
 
 			// 地図データの文字列表現の取得
-			String tileMapExpression = getTileMapExpression(mapData.tileMap);
+			String tileMapExpression = getTileMapExpression(regionMapModel.tileMap);
 
 			// 圧縮
 			List<String> list = compress(tileMapExpression, "UTF-8");
@@ -652,7 +652,7 @@ public class CanvasMap extends Canvas
 
 	private void updateLayerMap()
 	{
-		imageLayerMap.update(imageMap, mapData, positionX, positionZ, mapOrigin);
+		imageLayerMap.update(imageMap, regionMapModel, positionX, positionZ, mapOrigin);
 		updateLayerTile();
 	}
 
@@ -664,13 +664,13 @@ public class CanvasMap extends Canvas
 
 	private void updateLayerTile(TileIndex tileIndex)
 	{
-		imageLayerTile.update(imageLayerMap.getImage(), mapData, positionX, positionZ, tileIndex.plus(-1, -1), tileIndex.plus(1, 1));
+		imageLayerTile.update(imageLayerMap.getImage(), regionMapModel, positionX, positionZ, tileIndex.plus(-1, -1), tileIndex.plus(1, 1));
 		updateLayerOverlay();
 	}
 
 	private void updateLayerTile()
 	{
-		imageLayerTile.update(imageLayerMap.getImage(), mapData, positionX, positionZ);
+		imageLayerTile.update(imageLayerMap.getImage(), regionMapModel, positionX, positionZ);
 		updateLayerOverlay();
 	}
 
@@ -706,7 +706,7 @@ public class CanvasMap extends Canvas
 
 	private void updateLayerOverlay()
 	{
-		imageLayerOverlay.update(imageLayerTile.getImage(), mapData, oTool);
+		imageLayerOverlay.update(imageLayerTile.getImage(), regionMapModel, oTool);
 		repaint();
 	}
 

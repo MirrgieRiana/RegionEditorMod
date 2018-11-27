@@ -157,7 +157,7 @@ public class GuiRegionEditor extends GuiBase
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK))
 				.register();
 			actionOpenGuiCommand = new ActionBuilder<>(new ActionButton(e -> {
-				new GuiCommand(windowWrapper, canvasMap.mapData.getAreas(), oSender).show();
+				new GuiCommand(windowWrapper, canvasMap.regionMapModel.getAreas(), oSender).show();
 			}))
 				.value(Action.NAME, "Open Dynmap Command Window(D)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)
@@ -344,9 +344,9 @@ public class GuiRegionEditor extends GuiBase
 					JOptionPane.OK_CANCEL_OPTION,
 					JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
 
-					ArrayList<TileIndex> list = new ArrayList<>(canvasMap.mapData.tileMap.getKeys());
+					ArrayList<TileIndex> list = new ArrayList<>(canvasMap.regionMapModel.tileMap.getKeys());
 					for (TileIndex tileIndex : list) {
-						canvasMap.mapData.tileMap.set(tileIndex, Optional.empty());
+						canvasMap.regionMapModel.tileMap.set(tileIndex, Optional.empty());
 					}
 					canvasMap.update();
 
@@ -373,7 +373,7 @@ public class GuiRegionEditor extends GuiBase
 			actionDeleteRegion = new ActionBuilder<>(new ActionButton(e -> {
 				Optional<RegionEntry> oRegionEntry = getSelectedRegionEntry();
 				if (oRegionEntry.isPresent()) {
-					canvasMap.mapData.regionTable.remove(oRegionEntry.get().regionIdentifier);
+					canvasMap.regionMapModel.regionTable.remove(oRegionEntry.get().regionIdentifier);
 					updateRegionTable();
 				}
 			}))
@@ -917,7 +917,7 @@ public class GuiRegionEditor extends GuiBase
 	private void updateRegionTable()
 	{
 		modelTableRegionTable.clear();
-		for (Entry<RegionIdentifier, RegionInfo> entry : canvasMap.mapData.regionTable.entrySet()) {
+		for (Entry<RegionIdentifier, RegionInfo> entry : canvasMap.regionMapModel.regionTable.entrySet()) {
 			modelTableRegionTable.addElement(new RegionEntry(entry.getKey(), entry.getValue()));
 		}
 		windowWrapper.getContentPane().revalidate();
@@ -996,8 +996,8 @@ public class GuiRegionEditor extends GuiBase
 
 	private void scrollToRegion(RegionEntry regionEntry)
 	{
-		ArrayList<TileIndex> list = canvasMap.mapData.tileMap.getKeys().stream()
-			.filter(cp -> regionEntry.regionIdentifier.equals(canvasMap.mapData.tileMap.get(cp).orElse(null)))
+		ArrayList<TileIndex> list = canvasMap.regionMapModel.tileMap.getKeys().stream()
+			.filter(cp -> regionEntry.regionIdentifier.equals(canvasMap.regionMapModel.tileMap.get(cp).orElse(null)))
 			.collect(Collectors.toCollection(ArrayList::new));
 		if (list.size() <= 0) return;
 
