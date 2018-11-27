@@ -183,7 +183,7 @@ public class CanvasMap extends Canvas
 				for (int i = 0; i < 10000; i++) {
 					RegionIdentifier regionIdentifier;
 
-					regionIdentifier = regionMapModel.regionTableModel.getKeys().toCollection().get(random.nextInt(regionMapModel.regionTableModel.size()));
+					regionIdentifier = regionMapModel.regionTableModel.getRegionTable().getKeys().toCollection().get(random.nextInt(regionMapModel.regionTableModel.getRegionTable().size()));
 
 					int x = random.nextInt(1000);
 					int z = random.nextInt(1000);
@@ -335,7 +335,7 @@ public class CanvasMap extends Canvas
 		{
 			JsonArray infos = new JsonArray();
 
-			for (Tuple<RegionIdentifier, RegionInfo> entry : regionMapModel.regionTableModel.getEntries()) {
+			for (Tuple<RegionIdentifier, RegionInfo> entry : regionMapModel.regionTableModel.getRegionTable().getEntries()) {
 
 				// RegionEntryのJson表現の生成
 				String string;
@@ -386,8 +386,8 @@ public class CanvasMap extends Canvas
 		RegionIdentifier regionIdentifierLast = null;
 		int length = 0;
 
-		for (TileIndex tileIndex : tileMapModel.getKeys()) {
-			RegionIdentifier regionIdentifier = tileMapModel.get(tileIndex).get();
+		for (TileIndex tileIndex : tileMapModel.getTileMap().getKeys()) {
+			RegionIdentifier regionIdentifier = tileMapModel.getTileMap().get(tileIndex).get();
 
 			if (tileIndexLast != null) {
 				// 1個前の領地がある場合

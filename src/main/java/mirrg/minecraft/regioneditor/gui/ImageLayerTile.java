@@ -63,19 +63,19 @@ public class ImageLayerTile extends ImageLayer
 				TileIndex tileIndex = new TileIndex(x, z);
 
 				if (showTile) {
-					Optional<RegionIdentifier> oRegionIdentifier = regionMapModel.tileMapModel.get(tileIndex);
+					Optional<RegionIdentifier> oRegionIdentifier = regionMapModel.tileMapModel.getTileMap().get(tileIndex);
 					if (oRegionIdentifier.isPresent()) {
-						RegionInfo regionInfo = regionMapModel.regionTableModel.get(oRegionIdentifier.get());
+						RegionInfo regionInfo = regionMapModel.regionTableModel.getRegionTable().get(oRegionIdentifier.get());
 
 						drawRegionInfo(
 							oRegionIdentifier.get(),
 							regionInfo,
 							x - positionX,
 							z - positionZ,
-							!regionMapModel.tileMapModel.get(tileIndex.plus(-1, 0)).equals(oRegionIdentifier),
-							!regionMapModel.tileMapModel.get(tileIndex.plus(1, 0)).equals(oRegionIdentifier),
-							!regionMapModel.tileMapModel.get(tileIndex.plus(0, -1)).equals(oRegionIdentifier),
-							!regionMapModel.tileMapModel.get(tileIndex.plus(0, 1)).equals(oRegionIdentifier));
+							!regionMapModel.tileMapModel.getTileMap().get(tileIndex.plus(-1, 0)).equals(oRegionIdentifier),
+							!regionMapModel.tileMapModel.getTileMap().get(tileIndex.plus(1, 0)).equals(oRegionIdentifier),
+							!regionMapModel.tileMapModel.getTileMap().get(tileIndex.plus(0, -1)).equals(oRegionIdentifier),
+							!regionMapModel.tileMapModel.getTileMap().get(tileIndex.plus(0, 1)).equals(oRegionIdentifier));
 
 					}
 				}

@@ -4,9 +4,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import mirrg.boron.util.struct.Tuple;
-import mirrg.boron.util.suppliterator.ISuppliterator;
-
 public class TileMapModel
 {
 
@@ -16,26 +13,6 @@ public class TileMapModel
 	public TileMap getTileMap()
 	{
 		return tileMap;
-	}
-
-	public Optional<RegionIdentifier> get(TileIndex tileIndex)
-	{
-		return tileMap.get(tileIndex);
-	}
-
-	public ISuppliterator<TileIndex> getKeys()
-	{
-		return tileMap.getKeys();
-	}
-
-	public ISuppliterator<Tuple<TileIndex, RegionIdentifier>> getEntries()
-	{
-		return tileMap.getEntries();
-	}
-
-	public TileBoundingBox getBoundingBox()
-	{
-		return tileMap.getBoundingBox();
 	}
 
 	public void setTileMap(TileMap tileMap)

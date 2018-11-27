@@ -3,9 +3,6 @@ package mirrg.minecraft.regioneditor.data;
 import java.util.HashSet;
 import java.util.Set;
 
-import mirrg.boron.util.struct.Tuple;
-import mirrg.boron.util.suppliterator.ISuppliterator;
-
 public class RegionTableModel
 {
 
@@ -15,26 +12,6 @@ public class RegionTableModel
 	public RegionTable getRegionTable()
 	{
 		return regionTable;
-	}
-
-	public RegionInfo get(RegionIdentifier regionIdentifier)
-	{
-		return regionTable.get(regionIdentifier);
-	}
-
-	public int size()
-	{
-		return regionTable.size();
-	}
-
-	public ISuppliterator<RegionIdentifier> getKeys()
-	{
-		return regionTable.getKeys();
-	}
-
-	public ISuppliterator<Tuple<RegionIdentifier, RegionInfo>> getEntries()
-	{
-		return regionTable.getEntries();
 	}
 
 	public void setRegionTable(RegionTable regionTable)

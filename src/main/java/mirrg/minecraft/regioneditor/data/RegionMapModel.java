@@ -24,7 +24,7 @@ public class RegionMapModel
 
 		Set<TileIndex> visited = new HashSet<>();
 
-		TileBoundingBox tileBoundingBox = tileMapModel.getBoundingBox();
+		TileBoundingBox tileBoundingBox = tileMapModel.getTileMap().getBoundingBox();
 		int minX = tileBoundingBox.min.x;
 		int minZ = tileBoundingBox.min.z;
 		int maxX = tileBoundingBox.max.x;
@@ -32,14 +32,14 @@ public class RegionMapModel
 		for (int z = minZ; z <= maxZ; z++) { // 左上から順に見ていき、
 			for (int x = minX; x <= maxX; x++) {
 				TileIndex tileIndex = new TileIndex(x, z);
-				Optional<RegionIdentifier> oRegionIdentifier = tileMapModel.get(tileIndex);
+				Optional<RegionIdentifier> oRegionIdentifier = tileMapModel.getTileMap().get(tileIndex);
 				if (oRegionIdentifier.isPresent()) { // 空白地ではなく、
 					RegionIdentifier regionIdentifier = oRegionIdentifier.get();
 					if (!visited.contains(tileIndex)) { // 未訪問の場合、
 
 						// 一続きのマスをすべて訪問する
 						areas.add(new Area(
-							new RegionEntry(regionIdentifier, regionTableModel.get(regionIdentifier)),
+							new RegionEntry(regionIdentifier, regionTableModel.getRegionTable().get(regionIdentifier)),
 							visitRecursively(tileIndex, tileBoundingBox, visited)));
 
 					}
@@ -60,7 +60,7 @@ public class RegionMapModel
 	{
 
 		// 今調査している領地の識別番号（空白地の場合は空白地を調査中）
-		Optional<RegionIdentifier> regionType = tileMapModel.get(tileIndex);
+		Optional<RegionIdentifier> regionType = tileMapModel.getTileMap().get(tileIndex);
 
 		if (regionType.isPresent()) {
 
@@ -144,7 +144,7 @@ public class RegionMapModel
 		Set<TileIndex> visited)
 	{
 		return tileBoundingBox.contains(tileIndex)
-			&& tileMapModel.get(tileIndex).equals(regionType)
+			&& tileMapModel.getTileMap().get(tileIndex).equals(regionType)
 			&& !visited.contains(tileIndex);
 	}
 
