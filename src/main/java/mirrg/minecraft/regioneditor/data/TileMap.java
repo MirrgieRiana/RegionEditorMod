@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 
-public final class TileMap
+public class TileMap
 {
 
 	private Map<TileIndex, RegionIdentifier> map = new TreeMap<>();
