@@ -24,7 +24,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -50,6 +49,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 
+import mirrg.boron.util.struct.Tuple;
 import mirrg.minecraft.regioneditor.data.RegionEntry;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
@@ -917,8 +917,8 @@ public class GuiRegionEditor extends GuiBase
 	private void updateRegionTable()
 	{
 		modelTableRegionTable.clear();
-		for (Entry<RegionIdentifier, RegionInfo> entry : canvasMap.regionMapModel.regionTable.entrySet()) {
-			modelTableRegionTable.addElement(new RegionEntry(entry.getKey(), entry.getValue()));
+		for (Tuple<RegionIdentifier, RegionInfo> entry : canvasMap.regionMapModel.regionTable.getEntries()) {
+			modelTableRegionTable.addElement(new RegionEntry(entry.x, entry.y));
 		}
 		windowWrapper.getContentPane().revalidate();
 	}

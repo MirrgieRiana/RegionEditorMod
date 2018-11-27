@@ -151,6 +151,7 @@ public class CanvasMap extends Canvas
 	public RegionMapModel regionMapModel = new RegionMapModel();
 
 	// TODO
+	@SuppressWarnings("unused")
 	public void init()
 	{
 		try {
@@ -182,7 +183,7 @@ public class CanvasMap extends Canvas
 				for (int i = 0; i < 10000; i++) {
 					RegionIdentifier regionIdentifier;
 
-					regionIdentifier = new ArrayList<>(regionMapModel.regionTable.keySet()).get(random.nextInt(regionMapModel.regionTable.size()));
+					regionIdentifier = regionMapModel.regionTable.getKeys().toCollection().get(random.nextInt(regionMapModel.regionTable.size()));
 
 					int x = random.nextInt(1000);
 					int z = random.nextInt(1000);
@@ -334,14 +335,14 @@ public class CanvasMap extends Canvas
 		{
 			JsonArray infos = new JsonArray();
 
-			for (Entry<RegionIdentifier, RegionInfo> entry : regionMapModel.regionTable.entrySet()) {
+			for (Tuple<RegionIdentifier, RegionInfo> entry : regionMapModel.regionTable.getEntries()) {
 
 				// RegionEntryのJson表現の生成
 				String string;
 				{
 					JsonArray array = new JsonArray();
-					array.add(entry.getKey().encode());
-					array.add(entry.getValue().encode());
+					array.add(entry.x.encode());
+					array.add(entry.y.encode());
 					string = array.toString();
 				}
 

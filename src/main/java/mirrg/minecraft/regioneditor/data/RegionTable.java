@@ -1,28 +1,35 @@
 package mirrg.minecraft.regioneditor.data;
 
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeMap;
+
+import mirrg.boron.util.struct.Tuple;
+import mirrg.boron.util.suppliterator.ISuppliterator;
 
 public class RegionTable
 {
 
 	private Map<RegionIdentifier, RegionInfo> map = new TreeMap<>();
 
-	public Set<RegionIdentifier> keySet()
+	public RegionInfo get(RegionIdentifier regionIdentifier)
 	{
-		return map.keySet();
+		return map.getOrDefault(regionIdentifier, RegionInfo.DEFAULT);
 	}
 
-	public Set<Entry<RegionIdentifier, RegionInfo>> entrySet()
+	public int size()
 	{
-		return map.entrySet();
+		return map.size();
 	}
 
-	public void clear()
+	public ISuppliterator<RegionIdentifier> getKeys()
 	{
-		map.clear();
+		return ISuppliterator.ofIterable(map.keySet());
+	}
+
+	public ISuppliterator<Tuple<RegionIdentifier, RegionInfo>> getEntries()
+	{
+		return ISuppliterator.ofIterable(map.entrySet())
+			.map(e -> new Tuple<>(e.getKey(), e.getValue()));
 	}
 
 	public void put(RegionIdentifier regionIdentifier, RegionInfo regionInfo)
@@ -35,14 +42,9 @@ public class RegionTable
 		map.remove(regionIdentifier);
 	}
 
-	public int size()
+	public void clear()
 	{
-		return map.size();
-	}
-
-	public RegionInfo get(RegionIdentifier regionIdentifier)
-	{
-		return map.getOrDefault(regionIdentifier, RegionInfo.DEFAULT);
+		map.clear();
 	}
 
 }
