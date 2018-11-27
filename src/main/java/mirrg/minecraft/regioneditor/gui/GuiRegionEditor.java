@@ -53,7 +53,7 @@ import mirrg.boron.util.struct.Tuple;
 import mirrg.minecraft.regioneditor.data.RegionEntry;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
-import mirrg.minecraft.regioneditor.data.RegionTable;
+import mirrg.minecraft.regioneditor.data.RegionTableModel;
 import mirrg.minecraft.regioneditor.data.TileIndex;
 import mirrg.minecraft.regioneditor.gui.CanvasMap.ICanvasMapListener;
 import mirrg.minecraft.regioneditor.gui.GuiData.IDialogDataListener;
@@ -104,8 +104,8 @@ public class GuiRegionEditor extends GuiBase
 	private JLabel labelTileZ;
 	private JFormattedTextField textFieldX;
 	private JFormattedTextField textFieldZ;
-	private JList<RegionEntry> tableRegionTable;
-	private DefaultListModel<RegionEntry> modelTableRegionTable;
+	private JList<RegionEntry> tableRegion;
+	private DefaultListModel<RegionEntry> modelTableRegion;
 
 	public GuiRegionEditor(WindowWrapper owner, Optional<Consumer<List<String>>> oSender)
 	{
@@ -373,7 +373,7 @@ public class GuiRegionEditor extends GuiBase
 			actionDeleteRegion = new ActionBuilder<>(new ActionButton(e -> {
 				Optional<RegionEntry> oRegionEntry = getSelectedRegionEntry();
 				if (oRegionEntry.isPresent()) {
-					canvasMap.regionMapModel.regionTable.remove(oRegionEntry.get().regionIdentifier);
+					canvasMap.regionMapModel.regionTableModel.remove(oRegionEntry.get().regionIdentifier);
 					updateRegionTable();
 				}
 			}))
@@ -529,7 +529,7 @@ public class GuiRegionEditor extends GuiBase
 									// 地図
 									canvasMap = get(new CanvasMap(new ICanvasMapListener() {
 										@Override
-										public void onRegionTableChange(RegionTable regionTable)
+										public void onRegionTableChange(RegionTableModel regionTable)
 										{
 											updateRegionTable();
 										}
@@ -537,13 +537,13 @@ public class GuiRegionEditor extends GuiBase
 										@Override
 										public void onRegionIdentifierCurrentChange(Optional<RegionIdentifier> oRegionIdentifierCurrent)
 										{
-											tableRegionTable.getSelectionModel().clearSelection();
-											Enumeration<RegionEntry> elements = modelTableRegionTable.elements();
+											tableRegion.getSelectionModel().clearSelection();
+											Enumeration<RegionEntry> elements = modelTableRegion.elements();
 											int i = 0;
 											while (elements.hasMoreElements()) {
 												RegionEntry regionEntry = elements.nextElement();
 												if (Optional.of(regionEntry.regionIdentifier).equals(oRegionIdentifierCurrent)) {
-													tableRegionTable.setSelectedIndex(i);
+													tableRegion.setSelectedIndex(i);
 													break;
 												}
 												i++;
@@ -632,7 +632,7 @@ public class GuiRegionEditor extends GuiBase
 			borderPanelDown(
 
 				// 領地一覧
-				scrollPane(tableRegionTable = get(new JList<>(modelTableRegionTable = new DefaultListModel<>()), c -> {
+				scrollPane(tableRegion = get(new JList<>(modelTableRegion = new DefaultListModel<>()), c -> {
 					c.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 					c.addMouseListener(new MouseAdapter() {
 						@Override
@@ -916,19 +916,19 @@ public class GuiRegionEditor extends GuiBase
 
 	private void updateRegionTable()
 	{
-		modelTableRegionTable.clear();
-		for (Tuple<RegionIdentifier, RegionInfo> entry : canvasMap.regionMapModel.regionTable.getEntries()) {
-			modelTableRegionTable.addElement(new RegionEntry(entry.x, entry.y));
+		modelTableRegion.clear();
+		for (Tuple<RegionIdentifier, RegionInfo> entry : canvasMap.regionMapModel.regionTableModel.getEntries()) {
+			modelTableRegion.addElement(new RegionEntry(entry.x, entry.y));
 		}
 		windowWrapper.getContentPane().revalidate();
 	}
 
 	private Optional<RegionEntry> getSelectedRegionEntry()
 	{
-		int index = tableRegionTable.getSelectedIndex();
+		int index = tableRegion.getSelectedIndex();
 		if (index < 0) return Optional.empty();
-		if (index >= tableRegionTable.getModel().getSize()) return Optional.empty();
-		return Optional.of(tableRegionTable.getModel().getElementAt(index));
+		if (index >= tableRegion.getModel().getSize()) return Optional.empty();
+		return Optional.of(tableRegion.getModel().getElementAt(index));
 	}
 
 	private void loadMapFromLocal()

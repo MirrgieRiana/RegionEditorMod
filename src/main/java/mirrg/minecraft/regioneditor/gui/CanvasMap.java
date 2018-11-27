@@ -33,7 +33,7 @@ import mirrg.boron.util.struct.Tuple;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
 import mirrg.minecraft.regioneditor.data.RegionMapModel;
-import mirrg.minecraft.regioneditor.data.RegionTable;
+import mirrg.minecraft.regioneditor.data.RegionTableModel;
 import mirrg.minecraft.regioneditor.data.TileIndex;
 import mirrg.minecraft.regioneditor.data.TileMap;
 
@@ -183,7 +183,7 @@ public class CanvasMap extends Canvas
 				for (int i = 0; i < 10000; i++) {
 					RegionIdentifier regionIdentifier;
 
-					regionIdentifier = regionMapModel.regionTable.getKeys().toCollection().get(random.nextInt(regionMapModel.regionTable.size()));
+					regionIdentifier = regionMapModel.regionTableModel.getKeys().toCollection().get(random.nextInt(regionMapModel.regionTableModel.size()));
 
 					int x = random.nextInt(1000);
 					int z = random.nextInt(1000);
@@ -203,8 +203,8 @@ public class CanvasMap extends Canvas
 
 	public void addRegionInfo(RegionIdentifier regionIdentifier, RegionInfo regionInfo)
 	{
-		regionMapModel.regionTable.put(regionIdentifier, regionInfo);
-		listener.onRegionTableChange(regionMapModel.regionTable);
+		regionMapModel.regionTableModel.put(regionIdentifier, regionInfo);
+		listener.onRegionTableChange(regionMapModel.regionTableModel);
 	}
 
 	public CanvasMap(ICanvasMapListener listener)
@@ -235,7 +235,7 @@ public class CanvasMap extends Canvas
 	public static interface ICanvasMapListener
 	{
 
-		public void onRegionTableChange(RegionTable regionTable);
+		public void onRegionTableChange(RegionTableModel regionTableModel);
 
 		public void onRegionIdentifierCurrentChange(Optional<RegionIdentifier> oRegionIdentifierCurrent);
 
@@ -268,7 +268,7 @@ public class CanvasMap extends Canvas
 	public void setRegionMapModel(RegionMapModel regionMapModel)
 	{
 		this.regionMapModel = regionMapModel;
-		listener.onRegionTableChange(this.regionMapModel.regionTable);
+		listener.onRegionTableChange(this.regionMapModel.regionTableModel);
 		updateLayerTile();
 	}
 
@@ -295,7 +295,7 @@ public class CanvasMap extends Canvas
 				for (JsonElement info : infos) {
 					if (info.isJsonArray()) {
 						JsonArray entry = info.getAsJsonArray();
-						regionMapModel.regionTable.put(
+						regionMapModel.regionTableModel.put(
 							RegionIdentifier.decode(entry.get(0)),
 							RegionInfo.decode(entry.get(1)));
 					}
@@ -335,7 +335,7 @@ public class CanvasMap extends Canvas
 		{
 			JsonArray infos = new JsonArray();
 
-			for (Tuple<RegionIdentifier, RegionInfo> entry : regionMapModel.regionTable.getEntries()) {
+			for (Tuple<RegionIdentifier, RegionInfo> entry : regionMapModel.regionTableModel.getEntries()) {
 
 				// RegionEntryのJson表現の生成
 				String string;

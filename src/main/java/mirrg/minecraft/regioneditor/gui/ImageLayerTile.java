@@ -65,7 +65,7 @@ public class ImageLayerTile extends ImageLayer
 				if (showTile) {
 					Optional<RegionIdentifier> oRegionIdentifier = regionMapModel.tileMap.get(tileIndex);
 					if (oRegionIdentifier.isPresent()) {
-						RegionInfo regionInfo = regionMapModel.regionTable.get(oRegionIdentifier.get());
+						RegionInfo regionInfo = regionMapModel.regionTableModel.get(oRegionIdentifier.get());
 
 						drawRegionInfo(
 							oRegionIdentifier.get(),
