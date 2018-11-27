@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import mirrg.minecraft.regioneditor.data.MapData;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
-import mirrg.minecraft.regioneditor.data.TilePosition;
+import mirrg.minecraft.regioneditor.data.TileIndex;
 
 public interface IToolContext
 {
@@ -15,7 +15,11 @@ public interface IToolContext
 
 	public MapData getMapData();
 
-	public TilePosition getTilePosition(Point point);
+	public TileIndex getTileIndex(Point point);
+
+	public Point getTilePosition(TileIndex tileIndex);
+
+	public int getTileSize();
 
 	public Optional<RegionIdentifier> getCurrentRegionIdentifier();
 
@@ -23,7 +27,7 @@ public interface IToolContext
 
 	public void repaintTile();
 
-	public void repaintTile(TilePosition tilePosition);
+	public void repaintTile(TileIndex tileIndex);
 
 	public void repaintOverlay();
 

@@ -35,7 +35,7 @@ import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
 import mirrg.minecraft.regioneditor.data.RegionInfoTable;
 import mirrg.minecraft.regioneditor.data.RegionMap;
-import mirrg.minecraft.regioneditor.data.TilePosition;
+import mirrg.minecraft.regioneditor.data.TileIndex;
 
 public class CanvasMap extends Canvas
 {
@@ -76,9 +76,21 @@ public class CanvasMap extends Canvas
 		}
 
 		@Override
-		public TilePosition getTilePosition(Point point)
+		public TileIndex getTileIndex(Point point)
 		{
-			return CanvasMap.this.getTilePosition(point);
+			return CanvasMap.this.getTileIndex(point);
+		}
+
+		@Override
+		public Point getTilePosition(TileIndex tileIndex)
+		{
+			return CanvasMap.this.getTilePosition(tileIndex);
+		}
+
+		@Override
+		public int getTileSize()
+		{
+			return CanvasMap.this.getTileSize();
 		}
 
 		@Override
@@ -101,9 +113,9 @@ public class CanvasMap extends Canvas
 		}
 
 		@Override
-		public void repaintTile(TilePosition tilePosition)
+		public void repaintTile(TileIndex tileIndex)
 		{
-			CanvasMap.this.updateLayerTile(tilePosition);
+			CanvasMap.this.updateLayerTile(tileIndex);
 		}
 
 		@Override
@@ -161,7 +173,7 @@ public class CanvasMap extends Canvas
 				int s = random.nextInt(5);
 				for (int xi = -s; xi <= s; xi++) {
 					for (int zi = -s; zi <= s; zi++) {
-						mapData.regionMap.set(new TilePosition(x + xi, z + zi), Optional.of(regionIdentifier));
+						mapData.regionMap.set(new TileIndex(x + xi, z + zi), Optional.of(regionIdentifier));
 					}
 				}
 			}
@@ -353,23 +365,23 @@ public class CanvasMap extends Canvas
 	{
 		StringBuilder sb = new StringBuilder();
 
-		TilePosition tilePositionLast = null;
+		TileIndex tileIndexLast = null;
 		RegionIdentifier regionIdentifierLast = null;
 		int length = 0;
 
-		for (TilePosition tilePosition : regionMap.getKeys()) {
-			RegionIdentifier regionIdentifier = regionMap.get(tilePosition).get();
+		for (TileIndex tileIndex : regionMap.getKeys()) {
+			RegionIdentifier regionIdentifier = regionMap.get(tileIndex).get();
 
-			if (tilePositionLast != null) {
+			if (tileIndexLast != null) {
 				// 1個前の領地がある場合
 
-				if (tilePositionLast.x + 1 == tilePosition.x
-					&& tilePositionLast.z == tilePosition.z
+				if (tileIndexLast.x + 1 == tileIndex.x
+					&& tileIndexLast.z == tileIndex.z
 					&& regionIdentifierLast.equals(regionIdentifier)) {
 					// 1個前の領地のすぐ右で同じ領地情報の場合
 
 					// この領地を飛ばす
-					tilePositionLast = tilePosition;
+					tileIndexLast = tileIndex;
 					length++;
 
 				} else {
@@ -379,13 +391,13 @@ public class CanvasMap extends Canvas
 					sb.append(String.format("%s,%s,%s,%s,%s",
 						regionIdentifierLast.countryNumber,
 						regionIdentifierLast.stateNumber,
-						tilePositionLast.x - length + 1,
-						tilePositionLast.z,
+						tileIndexLast.x - length + 1,
+						tileIndexLast.z,
 						length));
 					sb.append(";\n");
 
 					// この領地を飛ばす
-					tilePositionLast = tilePosition;
+					tileIndexLast = tileIndex;
 					regionIdentifierLast = regionIdentifier;
 					length = 1;
 
@@ -395,7 +407,7 @@ public class CanvasMap extends Canvas
 				// 1個前の領地がない場合
 
 				// この領地を飛ばす
-				tilePositionLast = tilePosition;
+				tileIndexLast = tileIndex;
 				regionIdentifierLast = regionIdentifier;
 				length = 1;
 
@@ -403,15 +415,15 @@ public class CanvasMap extends Canvas
 
 		}
 
-		if (tilePositionLast != null) {
+		if (tileIndexLast != null) {
 			// 1個前の領地がある場合
 
 			// 前の領地を出力する
 			sb.append(String.format("%s,%s,%s,%s,%s",
 				regionIdentifierLast.countryNumber,
 				regionIdentifierLast.stateNumber,
-				tilePositionLast.x - length + 1,
-				tilePositionLast.z,
+				tileIndexLast.x - length + 1,
+				tileIndexLast.z,
 				length));
 			sb.append(";\n");
 
@@ -445,7 +457,7 @@ public class CanvasMap extends Canvas
 
 			// 配置実行
 			for (int xi = 0; xi < length; xi++) {
-				regionMap.set(new TilePosition(x + xi, z), Optional.of(regionIdentifier));
+				regionMap.set(new TileIndex(x + xi, z), Optional.of(regionIdentifier));
 			}
 
 		}
@@ -634,9 +646,9 @@ public class CanvasMap extends Canvas
 		updateLayerMap();
 	}
 
-	private void updateLayerTile(TilePosition tilePosition)
+	private void updateLayerTile(TileIndex tileIndex)
 	{
-		imageLayerTile.update(imageLayerMap.getImage(), mapData, positionX, positionZ, tilePosition.plus(-1, -1), tilePosition.plus(1, 1));
+		imageLayerTile.update(imageLayerMap.getImage(), mapData, positionX, positionZ, tileIndex.plus(-1, -1), tileIndex.plus(1, 1));
 		updateLayerOverlay();
 	}
 
@@ -678,7 +690,7 @@ public class CanvasMap extends Canvas
 
 	private void updateLayerOverlay()
 	{
-		imageLayerOverlay.update(imageLayerTile.getImage(), mapData, oTool, this::getTilePosition);
+		imageLayerOverlay.update(imageLayerTile.getImage(), mapData, oTool);
 		repaint();
 	}
 
@@ -688,11 +700,23 @@ public class CanvasMap extends Canvas
 		updateLayerOverlay();
 	}
 
-	private TilePosition getTilePosition(Point point)
+	private TileIndex getTileIndex(Point point)
 	{
-		return new TilePosition(
-			positionX + (int) Math.floor(((double) point.x - getWidth() / 2) / 16),
-			positionZ + (int) Math.floor(((double) point.y - getHeight() / 2) / 16));
+		return new TileIndex(
+			positionX + (int) Math.floor(((double) point.x - getWidth() / 2) / getTileSize()),
+			positionZ + (int) Math.floor(((double) point.y - getHeight() / 2) / getTileSize()));
+	}
+
+	private Point getTilePosition(TileIndex tileIndex)
+	{
+		return new Point(
+			(tileIndex.x - positionX) * getTileSize() + getWidth() / 2,
+			(tileIndex.z - positionZ) * getTileSize() + getHeight() / 2);
+	}
+
+	private int getTileSize()
+	{
+		return 16;
 	}
 
 	//

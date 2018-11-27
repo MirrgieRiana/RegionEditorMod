@@ -8,23 +8,23 @@ import java.util.TreeMap;
 public final class RegionMap
 {
 
-	private Map<TilePosition, RegionIdentifier> map = new TreeMap<>();
+	private Map<TileIndex, RegionIdentifier> map = new TreeMap<>();
 
-	public Optional<RegionIdentifier> get(TilePosition tilePosition)
+	public Optional<RegionIdentifier> get(TileIndex tileIndex)
 	{
-		return Optional.ofNullable(map.get(tilePosition));
+		return Optional.ofNullable(map.get(tileIndex));
 	}
 
-	public void set(TilePosition tilePosition, Optional<RegionIdentifier> oRegionInfo)
+	public void set(TileIndex tileIndex, Optional<RegionIdentifier> oRegionInfo)
 	{
 		if (oRegionInfo.isPresent()) {
-			map.put(tilePosition, oRegionInfo.get());
+			map.put(tileIndex, oRegionInfo.get());
 		} else {
-			map.remove(tilePosition);
+			map.remove(tileIndex);
 		}
 	}
 
-	public Set<TilePosition> getKeys()
+	public Set<TileIndex> getKeys()
 	{
 		return map.keySet();
 	}
@@ -40,13 +40,13 @@ public final class RegionMap
 		int minZ = 0;
 		int maxX = 0;
 		int maxZ = 0;
-		for (TilePosition tilePosition : map.keySet()) {
-			if (tilePosition.x < minX) minX = tilePosition.x;
-			if (tilePosition.x > maxX) maxX = tilePosition.x;
-			if (tilePosition.z < minZ) minZ = tilePosition.z;
-			if (tilePosition.z > maxZ) maxZ = tilePosition.z;
+		for (TileIndex tileIndex : map.keySet()) {
+			if (tileIndex.x < minX) minX = tileIndex.x;
+			if (tileIndex.x > maxX) maxX = tileIndex.x;
+			if (tileIndex.z < minZ) minZ = tileIndex.z;
+			if (tileIndex.z > maxZ) maxZ = tileIndex.z;
 		}
-		return new TileBoundingBox(new TilePosition(minX, minZ), new TilePosition(maxX, maxZ));
+		return new TileBoundingBox(new TileIndex(minX, minZ), new TileIndex(maxX, maxZ));
 	}
 
 }

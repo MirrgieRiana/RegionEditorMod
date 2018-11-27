@@ -3,10 +3,10 @@ package mirrg.minecraft.regioneditor.data;
 public final class TileBoundingBox
 {
 
-	public final TilePosition min;
-	public final TilePosition max;
+	public final TileIndex min;
+	public final TileIndex max;
 
-	public TileBoundingBox(TilePosition min, TilePosition max)
+	public TileBoundingBox(TileIndex min, TileIndex max)
 	{
 		this.min = min;
 		this.max = max;
@@ -40,12 +40,12 @@ public final class TileBoundingBox
 		return true;
 	}
 
-	public boolean contains(TilePosition tilePosition)
+	public boolean contains(TileIndex tileIndex)
 	{
-		if (tilePosition.x < min.x) return false;
-		if (tilePosition.x > max.x) return false;
-		if (tilePosition.z < min.z) return false;
-		if (tilePosition.z > max.z) return false;
+		if (tileIndex.x < min.x) return false;
+		if (tileIndex.x > max.x) return false;
+		if (tileIndex.z < min.z) return false;
+		if (tileIndex.z > max.z) return false;
 		return true;
 	}
 

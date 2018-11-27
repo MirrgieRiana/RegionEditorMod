@@ -6,9 +6,9 @@ public final class Area
 {
 
 	public final RegionEntry regionEntry;
-	public final ImmutableArray<TilePosition> vertexes;
+	public final ImmutableArray<TileIndex> vertexes;
 
-	public Area(RegionEntry regionEntry, ImmutableArray<TilePosition> vertexes)
+	public Area(RegionEntry regionEntry, ImmutableArray<TileIndex> vertexes)
 	{
 		this.regionEntry = regionEntry;
 		this.vertexes = vertexes;

@@ -8,7 +8,7 @@ import mirrg.boron.util.struct.ImmutableArray;
 public class Node
 {
 
-	public final TilePosition tilePosition;
+	public final TileIndex tileIndex;
 	public final Node parent;
 
 	public Node left = null;
@@ -16,9 +16,9 @@ public class Node
 	public Node up = null;
 	public Node down = null;
 
-	public Node(TilePosition tilePosition, Node parent)
+	public Node(TileIndex tileIndex, Node parent)
 	{
-		this.tilePosition = tilePosition;
+		this.tileIndex = tileIndex;
 		this.parent = parent;
 	}
 
@@ -26,7 +26,7 @@ public class Node
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
-		sb.append("[" + tilePosition.toString() + "]");
+		sb.append("[" + tileIndex.toString() + "]");
 		if (left != null) sb.append(left.toString());
 		if (right != null) sb.append(right.toString());
 		if (up != null) sb.append(up.toString());
@@ -34,40 +34,40 @@ public class Node
 		return sb.toString();
 	}
 
-	public ImmutableArray<TilePosition> getOutline()
+	public ImmutableArray<TileIndex> getOutline()
 	{
-		List<TilePosition> tilePositions = new ArrayList<>();
+		List<TileIndex> tileIndices = new ArrayList<>();
 
 		if (up != null) {
-			up.addOutlineFromDown(tilePositions);
+			up.addOutlineFromDown(tileIndices);
 		} else {
-			tilePositions.add(tilePosition.plus(1, 0));
+			tileIndices.add(tileIndex.plus(1, 0));
 		}
 		if (right != null) {
-			right.addOutlineFromLeft(tilePositions);
+			right.addOutlineFromLeft(tileIndices);
 		} else {
-			tilePositions.add(tilePosition.plus(1, 1));
+			tileIndices.add(tileIndex.plus(1, 1));
 		}
 		if (down != null) {
-			down.addOutlineFromUp(tilePositions);
+			down.addOutlineFromUp(tileIndices);
 		} else {
-			tilePositions.add(tilePosition.plus(0, 1));
+			tileIndices.add(tileIndex.plus(0, 1));
 		}
 		if (left != null) {
-			left.addOutlineFromRight(tilePositions);
+			left.addOutlineFromRight(tileIndices);
 		} else {
-			tilePositions.add(tilePosition.plus(0, 0));
+			tileIndices.add(tileIndex.plus(0, 0));
 		}
 
-		while (simplify1(tilePositions)) {
-
-		}
-
-		while (simplify2(tilePositions)) {
+		while (simplify1(tileIndices)) {
 
 		}
 
-		return ImmutableArray.ofIterable(tilePositions);
+		while (simplify2(tileIndices)) {
+
+		}
+
+		return ImmutableArray.ofIterable(tileIndices);
 	}
 
 	/**
@@ -75,16 +75,16 @@ public class Node
 	 *
 	 * @return Uターンが見つかった場合に真
 	 */
-	private boolean simplify1(List<TilePosition> tilePositions)
+	private boolean simplify1(List<TileIndex> tileIndices)
 	{
 		// [4,3],[4,2],[4,3] のような場合に [4,3] にまとめる
 
-		for (int i = 2; i < tilePositions.size(); i++) { // 添え字2以上のすべての頂点において、
-			if (tilePositions.get(i - 2).equals(tilePositions.get(i))) { // 2個前の頂点と同一の座標であった場合、
+		for (int i = 2; i < tileIndices.size(); i++) { // 添え字2以上のすべての頂点において、
+			if (tileIndices.get(i - 2).equals(tileIndices.get(i))) { // 2個前の頂点と同一の座標であった場合、
 
 				// 1個前とそこの要素を削除する
-				tilePositions.remove(i - 0);
-				tilePositions.remove(i - 1);
+				tileIndices.remove(i - 0);
+				tileIndices.remove(i - 1);
 
 				return true;
 			}
@@ -98,27 +98,27 @@ public class Node
 	 *
 	 * @return Uターンが見つかった場合に真
 	 */
-	private boolean simplify2(List<TilePosition> tilePositions)
+	private boolean simplify2(List<TileIndex> tileIndices)
 	{
 		// [4,3],[4,4],[4,5] のような場合に [4,3],[4,5] にまとめる
 
-		for (int i = 2; i < tilePositions.size(); i++) { // 添え字2以上のすべての頂点において、
+		for (int i = 2; i < tileIndices.size(); i++) { // 添え字2以上のすべての頂点において、
 
-			TilePosition a1 = tilePositions.get(i - 2);
-			TilePosition a2 = tilePositions.get(i - 1);
-			TilePosition a3 = tilePositions.get(i - 0);
+			TileIndex a1 = tileIndices.get(i - 2);
+			TileIndex a2 = tileIndices.get(i - 1);
+			TileIndex a3 = tileIndices.get(i - 0);
 
 			// 隣合った辺の向きが同じならば、
 			if (a1.x == a2.x && a2.x == a3.x) {
 
 				// 1個前の要素を削除する
-				tilePositions.remove(i - 1);
+				tileIndices.remove(i - 1);
 
 				return true;
 			} else if (a1.z == a2.z && a2.z == a3.z) {
 
 				// 1個前の要素を削除する
-				tilePositions.remove(i - 1);
+				tileIndices.remove(i - 1);
 
 				return true;
 			}
@@ -128,79 +128,79 @@ public class Node
 		return false;
 	}
 
-	private void addOutlineFromDown(List<TilePosition> tilePositions)
+	private void addOutlineFromDown(List<TileIndex> tileIndices)
 	{
 		if (left != null) {
-			left.addOutlineFromRight(tilePositions);
+			left.addOutlineFromRight(tileIndices);
 		} else {
-			tilePositions.add(tilePosition.plus(0, 0));
+			tileIndices.add(tileIndex.plus(0, 0));
 		}
 		if (up != null) {
-			up.addOutlineFromDown(tilePositions);
+			up.addOutlineFromDown(tileIndices);
 		} else {
-			tilePositions.add(tilePosition.plus(1, 0));
+			tileIndices.add(tileIndex.plus(1, 0));
 		}
 		if (right != null) {
-			right.addOutlineFromLeft(tilePositions);
+			right.addOutlineFromLeft(tileIndices);
 		} else {
-			tilePositions.add(tilePosition.plus(1, 1));
+			tileIndices.add(tileIndex.plus(1, 1));
 		}
 	}
 
-	private void addOutlineFromLeft(List<TilePosition> tilePositions)
+	private void addOutlineFromLeft(List<TileIndex> tileIndices)
 	{
 		if (up != null) {
-			up.addOutlineFromDown(tilePositions);
+			up.addOutlineFromDown(tileIndices);
 		} else {
-			tilePositions.add(tilePosition.plus(1, 0));
+			tileIndices.add(tileIndex.plus(1, 0));
 		}
 		if (right != null) {
-			right.addOutlineFromLeft(tilePositions);
+			right.addOutlineFromLeft(tileIndices);
 		} else {
-			tilePositions.add(tilePosition.plus(1, 1));
+			tileIndices.add(tileIndex.plus(1, 1));
 		}
 		if (down != null) {
-			down.addOutlineFromUp(tilePositions);
+			down.addOutlineFromUp(tileIndices);
 		} else {
-			tilePositions.add(tilePosition.plus(0, 1));
+			tileIndices.add(tileIndex.plus(0, 1));
 		}
 	}
 
-	private void addOutlineFromUp(List<TilePosition> tilePositions)
+	private void addOutlineFromUp(List<TileIndex> tileIndices)
 	{
 		if (right != null) {
-			right.addOutlineFromLeft(tilePositions);
+			right.addOutlineFromLeft(tileIndices);
 		} else {
-			tilePositions.add(tilePosition.plus(1, 1));
+			tileIndices.add(tileIndex.plus(1, 1));
 		}
 		if (down != null) {
-			down.addOutlineFromUp(tilePositions);
+			down.addOutlineFromUp(tileIndices);
 		} else {
-			tilePositions.add(tilePosition.plus(0, 1));
+			tileIndices.add(tileIndex.plus(0, 1));
 		}
 		if (left != null) {
-			left.addOutlineFromRight(tilePositions);
+			left.addOutlineFromRight(tileIndices);
 		} else {
-			tilePositions.add(tilePosition.plus(0, 0));
+			tileIndices.add(tileIndex.plus(0, 0));
 		}
 	}
 
-	private void addOutlineFromRight(List<TilePosition> tilePositions)
+	private void addOutlineFromRight(List<TileIndex> tileIndices)
 	{
 		if (down != null) {
-			down.addOutlineFromUp(tilePositions);
+			down.addOutlineFromUp(tileIndices);
 		} else {
-			tilePositions.add(tilePosition.plus(0, 1));
+			tileIndices.add(tileIndex.plus(0, 1));
 		}
 		if (left != null) {
-			left.addOutlineFromRight(tilePositions);
+			left.addOutlineFromRight(tileIndices);
 		} else {
-			tilePositions.add(tilePosition.plus(0, 0));
+			tileIndices.add(tileIndex.plus(0, 0));
 		}
 		if (up != null) {
-			up.addOutlineFromDown(tilePositions);
+			up.addOutlineFromDown(tileIndices);
 		} else {
-			tilePositions.add(tilePosition.plus(1, 0));
+			tileIndices.add(tileIndex.plus(1, 0));
 		}
 	}
 

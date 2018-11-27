@@ -4,10 +4,10 @@ import java.awt.Color;
 import java.awt.Image;
 import java.util.Optional;
 
-import mirrg.minecraft.regioneditor.data.TilePosition;
 import mirrg.minecraft.regioneditor.data.MapData;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
+import mirrg.minecraft.regioneditor.data.TileIndex;
 
 public class ImageLayerTile extends ImageLayer
 {
@@ -32,38 +32,38 @@ public class ImageLayerTile extends ImageLayer
 			mapData,
 			positionX,
 			positionZ,
-			new TilePosition(
+			new TileIndex(
 				positionX - xRadius,
 				positionZ - zRadius),
-			new TilePosition(
+			new TileIndex(
 				positionX + xRadius,
 				positionZ + zRadius));
 	}
 
 	/**
-	 * @param tilePositionEnd
+	 * @param tileIndexEnd
 	 *            このチャンクまでが描画範囲に含まれる。
 	 */
-	public void update(Image imageBackground, MapData mapData, int positionX, int positionZ, TilePosition tilePositionStart, TilePosition tilePositionEnd)
+	public void update(Image imageBackground, MapData mapData, int positionX, int positionZ, TileIndex tileIndexStart, TileIndex tileIndexEnd)
 	{
 		graphics.drawImage(
 			imageBackground,
-			(tilePositionStart.x - positionX) * 16 + width / 2,
-			(tilePositionStart.z - positionZ) * 16 + height / 2,
-			(tilePositionEnd.x - positionX) * 16 + width / 2 + 16,
-			(tilePositionEnd.z - positionZ) * 16 + height / 2 + 16,
-			(tilePositionStart.x - positionX) * 16 + width / 2,
-			(tilePositionStart.z - positionZ) * 16 + height / 2,
-			(tilePositionEnd.x - positionX) * 16 + width / 2 + 16,
-			(tilePositionEnd.z - positionZ) * 16 + height / 2 + 16,
+			(tileIndexStart.x - positionX) * 16 + width / 2,
+			(tileIndexStart.z - positionZ) * 16 + height / 2,
+			(tileIndexEnd.x - positionX) * 16 + width / 2 + 16,
+			(tileIndexEnd.z - positionZ) * 16 + height / 2 + 16,
+			(tileIndexStart.x - positionX) * 16 + width / 2,
+			(tileIndexStart.z - positionZ) * 16 + height / 2,
+			(tileIndexEnd.x - positionX) * 16 + width / 2 + 16,
+			(tileIndexEnd.z - positionZ) * 16 + height / 2 + 16,
 			null);
 
-		for (int x = tilePositionStart.x; x <= tilePositionEnd.x; x++) {
-			for (int z = tilePositionStart.z; z <= tilePositionEnd.z; z++) {
-				TilePosition tilePosition = new TilePosition(x, z);
+		for (int x = tileIndexStart.x; x <= tileIndexEnd.x; x++) {
+			for (int z = tileIndexStart.z; z <= tileIndexEnd.z; z++) {
+				TileIndex tileIndex = new TileIndex(x, z);
 
 				if (showTile) {
-					Optional<RegionIdentifier> oRegionIdentifier = mapData.regionMap.get(tilePosition);
+					Optional<RegionIdentifier> oRegionIdentifier = mapData.regionMap.get(tileIndex);
 					if (oRegionIdentifier.isPresent()) {
 						RegionInfo regionInfo = mapData.regionInfoTable.get(oRegionIdentifier.get());
 
@@ -72,10 +72,10 @@ public class ImageLayerTile extends ImageLayer
 							regionInfo,
 							x - positionX,
 							z - positionZ,
-							!mapData.regionMap.get(tilePosition.plus(-1, 0)).equals(oRegionIdentifier),
-							!mapData.regionMap.get(tilePosition.plus(1, 0)).equals(oRegionIdentifier),
-							!mapData.regionMap.get(tilePosition.plus(0, -1)).equals(oRegionIdentifier),
-							!mapData.regionMap.get(tilePosition.plus(0, 1)).equals(oRegionIdentifier));
+							!mapData.regionMap.get(tileIndex.plus(-1, 0)).equals(oRegionIdentifier),
+							!mapData.regionMap.get(tileIndex.plus(1, 0)).equals(oRegionIdentifier),
+							!mapData.regionMap.get(tileIndex.plus(0, -1)).equals(oRegionIdentifier),
+							!mapData.regionMap.get(tileIndex.plus(0, 1)).equals(oRegionIdentifier));
 
 					}
 				}
@@ -83,8 +83,7 @@ public class ImageLayerTile extends ImageLayer
 				// グリッド
 				if (showGrid) {
 					drawGrid(
-						positionX,
-						positionZ, (x - positionX) * 16 + width / 2,
+						(x - positionX) * 16 + width / 2,
 						(z - positionZ) * 16 + height / 2);
 				}
 
@@ -157,7 +156,7 @@ public class ImageLayerTile extends ImageLayer
 
 	}
 
-	private void drawGrid(int positionX, int positionZ, int x, int y)
+	private void drawGrid(int x, int y)
 	{
 		graphics.setColor(new Color(0x444444));
 		graphics.drawRect(x, y, 16, 16);

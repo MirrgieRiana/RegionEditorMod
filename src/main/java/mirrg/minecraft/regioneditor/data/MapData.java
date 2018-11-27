@@ -21,7 +21,7 @@ public class MapData
 	{
 		ArrayList<Area> areas = new ArrayList<>();
 
-		Set<TilePosition> visited = new HashSet<>();
+		Set<TileIndex> visited = new HashSet<>();
 
 		TileBoundingBox tileBoundingBox = regionMap.getBoundingBox();
 		int minX = tileBoundingBox.min.x;
@@ -30,16 +30,16 @@ public class MapData
 		int maxZ = tileBoundingBox.max.z;
 		for (int z = minZ; z <= maxZ; z++) { // 左上から順に見ていき、
 			for (int x = minX; x <= maxX; x++) {
-				TilePosition tilePosition = new TilePosition(x, z);
-				Optional<RegionIdentifier> oRegionIdentifier = regionMap.get(tilePosition);
+				TileIndex tileIndex = new TileIndex(x, z);
+				Optional<RegionIdentifier> oRegionIdentifier = regionMap.get(tileIndex);
 				if (oRegionIdentifier.isPresent()) { // 空白地ではなく、
 					RegionIdentifier regionIdentifier = oRegionIdentifier.get();
-					if (!visited.contains(tilePosition)) { // 未訪問の場合、
+					if (!visited.contains(tileIndex)) { // 未訪問の場合、
 
 						// 一続きのマスをすべて訪問する
 						areas.add(new Area(
 							new RegionEntry(regionIdentifier, regionInfoTable.get(regionIdentifier)),
-							visitRecursively(tilePosition, tileBoundingBox, visited)));
+							visitRecursively(tileIndex, tileBoundingBox, visited)));
 
 					}
 				}
@@ -52,35 +52,35 @@ public class MapData
 	/**
 	 * 起点マスに接続している一つながりの領地をすべて訪問する。
 	 */
-	private ImmutableArray<TilePosition> visitRecursively(
-		TilePosition tilePosition,
+	private ImmutableArray<TileIndex> visitRecursively(
+		TileIndex tileIndex,
 		TileBoundingBox tileBoundingBox,
-		Set<TilePosition> visited)
+		Set<TileIndex> visited)
 	{
 
 		// 今調査している領地の識別番号（空白地の場合は空白地を調査中）
-		Optional<RegionIdentifier> regionType = regionMap.get(tilePosition);
+		Optional<RegionIdentifier> regionType = regionMap.get(tileIndex);
 
 		if (regionType.isPresent()) {
 
 		}
 
 		// ツリーの生成をしながら訪問を進めていく処理
-		Node node = new Node(tilePosition, null);
+		Node node = new Node(tileIndex, null);
 		{
 
 			// 訪問予定地
-			Deque<Tuple<TilePosition, Node>> waitings = new ArrayDeque<>();
+			Deque<Tuple<TileIndex, Node>> waitings = new ArrayDeque<>();
 
 			// 起点を最初の訪問予定地に追加する
-			waitings.addLast(new Tuple<>(tilePosition, node));
-			visited.add(tilePosition);
+			waitings.addLast(new Tuple<>(tileIndex, node));
+			visited.add(tileIndex);
 
 			// 訪問予定地が残っている限り次々と訪問する
 			while (!waitings.isEmpty()) {
 
 				// 訪問予定地から除去
-				Tuple<TilePosition, Node> tuple = waitings.removeFirst();
+				Tuple<TileIndex, Node> tuple = waitings.removeFirst();
 
 				// 隣接マスへの訪問を試みる
 				tryVisitNeighbor(tuple.x, tileBoundingBox, regionType, visited, waitings, tuple.y);
@@ -94,57 +94,57 @@ public class MapData
 
 	/**
 	 * 起点マスから四方に
-	 * {@link #tryVisit(TilePosition, Optional, Set, Deque, Node, BiConsumer)}
+	 * {@link #tryVisit(TileIndex, Optional, Set, Deque, Node, BiConsumer)}
 	 * を試みる。
 	 */
 	private void tryVisitNeighbor(
-		TilePosition tilePosition,
+		TileIndex tileIndex,
 		TileBoundingBox tileBoundingBox,
 		Optional<RegionIdentifier> regionType,
-		Set<TilePosition> visited,
-		Deque<Tuple<TilePosition, Node>> waitings,
+		Set<TileIndex> visited,
+		Deque<Tuple<TileIndex, Node>> waitings,
 		Node parent)
 	{
-		tryVisit(tilePosition.plus(0, -1), tileBoundingBox, regionType, visited, waitings, parent, (p, n) -> p.up = n);
-		tryVisit(tilePosition.plus(1, 0), tileBoundingBox, regionType, visited, waitings, parent, (p, n) -> p.right = n);
-		tryVisit(tilePosition.plus(0, 1), tileBoundingBox, regionType, visited, waitings, parent, (p, n) -> p.down = n);
-		tryVisit(tilePosition.plus(-1, 0), tileBoundingBox, regionType, visited, waitings, parent, (p, n) -> p.left = n);
+		tryVisit(tileIndex.plus(0, -1), tileBoundingBox, regionType, visited, waitings, parent, (p, n) -> p.up = n);
+		tryVisit(tileIndex.plus(1, 0), tileBoundingBox, regionType, visited, waitings, parent, (p, n) -> p.right = n);
+		tryVisit(tileIndex.plus(0, 1), tileBoundingBox, regionType, visited, waitings, parent, (p, n) -> p.down = n);
+		tryVisit(tileIndex.plus(-1, 0), tileBoundingBox, regionType, visited, waitings, parent, (p, n) -> p.left = n);
 	}
 
 	/**
 	 * そのマスが同じ領地で未訪問なら訪問予定地に追加する。
 	 */
 	private void tryVisit(
-		TilePosition tilePosition,
+		TileIndex tileIndex,
 		TileBoundingBox tileBoundingBox,
 		Optional<RegionIdentifier> regionType,
-		Set<TilePosition> visited,
-		Deque<Tuple<TilePosition, Node>> waitings,
+		Set<TileIndex> visited,
+		Deque<Tuple<TileIndex, Node>> waitings,
 		Node parent,
 		BiConsumer<Node, Node> setter)
 	{
-		if (canVisit(tilePosition, tileBoundingBox, regionType, visited)) {
+		if (canVisit(tileIndex, tileBoundingBox, regionType, visited)) {
 
 			// ぶら下がるノードを生成
-			Node node = new Node(tilePosition, parent);
+			Node node = new Node(tileIndex, parent);
 			setter.accept(parent, node);
 
 			// 訪問予定地に追加
-			waitings.addLast(new Tuple<>(tilePosition, node));
-			visited.add(tilePosition);
+			waitings.addLast(new Tuple<>(tileIndex, node));
+			visited.add(tileIndex);
 
 		}
 	}
 
 	private boolean canVisit(
-		TilePosition tilePosition,
+		TileIndex tileIndex,
 		TileBoundingBox tileBoundingBox,
 		Optional<RegionIdentifier> regionType,
-		Set<TilePosition> visited)
+		Set<TileIndex> visited)
 	{
-		return tileBoundingBox.contains(tilePosition)
-			&& regionMap.get(tilePosition).equals(regionType)
-			&& !visited.contains(tilePosition);
+		return tileBoundingBox.contains(tileIndex)
+			&& regionMap.get(tileIndex).equals(regionType)
+			&& !visited.contains(tileIndex);
 	}
 
 }

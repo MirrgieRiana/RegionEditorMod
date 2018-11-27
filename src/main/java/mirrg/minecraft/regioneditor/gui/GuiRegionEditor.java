@@ -54,7 +54,7 @@ import mirrg.minecraft.regioneditor.data.RegionEntry;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
 import mirrg.minecraft.regioneditor.data.RegionInfoTable;
-import mirrg.minecraft.regioneditor.data.TilePosition;
+import mirrg.minecraft.regioneditor.data.TileIndex;
 import mirrg.minecraft.regioneditor.gui.CanvasMap.ICanvasMapListener;
 import mirrg.minecraft.regioneditor.gui.GuiData.IDialogDataListener;
 
@@ -344,9 +344,9 @@ public class GuiRegionEditor extends GuiBase
 					JOptionPane.OK_CANCEL_OPTION,
 					JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
 
-					ArrayList<TilePosition> list = new ArrayList<>(canvasMap.mapData.regionMap.getKeys());
-					for (TilePosition tilePosition : list) {
-						canvasMap.mapData.regionMap.set(tilePosition, Optional.empty());
+					ArrayList<TileIndex> list = new ArrayList<>(canvasMap.mapData.regionMap.getKeys());
+					for (TileIndex tileIndex : list) {
+						canvasMap.mapData.regionMap.set(tileIndex, Optional.empty());
 					}
 					canvasMap.update();
 
@@ -996,7 +996,7 @@ public class GuiRegionEditor extends GuiBase
 
 	private void scrollToRegion(RegionEntry regionEntry)
 	{
-		ArrayList<TilePosition> list = canvasMap.mapData.regionMap.getKeys().stream()
+		ArrayList<TileIndex> list = canvasMap.mapData.regionMap.getKeys().stream()
 			.filter(cp -> regionEntry.regionIdentifier.equals(canvasMap.mapData.regionMap.get(cp).orElse(null)))
 			.collect(Collectors.toCollection(ArrayList::new));
 		if (list.size() <= 0) return;
