@@ -12,7 +12,7 @@ public class RegionTableModel
 	private RegionTable regionTable = new RegionTable();
 	private Set<Runnable> listeners = new HashSet<>();
 
-	public RegionTable geRegionTable()
+	public RegionTable getRegionTable()
 	{
 		return regionTable;
 	}
