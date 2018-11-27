@@ -4,7 +4,7 @@ import java.awt.Component;
 import java.awt.Point;
 import java.util.Optional;
 
-import mirrg.minecraft.regioneditor.data.RegionMapModel;
+import mirrg.minecraft.regioneditor.data.PossessionMapModel;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.TileIndex;
 
@@ -13,7 +13,7 @@ public interface IToolContext
 
 	public Component getComponent();
 
-	public RegionMapModel getRegionMapModel();
+	public PossessionMapModel getPossessionMapModel();
 
 	public int getWidth();
 

@@ -4,14 +4,14 @@ import java.awt.Color;
 import java.awt.Image;
 import java.awt.Point;
 
-import mirrg.minecraft.regioneditor.data.RegionMapModel;
+import mirrg.minecraft.regioneditor.data.PossessionMapModel;
 
 public class ImageLayerMap extends ImageLayer
 {
 
 	public boolean showMap = true;
 
-	public void update(Image imageBackground, RegionMapModel regionMapModel, int positionX, int positionZ, Point mapOrigin)
+	public void update(Image imageBackground, PossessionMapModel possessionMapModel, int positionX, int positionZ, Point mapOrigin)
 	{
 		graphics.setBackground(new Color(128, 128, 128));
 		graphics.clearRect(0, 0, width, height);
