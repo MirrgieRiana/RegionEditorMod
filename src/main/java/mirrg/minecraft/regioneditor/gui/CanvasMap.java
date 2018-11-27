@@ -34,8 +34,8 @@ import mirrg.minecraft.regioneditor.data.MapData;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
 import mirrg.minecraft.regioneditor.data.RegionInfoTable;
-import mirrg.minecraft.regioneditor.data.RegionMap;
 import mirrg.minecraft.regioneditor.data.TileIndex;
+import mirrg.minecraft.regioneditor.data.TileMap;
 
 public class CanvasMap extends Canvas
 {
@@ -189,7 +189,7 @@ public class CanvasMap extends Canvas
 				int s = random.nextInt(5);
 				for (int xi = -s; xi <= s; xi++) {
 					for (int zi = -s; zi <= s; zi++) {
-						mapData.regionMap.set(new TileIndex(x + xi, z + zi), Optional.of(regionIdentifier));
+						mapData.tileMap.set(new TileIndex(x + xi, z + zi), Optional.of(regionIdentifier));
 					}
 				}
 			}
@@ -313,10 +313,10 @@ public class CanvasMap extends Canvas
 				String stringZipEncodeBase64 = sb.toString();
 
 				// 解凍
-				String regionMapExpression = decompress(stringZipEncodeBase64, "UTF-8");
+				String tileMapExpression = decompress(stringZipEncodeBase64, "UTF-8");
 
 				// 地図データに入れる
-				setRegionMapExpression(mapData.regionMap, regionMapExpression);
+				setTileMapExpression(mapData.tileMap, tileMapExpression);
 
 			}
 
@@ -359,10 +359,10 @@ public class CanvasMap extends Canvas
 			JsonArray map = new JsonArray();
 
 			// 地図データの文字列表現の取得
-			String regionMapExpression = getRegionMapExpression(mapData.regionMap);
+			String tileMapExpression = getTileMapExpression(mapData.tileMap);
 
 			// 圧縮
-			List<String> list = compress(regionMapExpression, "UTF-8");
+			List<String> list = compress(tileMapExpression, "UTF-8");
 
 			// Jsonに1行ずつ追加
 			for (String line : list) {
@@ -377,7 +377,7 @@ public class CanvasMap extends Canvas
 		return string;
 	}
 
-	private static String getRegionMapExpression(RegionMap regionMap)
+	private static String getTileMapExpression(TileMap tileMap)
 	{
 		StringBuilder sb = new StringBuilder();
 
@@ -385,8 +385,8 @@ public class CanvasMap extends Canvas
 		RegionIdentifier regionIdentifierLast = null;
 		int length = 0;
 
-		for (TileIndex tileIndex : regionMap.getKeys()) {
-			RegionIdentifier regionIdentifier = regionMap.get(tileIndex).get();
+		for (TileIndex tileIndex : tileMap.getKeys()) {
+			RegionIdentifier regionIdentifier = tileMap.get(tileIndex).get();
 
 			if (tileIndexLast != null) {
 				// 1個前の領地がある場合
@@ -448,14 +448,14 @@ public class CanvasMap extends Canvas
 		return sb.toString();
 	}
 
-	private static void setRegionMapExpression(RegionMap regionMap, String regionMapExpression)
+	private static void setTileMapExpression(TileMap tileMap, String tileMapExpression)
 	{
 
 		// 空白文字無視
-		regionMapExpression = regionMapExpression.replaceAll("[\\r\\n\\t ]", "");
+		tileMapExpression = tileMapExpression.replaceAll("[\\r\\n\\t ]", "");
 
 		// 区切ってコマンド列にする
-		String[] commands = regionMapExpression.isEmpty() ? new String[0] : regionMapExpression.split(";");
+		String[] commands = tileMapExpression.isEmpty() ? new String[0] : tileMapExpression.split(";");
 
 		// コマンド列の処理
 		for (String command : commands) {
@@ -473,7 +473,7 @@ public class CanvasMap extends Canvas
 
 			// 配置実行
 			for (int xi = 0; xi < length; xi++) {
-				regionMap.set(new TileIndex(x + xi, z), Optional.of(regionIdentifier));
+				tileMap.set(new TileIndex(x + xi, z), Optional.of(regionIdentifier));
 			}
 
 		}

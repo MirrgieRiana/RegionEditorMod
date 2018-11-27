@@ -15,7 +15,7 @@ public class MapData
 {
 
 	public RegionInfoTable regionInfoTable = new RegionInfoTable();
-	public RegionMap regionMap = new RegionMap();
+	public TileMap tileMap = new TileMap();
 
 	public ImmutableArray<Area> getAreas()
 	{
@@ -23,7 +23,7 @@ public class MapData
 
 		Set<TileIndex> visited = new HashSet<>();
 
-		TileBoundingBox tileBoundingBox = regionMap.getBoundingBox();
+		TileBoundingBox tileBoundingBox = tileMap.getBoundingBox();
 		int minX = tileBoundingBox.min.x;
 		int minZ = tileBoundingBox.min.z;
 		int maxX = tileBoundingBox.max.x;
@@ -31,7 +31,7 @@ public class MapData
 		for (int z = minZ; z <= maxZ; z++) { // 左上から順に見ていき、
 			for (int x = minX; x <= maxX; x++) {
 				TileIndex tileIndex = new TileIndex(x, z);
-				Optional<RegionIdentifier> oRegionIdentifier = regionMap.get(tileIndex);
+				Optional<RegionIdentifier> oRegionIdentifier = tileMap.get(tileIndex);
 				if (oRegionIdentifier.isPresent()) { // 空白地ではなく、
 					RegionIdentifier regionIdentifier = oRegionIdentifier.get();
 					if (!visited.contains(tileIndex)) { // 未訪問の場合、
@@ -59,7 +59,7 @@ public class MapData
 	{
 
 		// 今調査している領地の識別番号（空白地の場合は空白地を調査中）
-		Optional<RegionIdentifier> regionType = regionMap.get(tileIndex);
+		Optional<RegionIdentifier> regionType = tileMap.get(tileIndex);
 
 		if (regionType.isPresent()) {
 
@@ -143,7 +143,7 @@ public class MapData
 		Set<TileIndex> visited)
 	{
 		return tileBoundingBox.contains(tileIndex)
-			&& regionMap.get(tileIndex).equals(regionType)
+			&& tileMap.get(tileIndex).equals(regionType)
 			&& !visited.contains(tileIndex);
 	}
 

@@ -71,7 +71,7 @@ public class ToolPencil implements ITool
 
 			TileIndex tileIndex = toolContext.getTileIndex(e.getPoint());
 			if (e.getButton() == MouseEvent.BUTTON2) {
-				toolContext.setCurrentRegionIdentifier(toolContext.getMapData().regionMap.get(tileIndex));
+				toolContext.setCurrentRegionIdentifier(toolContext.getMapData().tileMap.get(tileIndex));
 			} else if (e.getButton() == MouseEvent.BUTTON1) {
 				setTile(tileIndex, toolContext.getCurrentRegionIdentifier(), keys[KeyEvent.VK_SHIFT] ? 3 : 0);
 			} else if (e.getButton() == MouseEvent.BUTTON3) {
@@ -184,7 +184,7 @@ public class ToolPencil implements ITool
 				oMousePosition.get().x + 2,
 				oMousePosition.get().y - height * 2 - 2);
 
-			Optional<RegionIdentifier> oRegionIdentifier = toolContext.getMapData().regionMap.get(tileIndex);
+			Optional<RegionIdentifier> oRegionIdentifier = toolContext.getMapData().tileMap.get(tileIndex);
 			if (oRegionIdentifier.isPresent()) {
 				RegionInfo regionInfo = toolContext.getMapData().regionInfoTable.get(oRegionIdentifier.get());
 
@@ -213,8 +213,8 @@ public class ToolPencil implements ITool
 
 	private void setTile(TileIndex tileIndex, Optional<RegionIdentifier> oRegionIdentifier)
 	{
-		if (!toolContext.getMapData().regionMap.get(tileIndex).equals(oRegionIdentifier)) {
-			toolContext.getMapData().regionMap.set(tileIndex, oRegionIdentifier);
+		if (!toolContext.getMapData().tileMap.get(tileIndex).equals(oRegionIdentifier)) {
+			toolContext.getMapData().tileMap.set(tileIndex, oRegionIdentifier);
 			toolContext.repaintTile(tileIndex);
 		}
 	}
