@@ -31,6 +31,7 @@ import com.google.gson.stream.JsonWriter;
 
 import mirrg.boron.util.struct.Tuple;
 import mirrg.minecraft.regioneditor.data.IRegionTableListener;
+import mirrg.minecraft.regioneditor.data.ITileMapListener;
 import mirrg.minecraft.regioneditor.data.PossessionMap;
 import mirrg.minecraft.regioneditor.data.PossessionMapModel;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
@@ -225,6 +226,19 @@ public class CanvasMap extends Canvas
 			public void onChange()
 			{
 				update();
+			}
+		});
+		possessionMapModel.tileMapModel.addListener(new ITileMapListener() {
+			@Override
+			public void onChange(TileIndex tileIndex)
+			{
+				updateLayerTile(tileIndex);
+			}
+
+			@Override
+			public void onChange()
+			{
+
 			}
 		});
 

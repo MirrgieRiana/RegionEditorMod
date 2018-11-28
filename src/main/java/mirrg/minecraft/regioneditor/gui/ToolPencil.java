@@ -215,7 +215,6 @@ public class ToolPencil implements ITool
 	{
 		if (!toolContext.getPossessionMapModel().tileMapModel.getDataReader().get(tileIndex).equals(oRegionIdentifier)) {
 			toolContext.getPossessionMapModel().tileMapModel.set(tileIndex, oRegionIdentifier);
-			toolContext.repaintTile(tileIndex);
 		}
 	}
 
