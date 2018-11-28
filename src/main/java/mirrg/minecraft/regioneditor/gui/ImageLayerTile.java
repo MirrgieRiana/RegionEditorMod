@@ -63,19 +63,19 @@ public class ImageLayerTile extends ImageLayer
 				TileIndex tileIndex = new TileIndex(x, z);
 
 				if (showTile) {
-					Optional<RegionIdentifier> oRegionIdentifier = possessionMapModel.tileMapModel.getTileMap().get(tileIndex);
+					Optional<RegionIdentifier> oRegionIdentifier = possessionMapModel.tileMapModel.getDataReader().get(tileIndex);
 					if (oRegionIdentifier.isPresent()) {
-						RegionInfo regionInfo = possessionMapModel.regionTableModel.getRegionTable().get(oRegionIdentifier.get());
+						RegionInfo regionInfo = possessionMapModel.regionTableModel.getDataReader().get(oRegionIdentifier.get());
 
 						drawRegionInfo(
 							oRegionIdentifier.get(),
 							regionInfo,
 							x - positionX,
 							z - positionZ,
-							!possessionMapModel.tileMapModel.getTileMap().get(tileIndex.plus(-1, 0)).equals(oRegionIdentifier),
-							!possessionMapModel.tileMapModel.getTileMap().get(tileIndex.plus(1, 0)).equals(oRegionIdentifier),
-							!possessionMapModel.tileMapModel.getTileMap().get(tileIndex.plus(0, -1)).equals(oRegionIdentifier),
-							!possessionMapModel.tileMapModel.getTileMap().get(tileIndex.plus(0, 1)).equals(oRegionIdentifier));
+							!possessionMapModel.tileMapModel.getDataReader().get(tileIndex.plus(-1, 0)).equals(oRegionIdentifier),
+							!possessionMapModel.tileMapModel.getDataReader().get(tileIndex.plus(1, 0)).equals(oRegionIdentifier),
+							!possessionMapModel.tileMapModel.getDataReader().get(tileIndex.plus(0, -1)).equals(oRegionIdentifier),
+							!possessionMapModel.tileMapModel.getDataReader().get(tileIndex.plus(0, 1)).equals(oRegionIdentifier));
 
 					}
 				}

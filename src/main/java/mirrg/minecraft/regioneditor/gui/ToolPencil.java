@@ -71,7 +71,7 @@ public class ToolPencil implements ITool
 
 			TileIndex tileIndex = toolContext.getTileIndex(e.getPoint());
 			if (e.getButton() == MouseEvent.BUTTON2) {
-				toolContext.setCurrentRegionIdentifier(toolContext.getPossessionMapModel().tileMapModel.getTileMap().get(tileIndex));
+				toolContext.setCurrentRegionIdentifier(toolContext.getPossessionMapModel().tileMapModel.getDataReader().get(tileIndex));
 			} else if (e.getButton() == MouseEvent.BUTTON1) {
 				setTile(tileIndex, toolContext.getCurrentRegionIdentifier(), keys[KeyEvent.VK_SHIFT] ? 3 : 0);
 			} else if (e.getButton() == MouseEvent.BUTTON3) {
@@ -184,9 +184,9 @@ public class ToolPencil implements ITool
 				oMousePosition.get().x + 2,
 				oMousePosition.get().y - height * 2 - 2);
 
-			Optional<RegionIdentifier> oRegionIdentifier = toolContext.getPossessionMapModel().tileMapModel.getTileMap().get(tileIndex);
+			Optional<RegionIdentifier> oRegionIdentifier = toolContext.getPossessionMapModel().tileMapModel.getDataReader().get(tileIndex);
 			if (oRegionIdentifier.isPresent()) {
-				RegionInfo regionInfo = toolContext.getPossessionMapModel().regionTableModel.getRegionTable().get(oRegionIdentifier.get());
+				RegionInfo regionInfo = toolContext.getPossessionMapModel().regionTableModel.getDataReader().get(oRegionIdentifier.get());
 
 				graphics.drawString(
 					"Country: (" + oRegionIdentifier.get().countryNumber + ") " + regionInfo.countryName,
@@ -213,7 +213,7 @@ public class ToolPencil implements ITool
 
 	private void setTile(TileIndex tileIndex, Optional<RegionIdentifier> oRegionIdentifier)
 	{
-		if (!toolContext.getPossessionMapModel().tileMapModel.getTileMap().get(tileIndex).equals(oRegionIdentifier)) {
+		if (!toolContext.getPossessionMapModel().tileMapModel.getDataReader().get(tileIndex).equals(oRegionIdentifier)) {
 			toolContext.getPossessionMapModel().tileMapModel.set(tileIndex, oRegionIdentifier);
 			toolContext.repaintTile(tileIndex);
 		}

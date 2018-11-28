@@ -2,57 +2,80 @@ package mirrg.minecraft.regioneditor.data;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
-public class RegionTableModel
+public class RegionTableModel implements IRegionTableWriter
 {
 
-	private RegionTable regionTable = new RegionTable();
-	private Set<Runnable> listeners = new HashSet<>();
+	private RegionTable regionTable;
 
-	public RegionTable getRegionTable()
+	public RegionTableModel(RegionTable regionTable)
+	{
+		this.regionTable = regionTable;
+	}
+
+	public IRegionTableReader getDataReader()
 	{
 		return regionTable;
 	}
 
-	public void setRegionTable(RegionTable regionTable)
-	{
-		this.regionTable = regionTable;
-		fireChangeEvent();
-	}
+	//
 
-	public void put(RegionIdentifier regionIdentifier, RegionInfo regionInfo)
-	{
-		regionTable.put(regionIdentifier, regionInfo);
-		fireChangeEvent();
-	}
+	private Set<IRegionTableListener> listeners = new HashSet<>();
 
-	public void remove(RegionIdentifier regionIdentifier)
-	{
-		regionTable.remove(regionIdentifier);
-		fireChangeEvent();
-	}
-
-	public void clear()
-	{
-		regionTable.clear();
-		fireChangeEvent();
-	}
-
-	public void addListener(Runnable listener)
+	public void addListener(IRegionTableListener listener)
 	{
 		listeners.add(listener);
 	}
 
-	public void removeListener(Runnable listener)
+	public void removeListener(IRegionTableListener listener)
 	{
 		listeners.remove(listener);
 	}
 
-	public void fireChangeEvent()
+	public void fireChange()
 	{
-		for (Runnable listener : listeners) {
-			listener.run();
+		for (IRegionTableListener listener : listeners) {
+			listener.onChange();
 		}
+	}
+
+	//
+
+	public void setData(RegionTable regionTable)
+	{
+		this.regionTable = regionTable;
+		fireChange();
+	}
+
+	public void modify(Consumer<RegionTable> consumer)
+	{
+		try {
+			consumer.accept(regionTable);
+		} finally {
+			fireChange();
+		}
+	}
+
+	@Override
+	public void put(RegionIdentifier regionIdentifier, RegionInfo regionInfo)
+	{
+		regionTable.put(regionIdentifier, regionInfo);
+		fireChange();
+	}
+
+	@Override
+	public void remove(RegionIdentifier regionIdentifier)
+	{
+		regionTable.remove(regionIdentifier);
+		fireChange();
+	}
+
+	@Override
+	public void clear()
+	{
+		regionTable.clear();
+		fireChange();
 	}
 
 }

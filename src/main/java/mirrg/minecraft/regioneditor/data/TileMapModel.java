@@ -3,51 +3,79 @@ package mirrg.minecraft.regioneditor.data;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 
-public class TileMapModel
+public class TileMapModel implements ITileMapWriter
 {
 
-	private TileMap tileMap = new TileMap();
-	private Set<Runnable> listeners = new HashSet<>();
+	private TileMap tileMap;
 
-	public TileMap getTileMap()
+	public TileMapModel(TileMap tileMap)
+	{
+		this.tileMap = tileMap;
+	}
+
+	public ITileMapReader getDataReader()
 	{
 		return tileMap;
 	}
 
-	public void setTileMap(TileMap tileMap)
+	//
+
+	private Set<ITileMapListener> listeners = new HashSet<>();
+
+	public void addListener(ITileMapListener listener)
+	{
+		listeners.add(listener);
+	}
+
+	public void removeListener(ITileMapListener listener)
+	{
+		listeners.remove(listener);
+	}
+
+	public void fireChange()
+	{
+		for (ITileMapListener listener : listeners) {
+			listener.onChange();
+		}
+	}
+
+	public void fireChange(TileIndex tileIndex)
+	{
+		for (ITileMapListener listener : listeners) {
+			listener.onChange(tileIndex);
+		}
+	}
+
+	//
+
+	public void setData(TileMap tileMap)
 	{
 		this.tileMap = tileMap;
-		fireChangeEvent();
+		fireChange();
+	}
+
+	public void modify(Consumer<TileMap> consumer)
+	{
+		try {
+			consumer.accept(tileMap);
+		} finally {
+			fireChange();
+		}
 	}
 
 	public void set(TileIndex tileIndex, Optional<RegionIdentifier> oRegionInfo)
 	{
 		tileMap.set(tileIndex, oRegionInfo);
-		fireChangeEvent();
+		fireChange(tileIndex);
+		fireChange();
 	}
 
 	public void clear()
 	{
 		tileMap.clear();
-		fireChangeEvent();
-	}
-
-	public void addListener(Runnable listener)
-	{
-		listeners.add(listener);
-	}
-
-	public void removeListener(Runnable listener)
-	{
-		listeners.remove(listener);
-	}
-
-	public void fireChangeEvent()
-	{
-		for (Runnable listener : listeners) {
-			listener.run();
-		}
+		fireChange();
 	}
 
 }

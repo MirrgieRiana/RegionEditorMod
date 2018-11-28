@@ -12,7 +12,7 @@ public final class RegionIdentifier implements Comparable<RegionIdentifier>
 	{
 		JsonArray array = json.getAsJsonArray();
 		return new RegionIdentifier(
-			array.get(0).getAsString(), 
+			array.get(0).getAsString(),
 			array.get(1).getAsString());
 	}
 

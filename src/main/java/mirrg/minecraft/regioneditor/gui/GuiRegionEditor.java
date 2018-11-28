@@ -157,7 +157,7 @@ public class GuiRegionEditor extends GuiBase
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK))
 				.register();
 			actionOpenGuiCommand = new ActionBuilder<>(new ActionButton(e -> {
-				new GuiCommand(windowWrapper, canvasMap.possessionMapModel.getAreas(), oSender).show();
+				new GuiCommand(windowWrapper, canvasMap.possessionMapModel.getDataReader().getAreas(), oSender).show();
 			}))
 				.value(Action.NAME, "Open Dynmap Command Window(D)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)
@@ -344,7 +344,7 @@ public class GuiRegionEditor extends GuiBase
 					JOptionPane.OK_CANCEL_OPTION,
 					JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
 
-					for (TileIndex tileIndex : canvasMap.possessionMapModel.tileMapModel.getTileMap().getKeys().toCollection()) {
+					for (TileIndex tileIndex : canvasMap.possessionMapModel.tileMapModel.getDataReader().getKeys().toCollection()) {
 						canvasMap.possessionMapModel.tileMapModel.set(tileIndex, Optional.empty());
 					}
 					canvasMap.update();
@@ -916,7 +916,7 @@ public class GuiRegionEditor extends GuiBase
 	private void updateRegionTable()
 	{
 		modelTableRegion.clear();
-		for (Tuple<RegionIdentifier, RegionInfo> entry : canvasMap.possessionMapModel.regionTableModel.getRegionTable().getEntries()) {
+		for (Tuple<RegionIdentifier, RegionInfo> entry : canvasMap.possessionMapModel.regionTableModel.getDataReader().getEntries()) {
 			modelTableRegion.addElement(new RegionEntry(entry.x, entry.y));
 		}
 		windowWrapper.getContentPane().revalidate();
@@ -995,8 +995,8 @@ public class GuiRegionEditor extends GuiBase
 
 	private void scrollToRegion(RegionEntry regionEntry)
 	{
-		ArrayList<TileIndex> list = canvasMap.possessionMapModel.tileMapModel.getTileMap().getKeys().stream()
-			.filter(cp -> regionEntry.regionIdentifier.equals(canvasMap.possessionMapModel.tileMapModel.getTileMap().get(cp).orElse(null)))
+		ArrayList<TileIndex> list = canvasMap.possessionMapModel.tileMapModel.getDataReader().getKeys().stream()
+			.filter(cp -> regionEntry.regionIdentifier.equals(canvasMap.possessionMapModel.tileMapModel.getDataReader().get(cp).orElse(null)))
 			.collect(Collectors.toCollection(ArrayList::new));
 		if (list.size() <= 0) return;
 
