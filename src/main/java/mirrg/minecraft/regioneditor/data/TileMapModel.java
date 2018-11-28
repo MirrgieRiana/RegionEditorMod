@@ -69,7 +69,6 @@ public class TileMapModel implements ITileMapWriter
 	{
 		tileMap.set(tileIndex, oRegionInfo);
 		fireChange(tileIndex);
-		fireChange();
 	}
 
 	public void clear()
