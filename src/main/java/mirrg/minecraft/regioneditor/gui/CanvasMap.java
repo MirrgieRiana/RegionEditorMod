@@ -30,15 +30,16 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 import mirrg.boron.util.struct.Tuple;
+import mirrg.minecraft.regioneditor.data.IPossessionMapReader;
 import mirrg.minecraft.regioneditor.data.IRegionTableListener;
 import mirrg.minecraft.regioneditor.data.ITileMapListener;
+import mirrg.minecraft.regioneditor.data.ITileMapReader;
 import mirrg.minecraft.regioneditor.data.PossessionMap;
 import mirrg.minecraft.regioneditor.data.PossessionMapModel;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
 import mirrg.minecraft.regioneditor.data.TileIndex;
 import mirrg.minecraft.regioneditor.data.TileMap;
-import mirrg.minecraft.regioneditor.data.TileMapModel;
 
 public class CanvasMap extends Canvas
 {
@@ -298,7 +299,7 @@ public class CanvasMap extends Canvas
 
 	public String getExpression() throws Exception
 	{
-		return toExpression(possessionMapModel);
+		return toExpression(possessionMapModel.getDataReader());
 	}
 
 	private static PossessionMap fromExpression(String string) throws Exception
@@ -345,7 +346,7 @@ public class CanvasMap extends Canvas
 		return possessionMap;
 	}
 
-	private static String toExpression(PossessionMapModel possessionMapModel) throws Exception
+	private static String toExpression(IPossessionMapReader possessionMap) throws Exception
 	{
 		Map<String, String> replaceTable = new HashMap<>();
 		int replaceIndex = 0;
@@ -354,7 +355,7 @@ public class CanvasMap extends Canvas
 		{
 			JsonArray infos = new JsonArray();
 
-			for (Tuple<RegionIdentifier, RegionInfo> entry : possessionMapModel.regionTableModel.getDataReader().getEntries()) {
+			for (Tuple<RegionIdentifier, RegionInfo> entry : possessionMap.getRegionTableReader().getEntries()) {
 
 				// RegionEntryのJson表現の生成
 				String string;
@@ -379,7 +380,7 @@ public class CanvasMap extends Canvas
 			JsonArray map = new JsonArray();
 
 			// 地図データの文字列表現の取得
-			String tileMapExpression = getTileMapExpression(possessionMapModel.tileMapModel);
+			String tileMapExpression = getTileMapExpression(possessionMap.getTileMapReader());
 
 			// 圧縮
 			List<String> list = compress(tileMapExpression, "UTF-8");
@@ -397,7 +398,7 @@ public class CanvasMap extends Canvas
 		return string;
 	}
 
-	private static String getTileMapExpression(TileMapModel tileMapModel)
+	private static String getTileMapExpression(ITileMapReader tileMap)
 	{
 		StringBuilder sb = new StringBuilder();
 
@@ -405,8 +406,8 @@ public class CanvasMap extends Canvas
 		RegionIdentifier regionIdentifierLast = null;
 		int length = 0;
 
-		for (TileIndex tileIndex : tileMapModel.getDataReader().getKeys()) {
-			RegionIdentifier regionIdentifier = tileMapModel.getDataReader().get(tileIndex).get();
+		for (TileIndex tileIndex : tileMap.getKeys()) {
+			RegionIdentifier regionIdentifier = tileMap.get(tileIndex).get();
 
 			if (tileIndexLast != null) {
 				// 1個前の領地がある場合
