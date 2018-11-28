@@ -374,6 +374,7 @@ public class GuiRegionEditor extends GuiBase
 				if (oRegionEntry.isPresent()) {
 					canvasMap.possessionMapModel.regionTableModel.remove(oRegionEntry.get().regionIdentifier);
 					updateRegionTable();
+					canvasMap.update();
 				}
 			}))
 				.value(Action.NAME, "Delete Region(D)")
