@@ -30,11 +30,11 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 import mirrg.boron.util.struct.Tuple;
+import mirrg.minecraft.regioneditor.data.IRegionTableListener;
 import mirrg.minecraft.regioneditor.data.PossessionMap;
 import mirrg.minecraft.regioneditor.data.PossessionMapModel;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
-import mirrg.minecraft.regioneditor.data.RegionTableModel;
 import mirrg.minecraft.regioneditor.data.TileIndex;
 import mirrg.minecraft.regioneditor.data.TileMap;
 import mirrg.minecraft.regioneditor.data.TileMapModel;
@@ -206,7 +206,6 @@ public class CanvasMap extends Canvas
 	public void addRegionInfo(RegionIdentifier regionIdentifier, RegionInfo regionInfo)
 	{
 		possessionMapModel.regionTableModel.put(regionIdentifier, regionInfo);
-		listener.onRegionTableChange(possessionMapModel.regionTableModel);
 	}
 
 	public CanvasMap(ICanvasMapListener listener)
@@ -219,6 +218,13 @@ public class CanvasMap extends Canvas
 			{
 				resizeLayer();
 				updateLayerMap();
+			}
+		});
+		possessionMapModel.regionTableModel.addListener(new IRegionTableListener() {
+			@Override
+			public void onChange()
+			{
+				update();
 			}
 		});
 
@@ -236,8 +242,6 @@ public class CanvasMap extends Canvas
 
 	public static interface ICanvasMapListener
 	{
-
-		public void onRegionTableChange(RegionTableModel regionTableModel);
 
 		public void onRegionIdentifierCurrentChange(Optional<RegionIdentifier> oRegionIdentifierCurrent);
 
@@ -270,7 +274,6 @@ public class CanvasMap extends Canvas
 	public void setPossessionMap(PossessionMap possessionMap)
 	{
 		possessionMapModel.setData(possessionMap);
-		listener.onRegionTableChange(possessionMapModel.regionTableModel);
 		updateLayerTile();
 	}
 

@@ -50,10 +50,10 @@ import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 
 import mirrg.boron.util.struct.Tuple;
+import mirrg.minecraft.regioneditor.data.IRegionTableListener;
 import mirrg.minecraft.regioneditor.data.RegionEntry;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
-import mirrg.minecraft.regioneditor.data.RegionTableModel;
 import mirrg.minecraft.regioneditor.data.TileIndex;
 import mirrg.minecraft.regioneditor.gui.CanvasMap.ICanvasMapListener;
 import mirrg.minecraft.regioneditor.gui.GuiData.IDialogDataListener;
@@ -373,7 +373,6 @@ public class GuiRegionEditor extends GuiBase
 				Optional<RegionEntry> oRegionEntry = getSelectedRegionEntry();
 				if (oRegionEntry.isPresent()) {
 					canvasMap.possessionMapModel.regionTableModel.remove(oRegionEntry.get().regionIdentifier);
-					updateRegionTable();
 					canvasMap.update();
 				}
 			}))
@@ -529,12 +528,6 @@ public class GuiRegionEditor extends GuiBase
 									// 地図
 									canvasMap = get(new CanvasMap(new ICanvasMapListener() {
 										@Override
-										public void onRegionTableChange(RegionTableModel regionTable)
-										{
-											updateRegionTable();
-										}
-
-										@Override
 										public void onRegionIdentifierCurrentChange(Optional<RegionIdentifier> oRegionIdentifierCurrent)
 										{
 											tableRegion.getSelectionModel().clearSelection();
@@ -650,6 +643,17 @@ public class GuiRegionEditor extends GuiBase
 								scrollToRegion(regionEntry);
 
 							}
+						}
+					});
+					canvasMap.possessionMapModel.regionTableModel.addListener(new IRegionTableListener() {
+						@Override
+						public void onChange()
+						{
+							modelTableRegion.clear();
+							for (Tuple<RegionIdentifier, RegionInfo> entry : canvasMap.possessionMapModel.regionTableModel.getDataReader().getEntries()) {
+								modelTableRegion.addElement(new RegionEntry(entry.x, entry.y));
+							}
+							windowWrapper.getContentPane().revalidate();
 						}
 					});
 				}), 300, 600),
@@ -912,15 +916,6 @@ public class GuiRegionEditor extends GuiBase
 			group.add(this);
 		}
 
-	}
-
-	private void updateRegionTable()
-	{
-		modelTableRegion.clear();
-		for (Tuple<RegionIdentifier, RegionInfo> entry : canvasMap.possessionMapModel.regionTableModel.getDataReader().getEntries()) {
-			modelTableRegion.addElement(new RegionEntry(entry.x, entry.y));
-		}
-		windowWrapper.getContentPane().revalidate();
 	}
 
 	private Optional<RegionEntry> getSelectedRegionEntry()
