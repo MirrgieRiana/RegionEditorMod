@@ -296,19 +296,7 @@ public class GuiRegionEditor extends GuiBase
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_B, 0))
 				.register();
 			actionToolFill = new ActionBuilder<>(new ActionRadio(groupTool, v -> {
-				canvasMap.setTool(Optional.of(new ITool() { // TODO
-					@Override
-					public void on()
-					{
-
-					}
-
-					@Override
-					public void off()
-					{
-
-					}
-				}));
+				canvasMap.setTool(Optional.of(new ToolFill(canvasMap.getToolContext())));
 			}))
 				.value(Action.NAME, "Fill Tool(F)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_F)
