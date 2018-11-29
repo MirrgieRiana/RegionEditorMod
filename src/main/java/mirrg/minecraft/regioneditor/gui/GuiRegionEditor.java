@@ -332,12 +332,12 @@ public class GuiRegionEditor extends GuiBase
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_K, 0))
 				.register();
 			listenersPreInit.add(() -> actionToolBrush.setSelected(true));
-			actionIncrementBrushSize = new ActionBuilder<>(new ActionButton(e -> canvasMap.setBrushSize(Math.max(Math.min(canvasMap.getBrushSize() + 1, 100), 1))))
+			actionIncrementBrushSize = new ActionBuilder<>(new ActionButton(e -> plusBrushSize(1)))
 				.value(Action.NAME, "Increment Brush Size(I)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_I)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, 0))
 				.register();
-			actionDecrementBrushSize = new ActionBuilder<>(new ActionButton(e -> canvasMap.setBrushSize(Math.max(Math.min(canvasMap.getBrushSize() - 1, 100), 1))))
+			actionDecrementBrushSize = new ActionBuilder<>(new ActionButton(e -> plusBrushSize(-1)))
 				.value(Action.NAME, "Decrement Brush Size(D)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_L)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, 0))
@@ -663,12 +663,16 @@ public class GuiRegionEditor extends GuiBase
 
 					new JLabel("Brush:"),
 
-					spinnerBrushSize = new JSpinner(modelSpinnerBrushSize = get(new SpinnerNumberModel(7, 1, 100, 1), c -> {
+					spinnerBrushSize = get(new JSpinner(modelSpinnerBrushSize = get(new SpinnerNumberModel(7, 1, 100, 1), c -> {
 						c.addChangeListener(e -> {
 							canvasMap.setBrushSize(c.getNumber().intValue());
 						});
 						listenersPreInit.add(() -> canvasMap.setBrushSize(modelSpinnerBrushSize.getNumber().intValue()));
-					}))
+					})), c -> {
+						c.addMouseWheelListener(e -> {
+							plusBrushSize(-(int) e.getPreciseWheelRotation());
+						});
+					})
 
 				),
 
@@ -885,6 +889,11 @@ public class GuiRegionEditor extends GuiBase
 		listenersPreInit.forEach(Runnable::run);
 		setPosition(0, 0);
 		canvasMap.init();
+	}
+
+	private void plusBrushSize(int dBrushSize)
+	{
+		canvasMap.setBrushSize(Math.max(Math.min(canvasMap.getBrushSize() + dBrushSize, 100), 1));
 	}
 
 	private void updateSelection(Optional<RegionIdentifier> oCurrentRegionIdentifier)
