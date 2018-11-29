@@ -56,11 +56,9 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
-import mirrg.boron.util.struct.Tuple;
 import mirrg.minecraft.regioneditor.data.IRegionTableListener;
 import mirrg.minecraft.regioneditor.data.RegionEntry;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
-import mirrg.minecraft.regioneditor.data.RegionInfo;
 import mirrg.minecraft.regioneditor.data.TileIndex;
 import mirrg.minecraft.regioneditor.gui.CanvasMap.ICanvasMapListener;
 import mirrg.minecraft.regioneditor.gui.GuiData.IDialogDataListener;
@@ -289,19 +287,7 @@ public class GuiRegionEditor extends GuiBase
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_P, 0))
 				.register();
 			actionToolBrush = new ActionBuilder<>(new ActionRadio(groupTool, v -> {
-				canvasMap.setTool(Optional.of(new ITool() { // TODO
-					@Override
-					public void on()
-					{
-
-					}
-
-					@Override
-					public void off()
-					{
-
-					}
-				}));
+				canvasMap.setTool(Optional.of(new ToolBrush(canvasMap.getToolContext())));
 			}))
 				.value(Action.NAME, "Brush Tool(B)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_B)
@@ -345,7 +331,7 @@ public class GuiRegionEditor extends GuiBase
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_K)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_K, 0))
 				.register();
-			listenersPreInit.add(() -> actionToolPencil.setSelected(true));
+			listenersPreInit.add(() -> actionToolBrush.setSelected(true));
 			actionIncrementBrushSize = new ActionBuilder<>(new ActionButton(e -> canvasMap.setBrushSize(Math.max(Math.min(canvasMap.getBrushSize() + 1, 100), 1))))
 				.value(Action.NAME, "Increment Brush Size(I)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_I)
