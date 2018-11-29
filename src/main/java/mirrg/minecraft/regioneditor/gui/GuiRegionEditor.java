@@ -7,6 +7,7 @@ import java.awt.Component;
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 import java.awt.FileDialog;
+import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
@@ -37,6 +38,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
@@ -709,6 +711,9 @@ public class GuiRegionEditor extends GuiBase
 							}
 						});
 						c.setCellRenderer(new ListCellRenderer<Optional<RegionIdentifier>>() {
+							private BufferedImage image = new BufferedImage(17, 17, BufferedImage.TYPE_INT_RGB);
+							private Graphics2D graphics = image.createGraphics();
+
 							private JLabel label = new JLabel();
 							{
 								label.setOpaque(true);
@@ -723,12 +728,29 @@ public class GuiRegionEditor extends GuiBase
 							{
 								if (value.isPresent()) {
 									RegionIdentifier regionIdentifier = value.get();
-									label.setText(new RegionEntry(
+									RegionEntry regionEntry = new RegionEntry(
 										regionIdentifier,
-										canvasMap.possessionMapModel.regionTableModel.getDataReader().get(regionIdentifier)).toString());
+										canvasMap.possessionMapModel.regionTableModel.getDataReader().get(regionIdentifier));
+
+									label.setText(regionEntry.toString());
 								} else {
 									label.setText("Empty");
 								}
+
+								graphics.setBackground(Color.gray);
+								graphics.clearRect(0, 0, 17, 17);
+								if (value.isPresent()) {
+									RegionIdentifier regionIdentifier = value.get();
+									RegionEntry regionEntry = new RegionEntry(
+										regionIdentifier,
+										canvasMap.possessionMapModel.regionTableModel.getDataReader().get(regionIdentifier));
+
+									ImageLayerTile.drawArea(graphics, regionEntry, 0, 0, 16);
+									ImageLayerTile.drawBorder(graphics, regionEntry, 0, 0, 16, true, true, true, true);
+									ImageLayerTile.drawIdentifier(image, regionEntry, 0, 0, 16);
+									ImageLayerTile.drawGrid(graphics, 0, 0, 16);
+								}
+								label.setIcon(new ImageIcon(image));
 
 								Color background;
 								Color foreground;

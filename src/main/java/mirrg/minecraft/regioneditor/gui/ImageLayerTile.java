@@ -1,10 +1,13 @@
 package mirrg.minecraft.regioneditor.gui;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.Optional;
 
 import mirrg.minecraft.regioneditor.data.PossessionMapModel;
+import mirrg.minecraft.regioneditor.data.RegionEntry;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
 import mirrg.minecraft.regioneditor.data.TileIndex;
@@ -18,7 +21,7 @@ public class ImageLayerTile extends ImageLayer
 	public boolean showIdentifier = true;
 	public boolean showGrid = true;
 
-	public void update(Image imageBackground, PossessionMapModel possessionMapModel, int positionX, int positionZ)
+	public void update(Image imageBackground, PossessionMapModel possessionMapModel, int tileXCenter, int tileZCenter)
 	{
 		// width = 255, maptipWidth = 16 -> xRadius = (254 / 2 / 16 + 1) = (127 / 16 + 1) = (7 + 1) = 8
 		// width = 256, maptipWidth = 16 -> xRadius = (255 / 2 / 16 + 1) = (127 / 16 + 1) = (7 + 1) = 8
@@ -30,37 +33,37 @@ public class ImageLayerTile extends ImageLayer
 		update(
 			imageBackground,
 			possessionMapModel,
-			positionX,
-			positionZ,
+			tileXCenter,
+			tileZCenter,
 			new TileIndex(
-				positionX - xRadius,
-				positionZ - zRadius),
+				tileXCenter - xRadius,
+				tileZCenter - zRadius),
 			new TileIndex(
-				positionX + xRadius,
-				positionZ + zRadius));
+				tileXCenter + xRadius,
+				tileZCenter + zRadius));
 	}
 
 	/**
 	 * @param tileIndexEnd
 	 *            このチャンクまでが描画範囲に含まれる。
 	 */
-	public void update(Image imageBackground, PossessionMapModel possessionMapModel, int positionX, int positionZ, TileIndex tileIndexStart, TileIndex tileIndexEnd)
+	public void update(Image imageBackground, PossessionMapModel possessionMapModel, int tileXCenter, int tileZCenter, TileIndex tileIndexStart, TileIndex tileIndexEnd)
 	{
 		graphics.drawImage(
 			imageBackground,
-			(tileIndexStart.x - positionX) * 16 + width / 2,
-			(tileIndexStart.z - positionZ) * 16 + height / 2,
-			(tileIndexEnd.x - positionX) * 16 + width / 2 + 16,
-			(tileIndexEnd.z - positionZ) * 16 + height / 2 + 16,
-			(tileIndexStart.x - positionX) * 16 + width / 2,
-			(tileIndexStart.z - positionZ) * 16 + height / 2,
-			(tileIndexEnd.x - positionX) * 16 + width / 2 + 16,
-			(tileIndexEnd.z - positionZ) * 16 + height / 2 + 16,
+			(tileIndexStart.x - tileXCenter) * 16 + width / 2,
+			(tileIndexStart.z - tileZCenter) * 16 + height / 2,
+			(tileIndexEnd.x - tileXCenter) * 16 + width / 2 + 16,
+			(tileIndexEnd.z - tileZCenter) * 16 + height / 2 + 16,
+			(tileIndexStart.x - tileXCenter) * 16 + width / 2,
+			(tileIndexStart.z - tileZCenter) * 16 + height / 2,
+			(tileIndexEnd.x - tileXCenter) * 16 + width / 2 + 16,
+			(tileIndexEnd.z - tileZCenter) * 16 + height / 2 + 16,
 			null);
 
-		for (int x = tileIndexStart.x; x <= tileIndexEnd.x; x++) {
-			for (int z = tileIndexStart.z; z <= tileIndexEnd.z; z++) {
-				TileIndex tileIndex = new TileIndex(x, z);
+		for (int tileX = tileIndexStart.x; tileX <= tileIndexEnd.x; tileX++) {
+			for (int tileZ = tileIndexStart.z; tileZ <= tileIndexEnd.z; tileZ++) {
+				TileIndex tileIndex = new TileIndex(tileX, tileZ);
 
 				if (showTile) {
 					Optional<RegionIdentifier> oRegionIdentifier = possessionMapModel.tileMapModel.getDataReader().get(tileIndex);
@@ -68,10 +71,9 @@ public class ImageLayerTile extends ImageLayer
 						RegionInfo regionInfo = possessionMapModel.regionTableModel.getDataReader().get(oRegionIdentifier.get());
 
 						drawRegionInfo(
-							oRegionIdentifier.get(),
-							regionInfo,
-							x - positionX,
-							z - positionZ,
+							new RegionEntry(oRegionIdentifier.get(), regionInfo),
+							tileX - tileXCenter,
+							tileZ - tileZCenter,
 							!possessionMapModel.tileMapModel.getDataReader().get(tileIndex.plus(-1, 0)).equals(oRegionIdentifier),
 							!possessionMapModel.tileMapModel.getDataReader().get(tileIndex.plus(1, 0)).equals(oRegionIdentifier),
 							!possessionMapModel.tileMapModel.getDataReader().get(tileIndex.plus(0, -1)).equals(oRegionIdentifier),
@@ -82,9 +84,7 @@ public class ImageLayerTile extends ImageLayer
 
 				// グリッド
 				if (showGrid) {
-					drawGrid(
-						(x - positionX) * 16 + width / 2,
-						(z - positionZ) * 16 + height / 2);
+					drawGrid(graphics, (tileX - tileXCenter) * 16 + width / 2, (tileZ - tileZCenter) * 16 + height / 2, 16);
 				}
 
 			}
@@ -94,72 +94,86 @@ public class ImageLayerTile extends ImageLayer
 	}
 
 	private void drawRegionInfo(
-		RegionIdentifier regionIdentifier,
-		RegionInfo regionInfo,
-		int x,
-		int y,
+		RegionEntry regionEntry,
+		int tileX,
+		int tileZ,
 		boolean borderLeft,
 		boolean borderRight,
 		boolean borderUp,
 		boolean borderDown)
 	{
+		int x = tileX * 16 + width / 2;
+		int y = tileZ * 16 + height / 2;
 
 		// 背景半透明塗りつぶし
 		if (showArea) {
-			graphics.setColor(new Color(
-				regionInfo.stateColor.getRed(),
-				regionInfo.stateColor.getGreen(),
-				regionInfo.stateColor.getBlue(),
-				64));
-			graphics.fillRect(x * 16 + width / 2, y * 16 + height / 2, 16, 16);
+			drawArea(graphics, regionEntry, x, y, 16);
 		}
 
 		// 領地輪郭線
 		if (showBorder) {
-			graphics.setColor(new Color(
-				regionInfo.countryColor.getRed(),
-				regionInfo.countryColor.getGreen(),
-				regionInfo.countryColor.getBlue()));
-			{
-				int w = 2;
-
-				// left
-				if (borderLeft) graphics.fillRect(x * 16 + 1 + 0 + width / 2, y * 16 + 1 + 0 + height / 2, w, 15);
-
-				// right
-				if (borderRight) graphics.fillRect(x * 16 + (16 - w) + width / 2, y * 16 + 1 + 0 + height / 2, w, 15);
-
-				// top
-				if (borderUp) graphics.fillRect(x * 16 + 1 + 0 + width / 2, y * 16 + 1 + 0 + height / 2, 15, w);
-
-				// bottom
-				if (borderDown) graphics.fillRect(x * 16 + 1 + 0 + width / 2, y * 16 + (16 - w) + height / 2, 15, w);
-
-			}
+			drawBorder(graphics, regionEntry, x, y, 16, borderLeft, borderRight, borderUp, borderDown);
 		}
 
 		// 数値
 		if (showIdentifier) {
-			FontRenderer.drawString(
-				image,
-				"" + regionIdentifier.countryNumber,
-				x * 16 + 8 + width / 2,
-				y * 16 + 2 + height / 2,
-				regionInfo.countryColor);
-			FontRenderer.drawString(
-				image,
-				"" + regionIdentifier.stateNumber,
-				x * 16 + 8 + width / 2,
-				y * 16 + 8 + height / 2,
-				regionInfo.stateColor);
+			drawIdentifier(image, regionEntry, x, y, 16);
 		}
 
 	}
 
-	private void drawGrid(int x, int y)
+	public static void drawArea(Graphics2D graphics, RegionEntry regionEntry, int x, int y, int tileSize)
+	{
+		graphics.setColor(new Color(
+			regionEntry.regionInfo.stateColor.getRed(),
+			regionEntry.regionInfo.stateColor.getGreen(),
+			regionEntry.regionInfo.stateColor.getBlue(),
+			64));
+		graphics.fillRect(x, y, tileSize, tileSize);
+	}
+
+	public static void drawBorder(
+		Graphics2D graphics,
+		RegionEntry regionEntry,
+		int x,
+		int y,
+		int tileSize,
+		boolean borderLeft,
+		boolean borderRight,
+		boolean borderUp,
+		boolean borderDown)
+	{
+		graphics.setColor(new Color(
+			regionEntry.regionInfo.countryColor.getRed(),
+			regionEntry.regionInfo.countryColor.getGreen(),
+			regionEntry.regionInfo.countryColor.getBlue()));
+		int w = 2;
+		if (borderLeft) graphics.fillRect(x + 1 + 0, y + 1 + 0, w, tileSize - 1);
+		if (borderRight) graphics.fillRect(x + (tileSize - w), y + 1 + 0, w, tileSize - 1);
+		if (borderUp) graphics.fillRect(x + 1 + 0, y + 1 + 0, tileSize - 1, w);
+		if (borderDown) graphics.fillRect(x + 1 + 0, y + (tileSize - w), tileSize - 1, w);
+	}
+
+	public static void drawIdentifier(BufferedImage image, RegionEntry regionEntry, int x, int y, int tileSize)
+	{
+		FontRenderer.drawString(
+			image,
+			"" + regionEntry.regionIdentifier.countryNumber,
+			x + tileSize / 2,
+			y + tileSize / 2 - 6,
+			regionEntry.regionInfo.countryColor);
+		FontRenderer.drawString(
+			image,
+			"" + regionEntry.regionIdentifier.stateNumber,
+			x + tileSize / 2,
+			y + tileSize / 2,
+			regionEntry.regionInfo.stateColor);
+	}
+
+	public static void drawGrid(Graphics2D graphics, int x, int y, int tileSize)
 	{
 		graphics.setColor(new Color(0x444444));
-		graphics.drawRect(x, y, 16, 16);
+		graphics.drawRect(x, y, tileSize, tileSize);
 	}
 
 }
