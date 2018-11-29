@@ -27,7 +27,9 @@ public interface IToolContext
 
 	public Optional<RegionIdentifier> getCurrentRegionIdentifier();
 
-	public void setCurrentRegionIdentifier(Optional<RegionIdentifier> oRegionIdentifierCurrent);
+	public void setCurrentRegionIdentifier(Optional<RegionIdentifier> oCurrentRegionIdentifier);
+
+	public int getBrushSize();
 
 	public void repaintTile();
 

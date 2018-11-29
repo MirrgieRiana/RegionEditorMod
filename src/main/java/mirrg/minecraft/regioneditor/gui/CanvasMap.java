@@ -116,14 +116,19 @@ public class CanvasMap extends Canvas
 		@Override
 		public Optional<RegionIdentifier> getCurrentRegionIdentifier()
 		{
-			return CanvasMap.this.oRegionIdentifierCurrent;
+			return CanvasMap.this.oCurrentRegionIdentifier;
 		}
 
 		@Override
-		public void setCurrentRegionIdentifier(Optional<RegionIdentifier> oRegionIdentifierCurrent)
+		public void setCurrentRegionIdentifier(Optional<RegionIdentifier> oCurrentRegionIdentifier)
 		{
-			CanvasMap.this.setRegionIdentifierCurrent(oRegionIdentifierCurrent);
+			CanvasMap.this.setCurrentRegionIdentifier(oCurrentRegionIdentifier);
+		}
 
+		@Override
+		public int getBrushSize()
+		{
+			return CanvasMap.this.brushSize;
 		}
 
 		@Override
@@ -150,7 +155,8 @@ public class CanvasMap extends Canvas
 		return toolContext;
 	}
 
-	private Optional<RegionIdentifier> oRegionIdentifierCurrent = Optional.empty();
+	private Optional<RegionIdentifier> oCurrentRegionIdentifier = Optional.empty();
+	private int brushSize = 1;
 
 	public final PossessionMapModel possessionMapModel = new PossessionMapModel(new PossessionMap());
 
@@ -248,17 +254,42 @@ public class CanvasMap extends Canvas
 		updateLayerMap();
 	}
 
-	public void setRegionIdentifierCurrent(Optional<RegionIdentifier> oRegionIdentifierCurrent)
+	public Optional<RegionIdentifier> getCurrentRegionIdentifier()
 	{
-		this.oRegionIdentifierCurrent = oRegionIdentifierCurrent;
-		listener.onRegionIdentifierCurrentChange(oRegionIdentifierCurrent);
+		return oCurrentRegionIdentifier;
+	}
+
+	public void setCurrentRegionIdentifier(Optional<RegionIdentifier> oCurrentRegionIdentifier)
+	{
+		this.oCurrentRegionIdentifier = oCurrentRegionIdentifier;
+		listener.onCurrentRegionIdentifierChange(oCurrentRegionIdentifier);
+		updateLayerOverlay();
+	}
+
+	public int getBrushSize()
+	{
+		return brushSize;
+	}
+
+	public void setBrushSize(int brushSize)
+	{
+		this.brushSize = brushSize;
+		listener.onBrushSizeChange(brushSize);
 		updateLayerOverlay();
 	}
 
 	public static interface ICanvasMapListener
 	{
 
-		public void onRegionIdentifierCurrentChange(Optional<RegionIdentifier> oRegionIdentifierCurrent);
+		public default void onCurrentRegionIdentifierChange(Optional<RegionIdentifier> oCurrentRegionIdentifier)
+		{
+
+		}
+
+		public default void onBrushSizeChange(int brushSize)
+		{
+
+		}
 
 	}
 
