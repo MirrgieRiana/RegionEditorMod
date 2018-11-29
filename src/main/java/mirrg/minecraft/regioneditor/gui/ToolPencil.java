@@ -6,9 +6,6 @@ import java.awt.Point;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -26,7 +23,6 @@ public class ToolPencil implements ITool
 	protected final IToolContext toolContext;
 
 	private boolean[] mouseButtons = new boolean[8];
-	private boolean[] keys = new boolean[2048];
 	private Optional<Point> oMousePosition = Optional.empty();
 
 	public ToolPencil(IToolContext toolContext)
@@ -41,24 +37,6 @@ public class ToolPencil implements ITool
 			for (int i = 0; i < mouseButtons.length; i++) {
 				mouseButtons[i] = false;
 			}
-			for (int i = 0; i < keys.length; i++) {
-				keys[i] = false;
-			}
-		}
-	};
-	private KeyListener keyListener = new KeyAdapter() {
-		@Override
-		public void keyPressed(KeyEvent e)
-		{
-			keys[Math.min(e.getKeyCode(), keys.length - 1)] = true;
-			toolContext.repaintOverlay();
-		}
-
-		@Override
-		public void keyReleased(KeyEvent e)
-		{
-			keys[Math.min(e.getKeyCode(), keys.length - 1)] = false;
-			toolContext.repaintOverlay();
 		}
 	};
 	private MouseListener mouseListener = new MouseAdapter() {
@@ -73,9 +51,9 @@ public class ToolPencil implements ITool
 			if (e.getButton() == MouseEvent.BUTTON2) {
 				toolContext.setCurrentRegionIdentifier(toolContext.getPossessionMapModel().tileMapModel.getDataReader().get(tileIndex));
 			} else if (e.getButton() == MouseEvent.BUTTON1) {
-				setTile(tileIndex, toolContext.getCurrentRegionIdentifier(), keys[KeyEvent.VK_SHIFT] ? 3 : 0);
+				setTile(tileIndex, toolContext.getCurrentRegionIdentifier());
 			} else if (e.getButton() == MouseEvent.BUTTON3) {
-				setTile(tileIndex, Optional.empty(), keys[KeyEvent.VK_SHIFT] ? 3 : 0);
+				setTile(tileIndex, Optional.empty());
 			}
 		}
 
@@ -117,9 +95,9 @@ public class ToolPencil implements ITool
 
 			TileIndex tileIndex = toolContext.getTileIndex(e.getPoint());
 			if (mouseButtons[MouseEvent.BUTTON1]) {
-				setTile(tileIndex, toolContext.getCurrentRegionIdentifier(), keys[KeyEvent.VK_SHIFT] ? 3 : 0);
+				setTile(tileIndex, toolContext.getCurrentRegionIdentifier());
 			} else if (mouseButtons[MouseEvent.BUTTON3]) {
-				setTile(tileIndex, Optional.empty(), keys[KeyEvent.VK_SHIFT] ? 3 : 0);
+				setTile(tileIndex, Optional.empty());
 			}
 		}
 	};
@@ -128,7 +106,6 @@ public class ToolPencil implements ITool
 	public void on()
 	{
 		toolContext.getComponent().addFocusListener(focusListener);
-		toolContext.getComponent().addKeyListener(keyListener);
 		toolContext.getComponent().addMouseListener(mouseListener);
 		toolContext.getComponent().addMouseMotionListener(mouseMotionListener);
 	}
@@ -137,7 +114,6 @@ public class ToolPencil implements ITool
 	public void off()
 	{
 		toolContext.getComponent().removeFocusListener(focusListener);
-		toolContext.getComponent().removeKeyListener(keyListener);
 		toolContext.getComponent().removeMouseListener(mouseListener);
 		toolContext.getComponent().removeMouseMotionListener(mouseMotionListener);
 	}
@@ -148,25 +124,20 @@ public class ToolPencil implements ITool
 		if (oMousePosition.isPresent()) {
 			TileIndex tileIndex = toolContext.getTileIndex(oMousePosition.get());
 			int size = toolContext.getTileSize();
-			int radius = keys[KeyEvent.VK_SHIFT] ? 3 : 0;
-			for (int xi = -radius; xi <= radius; xi++) {
-				for (int zi = -radius; zi <= radius; zi++) {
-					Point position = toolContext.getTilePosition(tileIndex.plus(xi, zi));
+			Point position = toolContext.getTilePosition(tileIndex);
 
-					graphics.setColor(Color.white);
-					graphics.drawLine(
-						position.x,
-						position.y,
-						position.x + size,
-						position.y + toolContext.getTileSize());
-					graphics.drawLine(
-						position.x + size,
-						position.y,
-						position.x,
-						position.y + toolContext.getTileSize());
+			graphics.setColor(Color.white);
+			graphics.drawLine(
+				position.x,
+				position.y,
+				position.x + size,
+				position.y + toolContext.getTileSize());
+			graphics.drawLine(
+				position.x + size,
+				position.y,
+				position.x,
+				position.y + toolContext.getTileSize());
 
-				}
-			}
 		}
 	}
 
@@ -199,15 +170,6 @@ public class ToolPencil implements ITool
 
 			}
 
-		}
-	}
-
-	private void setTile(TileIndex tileIndex, Optional<RegionIdentifier> oRegionIdentifier, int radius)
-	{
-		for (int xi = -radius; xi <= radius; xi++) {
-			for (int zi = -radius; zi <= radius; zi++) {
-				setTile(tileIndex.plus(xi, zi), oRegionIdentifier);
-			}
 		}
 	}
 
