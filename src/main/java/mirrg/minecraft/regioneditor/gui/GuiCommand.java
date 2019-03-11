@@ -23,10 +23,15 @@ public class GuiCommand extends GuiBase
 	private String dynmapCommand;
 	private Optional<Consumer<List<String>>> oSender;
 
-	public GuiCommand(WindowWrapper owner, ImmutableArray<Area> list, Optional<Consumer<List<String>>> oSender)
+	public GuiCommand(WindowWrapper owner, String dynmapCommand, Optional<Consumer<List<String>>> oSender)
 	{
 		super(owner, "Command", ModalityType.MODELESS);
+		this.dynmapCommand = dynmapCommand;
+		this.oSender = oSender;
+	}
 
+	public static String getCommandUpload(ImmutableArray<Area> list)
+	{
 		Map<RegionIdentifier, Integer> areaIds = new HashMap<>();
 
 		StringBuilder sb = new StringBuilder();
@@ -47,8 +52,8 @@ public class GuiCommand extends GuiBase
 			sb.append("\n");
 		});
 
-		this.dynmapCommand = sb.toString();
-		this.oSender = oSender;
+		String string = sb.toString();
+		return string;
 	}
 
 	private JTextArea textArea;
