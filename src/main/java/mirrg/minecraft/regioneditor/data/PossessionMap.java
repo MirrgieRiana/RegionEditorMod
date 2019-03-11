@@ -165,6 +165,7 @@ public class PossessionMap implements IPossessionMapReader
 	{
 
 		public final TileIndex tileIndex;
+		@SuppressWarnings("unused")
 		public final Node parent;
 
 		public Node left = null;
