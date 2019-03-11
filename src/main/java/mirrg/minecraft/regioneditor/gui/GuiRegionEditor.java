@@ -113,6 +113,7 @@ public class GuiRegionEditor extends GuiBase
 	private JLabel labelTileZ;
 	private JFormattedTextField textFieldX;
 	private JFormattedTextField textFieldZ;
+	@SuppressWarnings("unused")
 	private JSpinner spinnerBrushSize;
 	private SpinnerNumberModel modelSpinnerBrushSize;
 	private JList<Optional<RegionIdentifier>> tableRegion;
