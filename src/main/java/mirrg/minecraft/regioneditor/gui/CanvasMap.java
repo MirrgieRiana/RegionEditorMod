@@ -666,7 +666,7 @@ public class CanvasMap extends Canvas
 
 	private static ArrayList<String> slice(String string, int length)
 	{
-		ArrayList<String> lines = new ArrayList();
+		ArrayList<String> lines = new ArrayList<>();
 		for (int i = 0; i < string.length(); i += length) {
 			lines.add(string.substring(i, Math.min(i + length, string.length())));
 		}
