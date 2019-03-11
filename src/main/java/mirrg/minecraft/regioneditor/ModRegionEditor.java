@@ -52,9 +52,10 @@ public class ModRegionEditor
 									for (String s : ss) {
 										Minecraft.getMinecraft().ingameGUI.getChatGUI().addToSentMessages(s);
 										if (ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().player, s) != 0) {
-											return;
+
+										} else {
+											Minecraft.getMinecraft().player.sendChatMessage(s);
 										}
-										Minecraft.getMinecraft().player.sendChatMessage(s);
 									}
 
 								})).show();
