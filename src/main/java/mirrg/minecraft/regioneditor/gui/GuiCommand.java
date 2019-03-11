@@ -56,6 +56,15 @@ public class GuiCommand extends GuiBase
 		return string;
 	}
 
+	public static String getCommandDeleteAreas(List<String> source)
+	{
+		// cat dynmap/markers.yml | grep "            '" | perl -ple '$_ =~ /            '\''([^'\'']*)'\'':/; $_ = "/dmarker deletearea id:\"$1\""'
+		// /dmarker deletearea id:"111:6:0"
+
+		// TODO スタブ
+		throw null;
+	}
+
 	private JTextArea textArea;
 
 	@Override
