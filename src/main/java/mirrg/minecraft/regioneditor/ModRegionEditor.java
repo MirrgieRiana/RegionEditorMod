@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import mirrg.boron.util.struct.ImmutableArray;
 import mirrg.minecraft.regioneditor.gui.GuiRegionEditor;
 import mirrg.minecraft.regioneditor.gui.IChatMessageProvider;
+import mirrg.minecraft.regioneditor.gui.lang.I18n;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -64,6 +65,9 @@ public class ModRegionEditor
 						ItemStack itemStack = event.getItemStack();
 						if (itemStack.getItem() == Items.STICK) {
 							if (itemStack.getDisplayName().equals("RegionEditor.show")) {
+
+								I18n.setLocale(Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getLanguageCode());
+
 								new GuiRegionEditor(null, Optional.of(ss -> {
 
 									for (String s : ss) {

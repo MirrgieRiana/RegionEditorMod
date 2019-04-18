@@ -38,6 +38,7 @@ import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
 import mirrg.minecraft.regioneditor.data.TileIndex;
 import mirrg.minecraft.regioneditor.data.TileMap;
+import mirrg.minecraft.regioneditor.gui.lang.I18n;
 
 public class CanvasMap extends Canvas
 {
@@ -163,7 +164,9 @@ public class CanvasMap extends Canvas
 		try {
 			addRegionInfo(
 				RegionIdentifier.decode(new Gson().fromJson("[\"DUMY\",\"1234\"]", JsonElement.class)),
-				RegionInfo.decode(new Gson().fromJson("[\"国名\",\"#FF0000\",\"州名\",\"#823413\"]", JsonElement.class)));
+				RegionInfo.decode(new Gson().fromJson("[\"" +
+					I18n.localize("CanvasMap.defaultCountry") + "\",\"#FF0000\",\"" +
+					I18n.localize("CanvasMap.defaultState") + "\",\"#823413\"]", JsonElement.class)));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
