@@ -30,7 +30,7 @@ public class GuiCommand extends GuiBase
 		this.oSender = oSender;
 	}
 
-	public static String getCommandUpload(ImmutableArray<Area> list)
+	public static String getCommandUpload(ImmutableArray<Area> list, String set)
 	{
 		Map<RegionIdentifier, Integer> areaIds = new HashMap<>();
 
@@ -44,7 +44,7 @@ public class GuiCommand extends GuiBase
 					sb.append("\n");
 				});
 			int areaId = areaIds.compute(area.regionEntry.regionIdentifier, (id2, i2) -> i2 == null ? 0 : i2 + 1);
-			sb.append(String.format("/dmarker addarea color:%06x fillcolor:%06x weight:4 opacity:0.8 fillopacity:0.4 label:\"%s\" id:\"%s\"",
+			sb.append(String.format("/dmarker addarea color:%06x fillcolor:%06x weight:4 opacity:0.8 fillopacity:0.4 label:\"%s\" id:\"%s\" set:\"" + set + "\"",
 				area.regionEntry.regionInfo.countryColor.getRGB() & 0xFFFFFF,
 				area.regionEntry.regionInfo.stateColor.getRGB() & 0xFFFFFF,
 				area.regionEntry.regionInfo.countryName + " / " + area.regionEntry.regionInfo.stateName,
