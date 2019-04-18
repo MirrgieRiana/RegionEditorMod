@@ -4,15 +4,23 @@ import static mirrg.minecraft.regioneditor.gui.SwingUtils.*;
 
 import java.awt.CardLayout;
 import java.awt.Dialog.ModalityType;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 import mirrg.boron.util.struct.ImmutableArray;
+import mirrg.boron.util.struct.Tuple;
 import mirrg.boron.util.suppliterator.ISuppliterator;
 import mirrg.minecraft.regioneditor.data.Area;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
@@ -20,14 +28,16 @@ import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 public class GuiCommand extends GuiBase
 {
 
-	private String dynmapCommand;
+	private ImmutableArray<Area> areas;
 	private Optional<Consumer<List<String>>> oSender;
+	private Optional<IChatMessageProvider> oChatMessageProvider;
 
-	public GuiCommand(WindowWrapper owner, String dynmapCommand, Optional<Consumer<List<String>>> oSender)
+	public GuiCommand(WindowWrapper owner, ImmutableArray<Area> areas, Optional<Consumer<List<String>>> oSender, Optional<IChatMessageProvider> oChatMessageProvider)
 	{
 		super(owner, "Command", ModalityType.MODELESS);
-		this.dynmapCommand = dynmapCommand;
+		this.areas = areas;
 		this.oSender = oSender;
+		this.oChatMessageProvider = oChatMessageProvider;
 	}
 
 	public static String getCommandUpload(ImmutableArray<Area> list, String set)
@@ -56,16 +66,44 @@ public class GuiCommand extends GuiBase
 		return string;
 	}
 
-	public static String getCommandDeleteAreas(List<String> source)
-	{
-		// cat dynmap/markers.yml | grep "            '" | perl -ple '$_ =~ /            '\''([^'\'']*)'\'':/; $_ = "/dmarker deletearea id:\"$1\""'
-		// /dmarker deletearea id:"111:6:0"
+	// 103:5:65: label:"ラベル", set:markers, world:world, corners:{ {34128.0,1632.0} {34288.0,1632.0} {34288.0,1808.0} {34112.0,1808.0} {34112.0,1632.0} }, weight:4, color:a10005, opacity:0.8, fillcolor:a10005, fillopacity:0.4, boost:false, markup:false
+	// boolean org.dynmap.markers.impl.MarkerAPIImpl.processListArea(DynmapCore plugin, DynmapCommandSender sender, String cmd, String commandLabel, String[] args)
+	// cat dynmap/markers.yml | grep "            '" | perl -ple '$_ =~ /            '\''([^'\'']*)'\'':/; $_ = "/dmarker deletearea id:\"$1\""'
+	// /dmarker deletearea id:"111:6:0"
+	/*
+	 * String msg = m.getMarkerID() + ": label:\"" + m.getLabel() + "\", set:" + m.getMarkerSet().getMarkerSetID()
+	 * 	+ ", world:" + m.getWorld() + ", corners:" + ptlist + ", weight:" + m.getLineWeight() + ", color:"
+	 * 	+ String.format("%06x", m.getLineColor()) + ", opacity:" + m.getLineOpacity() + ", fillcolor:"
+	 * 	+ String.format("%06x", m.getFillColor()) + ", fillopacity:" + m.getFillOpacity() + ", boost:"
+	 * 	+ m.getBoostFlag() + ", markup:" + m.isLabelMarkup();
+	 */
+	private static Pattern pattern = Pattern.compile("\\A(.*): label:\".*\", set:([^ ]*)");
 
-		// TODO スタブ
-		throw null;
+	public static String getCommandDeleteAreas(ImmutableArray<String> messages, String setExpected)
+	{
+		return messages.suppliterator()
+			.mapIfNotNull(m -> {
+				Matcher matcher = pattern.matcher(m);
+				if (matcher.find()) {
+					String id = matcher.group(1);
+					String set = matcher.group(2);
+					return new Tuple<>(id, set);
+				}
+				return null;
+			})
+			.filter(t -> {
+				if (setExpected.startsWith("/") && setExpected.endsWith("/")) {
+					return t.y.matches(setExpected.substring(1, setExpected.length() - 1));
+				} else {
+					return t.y.equals(setExpected);
+				}
+			})
+			.map(t -> "/dmarker deletearea id:\"" + t.x + "\" set:\"" + t.y + "\"") // /dmarker deletearea id:"$1" set:"$2"
+			.join("\n");
 	}
 
-	private JTextArea textArea;
+	private JTextArea textAreaCommand;
+	private JTextField textAreaSet;
 
 	@Override
 	protected void initComponenets()
@@ -74,17 +112,63 @@ public class GuiCommand extends GuiBase
 
 		windowWrapper.getWindow().add(borderPanelDown(
 
-			scrollPane(textArea = new JTextArea(dynmapCommand), 600, 600),
+			scrollPane(textAreaCommand = new JTextArea(), 600, 600),
 
-			flowPanel(
+			borderPanelDown(
 
-				get(button("Send", e -> {
-					if (oSender.isPresent()) {
-						oSender.get().accept(ISuppliterator.of(textArea.getText().trim().split("\\n")).toCollection());
-					}
-				}), c -> {
-					c.setEnabled(oSender.isPresent());
-				})
+				flowPanel(
+
+					new JLabel("Set"),
+
+					textAreaSet = new JTextField("markers", 10)
+
+				),
+
+				borderPanelDown(
+
+					flowPanel(
+
+						button("Generate Upload Command", e -> {
+							textAreaCommand.setText(getCommandUpload(areas, textAreaSet.getText()));
+						}),
+
+						get(new JButton("Generate Delete Command"), c -> {
+							c.setEnabled(oChatMessageProvider.isPresent());
+							if (oChatMessageProvider.isPresent()) {
+								c.addMouseListener(new MouseAdapter() {
+									@Override
+									public void mousePressed(MouseEvent e)
+									{
+										textAreaCommand.setText("");
+										oChatMessageProvider.get().startCapture("/dmarker listareas");
+									}
+
+									@Override
+									public void mouseReleased(MouseEvent e)
+									{
+										textAreaCommand.setText(getCommandDeleteAreas(
+											oChatMessageProvider.get().stopCapture(),
+											textAreaSet.getText()));
+									}
+								});
+							}
+						})
+
+					),
+
+					flowPanel(
+
+						get(button("Send", e -> {
+							if (oSender.isPresent()) {
+								oSender.get().accept(ISuppliterator.of(textAreaCommand.getText().trim().split("\\n")).toList());
+							}
+						}), c -> {
+							c.setEnabled(oSender.isPresent());
+						})
+
+					)
+
+				)
 
 			)
 
