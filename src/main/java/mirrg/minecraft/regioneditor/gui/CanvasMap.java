@@ -1,7 +1,6 @@
 package mirrg.minecraft.regioneditor.gui;
 
 import java.awt.Canvas;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Random;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
@@ -160,52 +158,12 @@ public class CanvasMap extends Canvas
 
 	public final PossessionMapModel possessionMapModel = new PossessionMapModel(new PossessionMap());
 
-	// TODO
-	@SuppressWarnings("unused")
 	public void init()
 	{
 		try {
-
-			Random random = new Random();
-
-			for (int i = 0; i < 5; i++) {
-				addRegionInfo(
-					new RegionIdentifier(
-						"" + (random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10)),
-						"" + (random.nextInt(10) * random.nextInt(10) * random.nextInt(10) * random.nextInt(10))),
-					new RegionInfo(
-						"" + random.nextInt(10000),
-						new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256)),
-						"" + random.nextInt(10000),
-						new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256))));
-			}
 			addRegionInfo(
-				RegionIdentifier.decode(new Gson().fromJson("[\"4432\",\"1\"]", JsonElement.class)),
-				RegionInfo.decode(new Gson().fromJson("[\"レイミセロ国\",\"#FF0000\",\"首都\",\"#823413\"]", JsonElement.class)));
-			addRegionInfo(
-				RegionIdentifier.decode(new Gson().fromJson("[\"4432\",\"5673\"]", JsonElement.class)),
-				RegionInfo.decode(new Gson().fromJson("[\"レイミセロ国\",\"#FF0000\",\"九州\",\"#198467\"]", JsonElement.class)));
-			addRegionInfo(
-				RegionIdentifier.decode(new Gson().fromJson("[\"17\",\"1\"]", JsonElement.class)),
-				RegionInfo.decode(new Gson().fromJson("[\"宇宙航空研究開発機構\",\"#D89726\",\"金星探査機「あかつき28」墜落跡地\",\"#ff0000\"]", JsonElement.class)));
-
-			if (false) {
-				for (int i = 0; i < 10000; i++) {
-					RegionIdentifier regionIdentifier;
-
-					regionIdentifier = possessionMapModel.regionTableModel.getDataReader().getKeys().toCollection().get(random.nextInt(possessionMapModel.regionTableModel.getDataReader().size()));
-
-					int x = random.nextInt(1000);
-					int z = random.nextInt(1000);
-					int s = random.nextInt(5);
-					for (int xi = -s; xi <= s; xi++) {
-						for (int zi = -s; zi <= s; zi++) {
-							possessionMapModel.tileMapModel.set(new TileIndex(x + xi, z + zi), Optional.of(regionIdentifier));
-						}
-					}
-				}
-			}
-
+				RegionIdentifier.decode(new Gson().fromJson("[\"DUMY\",\"1234\"]", JsonElement.class)),
+				RegionInfo.decode(new Gson().fromJson("[\"国名\",\"#FF0000\",\"州名\",\"#823413\"]", JsonElement.class)));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
