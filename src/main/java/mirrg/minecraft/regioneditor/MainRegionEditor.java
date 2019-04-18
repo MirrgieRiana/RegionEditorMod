@@ -17,7 +17,7 @@ public class MainRegionEditor
 			e.printStackTrace();
 		}
 
-		new GuiRegionEditor(null, Optional.empty()).show();
+		new GuiRegionEditor(null, Optional.empty(), Optional.empty()).show();
 	}
 
 }

@@ -1,14 +1,19 @@
 package mirrg.minecraft.regioneditor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.logging.log4j.Logger;
 
+import mirrg.boron.util.struct.ImmutableArray;
 import mirrg.minecraft.regioneditor.gui.GuiRegionEditor;
+import mirrg.minecraft.regioneditor.gui.IChatMessageProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.ClientCommandHandler;
+import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -40,6 +45,18 @@ public class ModRegionEditor
 	{
 		if (event.getSide() == Side.CLIENT) {
 			MinecraftForge.EVENT_BUS.register(new Object() {
+				private final Object lock = new Object();
+				private List<String> chatMessage = new ArrayList<>();
+				private boolean doCapture = false;
+
+				@SubscribeEvent
+				public void handle(ClientChatReceivedEvent event)
+				{
+					synchronized (lock) {
+						if (doCapture) chatMessage.add(event.getMessage().getUnformattedText());
+					}
+				}
+
 				@SubscribeEvent
 				public void handle(PlayerInteractEvent.RightClickItem event)
 				{
@@ -53,6 +70,27 @@ public class ModRegionEditor
 										send(s);
 									}
 
+								}), Optional.of(new IChatMessageProvider() {
+									@Override
+									public void startCapture(String command)
+									{
+										synchronized (lock) {
+											doCapture = true;
+										}
+										send(command);
+									}
+
+									@Override
+									public ImmutableArray<String> stopCapture()
+									{
+										ImmutableArray<String> array;
+										synchronized (lock) {
+											doCapture = false;
+											array = ImmutableArray.ofList(chatMessage);
+											chatMessage.clear();
+										}
+										return array;
+									}
 								})).show();
 							}
 						}

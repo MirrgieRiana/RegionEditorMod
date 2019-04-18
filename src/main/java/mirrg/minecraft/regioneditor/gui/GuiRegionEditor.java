@@ -69,6 +69,7 @@ public class GuiRegionEditor extends GuiBase
 {
 
 	private Optional<Consumer<List<String>>> oSender;
+	private Optional<IChatMessageProvider> oChatMessageProvider;
 
 	private InputMap inputMap;
 	private ActionMap actionMap;
@@ -119,10 +120,11 @@ public class GuiRegionEditor extends GuiBase
 	private JList<Optional<RegionIdentifier>> tableRegion;
 	private DefaultListModel<Optional<RegionIdentifier>> modelTableRegion;
 
-	public GuiRegionEditor(WindowWrapper owner, Optional<Consumer<List<String>>> oSender)
+	public GuiRegionEditor(WindowWrapper owner, Optional<Consumer<List<String>>> oSender, Optional<IChatMessageProvider> oChatMessageProvider)
 	{
 		super(owner, "RegionEditor", ModalityType.MODELESS);
 		this.oSender = oSender;
+		this.oChatMessageProvider = oChatMessageProvider;
 	}
 
 	@Override
