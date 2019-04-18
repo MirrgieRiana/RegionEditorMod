@@ -50,12 +50,7 @@ public class ModRegionEditor
 								new GuiRegionEditor(null, Optional.of(ss -> {
 
 									for (String s : ss) {
-										Minecraft.getMinecraft().ingameGUI.getChatGUI().addToSentMessages(s);
-										if (ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().player, s) != 0) {
-
-										} else {
-											Minecraft.getMinecraft().player.sendChatMessage(s);
-										}
+										send(s);
 									}
 
 								})).show();
@@ -64,6 +59,16 @@ public class ModRegionEditor
 					}
 				}
 			});
+		}
+	}
+
+	private static void send(String s)
+	{
+		Minecraft.getMinecraft().ingameGUI.getChatGUI().addToSentMessages(s);
+		if (ClientCommandHandler.instance.executeCommand(Minecraft.getMinecraft().player, s) != 0) {
+
+		} else {
+			Minecraft.getMinecraft().player.sendChatMessage(s);
 		}
 	}
 
