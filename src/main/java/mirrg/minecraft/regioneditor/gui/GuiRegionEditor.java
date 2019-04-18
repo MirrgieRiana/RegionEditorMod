@@ -169,7 +169,7 @@ public class GuiRegionEditor extends GuiBase
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK))
 				.register();
 			actionOpenGuiCommand = new ActionBuilder<>(new ActionButton(e -> {
-				new GuiCommand(windowWrapper, GuiCommand.getCommandUpload(canvasMap.possessionMapModel.getDataReader().getAreas(), "markers"), oSender).show();
+				new GuiCommand(windowWrapper, GuiCommand.getCommandUpload(canvasMap.possessionMapModel.getDataReader().getAreas(), "markers"/*TODO*/), oSender).show();
 			}))
 				.value(Action.NAME, "Open Dynmap Command Window(D)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)
