@@ -47,8 +47,8 @@ public class GuiCommand extends GuiBase
 			sb.append(String.format("/dmarker addarea color:%06x fillcolor:%06x weight:4 opacity:0.8 fillopacity:0.4 label:\"%s\" id:\"%s\"",
 				area.regionEntry.regionInfo.countryColor.getRGB() & 0xFFFFFF,
 				area.regionEntry.regionInfo.stateColor.getRGB() & 0xFFFFFF,
-				area.regionEntry.regionInfo.countryName + "：" + area.regionEntry.regionInfo.stateName,
-				area.regionEntry.regionIdentifier.countryNumber + ":" + area.regionEntry.regionIdentifier.stateNumber + ":" + areaId));
+				area.regionEntry.regionInfo.countryName + " / " + area.regionEntry.regionInfo.stateName,
+				area.regionEntry.regionIdentifier.countryNumber + "_" + area.regionEntry.regionIdentifier.stateNumber + "_" + areaId));
 			sb.append("\n");
 		});
 
