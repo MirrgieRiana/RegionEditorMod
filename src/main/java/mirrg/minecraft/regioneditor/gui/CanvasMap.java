@@ -57,11 +57,6 @@ public class CanvasMap extends Canvas
 
 	private I18n i18n;
 
-	public CanvasMap(I18n i18n)
-	{
-		this.i18n = i18n;
-	}
-
 	private Optional<ITool> oTool = Optional.empty();
 
 	public void setTool(Optional<ITool> oTool)
@@ -184,8 +179,9 @@ public class CanvasMap extends Canvas
 		possessionMapModel.regionTableModel.put(regionIdentifier, regionInfo);
 	}
 
-	public CanvasMap(ICanvasMapListener listener)
+	public CanvasMap(I18n i18n, ICanvasMapListener listener)
 	{
+		this.i18n = i18n;
 		this.listener = listener;
 
 		addComponentListener(new ComponentAdapter() {

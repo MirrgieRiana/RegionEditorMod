@@ -564,7 +564,7 @@ public class GuiRegionEditor extends GuiBase
 								borderPanelRight(
 
 									// 地図
-									canvasMap = get(new CanvasMap(new ICanvasMapListener() {
+									canvasMap = get(new CanvasMap(i18n, new ICanvasMapListener() {
 										@Override
 										public void onCurrentRegionIdentifierChange(Optional<RegionIdentifier> oCurrentRegionIdentifier)
 										{
