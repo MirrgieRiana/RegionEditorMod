@@ -12,7 +12,7 @@ import java.net.URL;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 
-import mirrg.minecraft.regioneditor.gui.lang.I18n;
+import mirrg.boron.util.i18n.I18n;
 
 public class GuiUrl extends GuiBase
 {

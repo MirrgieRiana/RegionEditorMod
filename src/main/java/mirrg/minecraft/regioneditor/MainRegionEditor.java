@@ -6,14 +6,14 @@ import java.util.Optional;
 
 import javax.swing.UIManager;
 
+import mirrg.boron.util.i18n.I18n;
+import mirrg.boron.util.i18n.localizers.LocalizerResourceBundle;
 import mirrg.minecraft.regioneditor.gui.GuiRegionEditor;
-import mirrg.minecraft.regioneditor.gui.lang.I18n;
-import mirrg.minecraft.regioneditor.gui.lang.LocalizerResourceBundle;
 
 public class MainRegionEditor
 {
 
-	public static final String I18N_BASENAME = I18n.class.getPackage().getName() + ".gui";
+	public static final String I18N_BASENAME = MainRegionEditor.class.getPackage().getName() + ".lang.gui";
 	public static I18n i18n = new I18n();
 
 	public static void main(String[] args)

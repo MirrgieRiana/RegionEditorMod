@@ -8,7 +8,7 @@ import java.awt.Font;
 
 import javax.swing.JTextArea;
 
-import mirrg.minecraft.regioneditor.gui.lang.I18n;
+import mirrg.boron.util.i18n.I18n;
 
 public class GuiData extends GuiBase
 {

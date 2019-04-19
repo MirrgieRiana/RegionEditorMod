@@ -1,4 +1,4 @@
-package mirrg.minecraft.regioneditor.gui.lang;
+package mirrg.boron.util.i18n;
 
 import java.util.ArrayDeque;
 import java.util.Deque;

@@ -1,4 +1,4 @@
-package mirrg.minecraft.regioneditor.gui.lang;
+package mirrg.boron.util.i18n.localizers;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +12,8 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
+
+import mirrg.boron.util.i18n.ILocalizer;
 
 public class LocalizerResourceBundle implements ILocalizer
 {

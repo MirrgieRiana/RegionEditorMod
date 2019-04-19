@@ -19,12 +19,12 @@ import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import mirrg.boron.util.i18n.I18n;
 import mirrg.boron.util.struct.ImmutableArray;
 import mirrg.boron.util.struct.Tuple;
 import mirrg.boron.util.suppliterator.ISuppliterator;
 import mirrg.minecraft.regioneditor.data.Area;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
-import mirrg.minecraft.regioneditor.gui.lang.I18n;
 
 public class GuiCommand extends GuiBase
 {

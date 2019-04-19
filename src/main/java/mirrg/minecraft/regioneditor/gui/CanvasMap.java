@@ -27,6 +27,7 @@ import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
+import mirrg.boron.util.i18n.I18n;
 import mirrg.boron.util.struct.Tuple;
 import mirrg.minecraft.regioneditor.data.IPossessionMapReader;
 import mirrg.minecraft.regioneditor.data.IRegionTableListener;
@@ -38,7 +39,6 @@ import mirrg.minecraft.regioneditor.data.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.RegionInfo;
 import mirrg.minecraft.regioneditor.data.TileIndex;
 import mirrg.minecraft.regioneditor.data.TileMap;
-import mirrg.minecraft.regioneditor.gui.lang.I18n;
 
 public class CanvasMap extends Canvas
 {

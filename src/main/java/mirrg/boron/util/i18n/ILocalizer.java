@@ -1,4 +1,4 @@
-package mirrg.minecraft.regioneditor.gui.lang;
+package mirrg.boron.util.i18n;
 
 public interface ILocalizer
 {
