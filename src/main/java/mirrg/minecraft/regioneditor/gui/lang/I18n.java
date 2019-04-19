@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.file.NoSuchFileException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -62,7 +63,9 @@ public class I18n
 
 	private static Map<String, String> load(String locale) throws IOException
 	{
-		return load(I18n.class.getResource(locale + ".txt"));
+		URL url = I18n.class.getResource(locale + ".txt");
+		if (url == null) throw new NoSuchFileException(locale + ".txt");
+		return load(url);
 	}
 
 }
