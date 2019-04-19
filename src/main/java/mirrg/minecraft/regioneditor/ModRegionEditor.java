@@ -11,7 +11,6 @@ import org.apache.logging.log4j.Logger;
 import mirrg.boron.util.struct.ImmutableArray;
 import mirrg.minecraft.regioneditor.gui.GuiRegionEditor;
 import mirrg.minecraft.regioneditor.gui.IChatMessageProvider;
-import mirrg.minecraft.regioneditor.gui.lang.I18n;
 import mirrg.minecraft.regioneditor.gui.lang.LocalizerResourceBundle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Items;
@@ -46,12 +45,12 @@ public class ModRegionEditor
 		logger = event.getModLog();
 
 		try {
-			MainRegionEditor.i18n.registerLocalizerEngine(I18n.getLocalizerResourceBundle(Locale.ENGLISH));
+			MainRegionEditor.i18n.registerLocalizerEngine(LocalizerResourceBundle.create(MainRegionEditor.I18N_BASENAME, Locale.ENGLISH));
 		} catch (IOException e) {
 			logger.warn(e);
 		}
 		try {
-			MainRegionEditor.i18n.registerLocalizerEngine(I18n.getLocalizerResourceBundle(Locale.getDefault()));
+			MainRegionEditor.i18n.registerLocalizerEngine(LocalizerResourceBundle.create(MainRegionEditor.I18N_BASENAME, Locale.getDefault()));
 		} catch (IOException e) {
 			logger.warn("Could not load the language file: " + Locale.getDefault().toLanguageTag());
 		}
@@ -90,7 +89,7 @@ public class ModRegionEditor
 									if (locale == null || !locale.equals(localeNew)) {
 										locale = localeNew;
 										try {
-											localizer = I18n.getLocalizerResourceBundle(localeNew);
+											localizer = LocalizerResourceBundle.create(MainRegionEditor.I18N_BASENAME, localeNew);
 										} catch (IOException e) {
 											logger.warn("Could not load the language file: " + localeNew.toLanguageTag());
 											localizer = null;
