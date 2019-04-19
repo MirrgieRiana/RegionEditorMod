@@ -1,7 +1,9 @@
 package mirrg.minecraft.regioneditor;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import org.apache.logging.log4j.Logger;
@@ -10,6 +12,7 @@ import mirrg.boron.util.struct.ImmutableArray;
 import mirrg.minecraft.regioneditor.gui.GuiRegionEditor;
 import mirrg.minecraft.regioneditor.gui.IChatMessageProvider;
 import mirrg.minecraft.regioneditor.gui.lang.I18n;
+import mirrg.minecraft.regioneditor.gui.lang.LocalizerResourceBundle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -32,13 +35,29 @@ public class ModRegionEditor
 	public static final String NAME = "RegionEditor";
 	public static final String VERSION = "0.0.1";
 
-	@SuppressWarnings("unused")
 	private static Logger logger;
+
+	private Locale locale;
+	private LocalizerResourceBundle localizer;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
 	{
 		logger = event.getModLog();
+
+		try {
+			I18n.registerLocalizerEngine(I18n.getLocalizerResourceBundle(Locale.ENGLISH));
+		} catch (IOException e) {
+			logger.warn(e);
+		}
+		try {
+			I18n.registerLocalizerEngine(I18n.getLocalizerResourceBundle(Locale.getDefault()));
+		} catch (IOException e) {
+			logger.warn("Could not load the language file: " + Locale.getDefault().toLanguageTag());
+		}
+
+		I18n.registerLocalizerEngine(() -> Optional.ofNullable(localizer));
+
 	}
 
 	@EventHandler
@@ -66,7 +85,18 @@ public class ModRegionEditor
 						if (itemStack.getItem() == Items.STICK) {
 							if (itemStack.getDisplayName().equals("RegionEditor.show")) {
 
-								I18n.setLocale(Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getLanguageCode());
+								{
+									Locale localeNew = Minecraft.getMinecraft().getLanguageManager().getCurrentLanguage().getJavaLocale();
+									if (locale == null || !locale.equals(localeNew)) {
+										locale = localeNew;
+										try {
+											localizer = I18n.getLocalizerResourceBundle(localeNew);
+										} catch (IOException e) {
+											logger.warn("Could not load the language file: " + localeNew.toLanguageTag());
+											localizer = null;
+										}
+									}
+								}
 
 								new GuiRegionEditor(null, Optional.of(ss -> {
 

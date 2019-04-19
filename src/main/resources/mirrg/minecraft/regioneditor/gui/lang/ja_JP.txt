@@ -1,2 +1,0 @@
-CanvasMap.defaultCountry=国名
-CanvasMap.defaultState=州名
