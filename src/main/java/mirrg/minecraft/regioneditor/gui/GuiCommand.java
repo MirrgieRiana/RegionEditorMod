@@ -24,6 +24,7 @@ import mirrg.boron.util.struct.Tuple;
 import mirrg.boron.util.suppliterator.ISuppliterator;
 import mirrg.minecraft.regioneditor.data.Area;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
+import mirrg.minecraft.regioneditor.gui.lang.I18n;
 
 public class GuiCommand extends GuiBase
 {
@@ -34,13 +35,13 @@ public class GuiCommand extends GuiBase
 
 	public GuiCommand(WindowWrapper owner, ImmutableArray<Area> areas, Optional<Consumer<List<String>>> oSender, Optional<IChatMessageProvider> oChatMessageProvider)
 	{
-		super(owner, "Command", ModalityType.MODELESS);
+		super(owner, I18n.localize("GuiCommand.title"), ModalityType.MODELESS);
 		this.areas = areas;
 		this.oSender = oSender;
 		this.oChatMessageProvider = oChatMessageProvider;
 	}
 
-	public static String getCommandUpload(ImmutableArray<Area> list, String set)
+	public static String getCommandAdd(ImmutableArray<Area> list, String set)
 	{
 		Map<RegionIdentifier, Integer> areaIds = new HashMap<>();
 
@@ -118,7 +119,7 @@ public class GuiCommand extends GuiBase
 
 				flowPanel(
 
-					new JLabel("Set"),
+					new JLabel(I18n.localize("GuiCommand.label.set")),
 
 					textAreaSet = new JTextField("markers", 10)
 
@@ -128,11 +129,11 @@ public class GuiCommand extends GuiBase
 
 					flowPanel(
 
-						button("Generate Upload Command", e -> {
-							textAreaCommand.setText(getCommandUpload(areas, textAreaSet.getText()));
+						button(I18n.localize("GuiCommand.button.generateCommandAdd"), e -> {
+							textAreaCommand.setText(getCommandAdd(areas, textAreaSet.getText()));
 						}),
 
-						get(new JButton("Generate Delete Command"), c -> {
+						get(new JButton(I18n.localize("GuiCommand.button.generateCommandDelete")), c -> {
 							c.setEnabled(oChatMessageProvider.isPresent());
 							if (oChatMessageProvider.isPresent()) {
 								c.addMouseListener(new MouseAdapter() {
@@ -158,7 +159,7 @@ public class GuiCommand extends GuiBase
 
 					flowPanel(
 
-						get(button("Send", e -> {
+						get(button(I18n.localize("GuiCommand.button.send"), e -> {
 							if (oSender.isPresent()) {
 								oSender.get().accept(ISuppliterator.of(textAreaCommand.getText().trim().split("\\n")).toList());
 							}
