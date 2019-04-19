@@ -58,6 +58,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
+import mirrg.boron.util.UtilsString;
 import mirrg.minecraft.regioneditor.data.IRegionTableListener;
 import mirrg.minecraft.regioneditor.data.RegionEntry;
 import mirrg.minecraft.regioneditor.data.RegionIdentifier;
@@ -152,6 +153,11 @@ public class GuiRegionEditor extends GuiBase
 						canvasMap.setExpression(string);
 					} catch (Exception e) {
 						e.printStackTrace();
+						JOptionPane.showMessageDialog(
+							windowWrapper.frame,
+							UtilsString.getStackTrace(e),
+							"Error",
+							JOptionPane.ERROR_MESSAGE);
 					}
 				}
 
