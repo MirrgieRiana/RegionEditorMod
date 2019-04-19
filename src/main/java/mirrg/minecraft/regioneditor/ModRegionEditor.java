@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import org.apache.logging.log4j.Logger;
 
+import mirrg.boron.util.i18n.LocalizerEngine;
 import mirrg.boron.util.i18n.localizers.LocalizerResourceBundle;
 import mirrg.boron.util.struct.ImmutableArray;
 import mirrg.minecraft.regioneditor.gui.GuiRegionEditor;
@@ -37,7 +38,7 @@ public class ModRegionEditor
 	private static Logger logger;
 
 	private Locale locale;
-	private LocalizerResourceBundle localizer;
+	private LocalizerEngine localizerEngine;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
@@ -45,17 +46,17 @@ public class ModRegionEditor
 		logger = event.getModLog();
 
 		try {
-			MainRegionEditor.i18n.registerLocalizerEngine(LocalizerResourceBundle.create(MainRegionEditor.I18N_BASENAME, Locale.ENGLISH));
+			MainRegionEditor.i18n.registerLocalizer(LocalizerResourceBundle.create(MainRegionEditor.I18N_BASENAME, Locale.ENGLISH));
 		} catch (IOException e) {
 			logger.warn(e);
 		}
 		try {
-			MainRegionEditor.i18n.registerLocalizerEngine(LocalizerResourceBundle.create(MainRegionEditor.I18N_BASENAME, Locale.getDefault()));
+			MainRegionEditor.i18n.registerLocalizer(LocalizerResourceBundle.create(MainRegionEditor.I18N_BASENAME, Locale.getDefault()));
 		} catch (IOException e) {
 			logger.warn("Could not load the language file: " + Locale.getDefault().toLanguageTag());
 		}
 
-		MainRegionEditor.i18n.registerLocalizerEngine(() -> Optional.ofNullable(localizer));
+		MainRegionEditor.i18n.registerLocalizerEngine(localizerEngine);
 
 	}
 
@@ -89,10 +90,10 @@ public class ModRegionEditor
 									if (locale == null || !locale.equals(localeNew)) {
 										locale = localeNew;
 										try {
-											localizer = LocalizerResourceBundle.create(MainRegionEditor.I18N_BASENAME, localeNew);
+											localizerEngine.setLocalizer(LocalizerResourceBundle.create(MainRegionEditor.I18N_BASENAME, localeNew));
 										} catch (IOException e) {
 											logger.warn("Could not load the language file: " + localeNew.toLanguageTag());
-											localizer = null;
+											localizerEngine.setLocalizer(null);
 										}
 									}
 								}

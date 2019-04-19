@@ -26,20 +26,20 @@ public class MainRegionEditor
 		}
 
 		try {
-			i18n.registerLocalizerEngine(LocalizerResourceBundle.create(I18N_BASENAME, Locale.ENGLISH));
+			i18n.registerLocalizer(LocalizerResourceBundle.create(I18N_BASENAME, Locale.ENGLISH));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 		try {
-			i18n.registerLocalizerEngine(LocalizerResourceBundle.create(I18N_BASENAME, Locale.getDefault()));
+			i18n.registerLocalizer(LocalizerResourceBundle.create(I18N_BASENAME, Locale.getDefault()));
 		} catch (IOException e) {
 			System.err.println("Could not load the language file: " + Locale.getDefault().toLanguageTag());
 		}
 
 		if (args.length >= 1) {
 			try {
-				i18n.registerLocalizerEngine(LocalizerResourceBundle.create(I18N_BASENAME, Locale.forLanguageTag(args[0].replace('_', '-'))));
+				i18n.registerLocalizer(LocalizerResourceBundle.create(I18N_BASENAME, Locale.forLanguageTag(args[0].replace('_', '-'))));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
