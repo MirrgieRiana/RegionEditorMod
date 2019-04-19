@@ -35,7 +35,7 @@ public class I18n
 	public synchronized static void setLocale(String locale)
 	{
 		if (locale.matches("[a-zA-Z][a-zA-Z]_[a-zA-Z][a-zA-Z]")) {
-			locale = locale.substring(0, 2).toLowerCase() + "_" + locale.substring(3, 5);
+			locale = locale.substring(0, 2).toLowerCase() + "_" + locale.substring(3, 5).toUpperCase();
 		}
 
 		try {
