@@ -12,12 +12,14 @@ import java.net.URL;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 
+import mirrg.minecraft.regioneditor.gui.lang.I18n;
+
 public class GuiUrl extends GuiBase
 {
 
 	public GuiUrl(WindowWrapper owner)
 	{
-		super(owner, "Url", ModalityType.DOCUMENT_MODAL);
+		super(owner, I18n.localize("GuiUrl.title"), ModalityType.DOCUMENT_MODAL);
 	}
 
 	private JTextArea textArea;
@@ -52,7 +54,7 @@ public class GuiUrl extends GuiBase
 
 			flowPanel(
 
-				button("OK", e -> {
+				button(I18n.localize("GuiUrl.button.ok"), e -> {
 					try {
 						uri = new URI(textArea.getText());
 						url = new URL(textArea.getText());
@@ -63,7 +65,7 @@ public class GuiUrl extends GuiBase
 					}
 				}),
 
-				button("Cancel", e -> {
+				button(I18n.localize("GuiUrl.button.cancel"), e -> {
 					windowWrapper.getWindow().setVisible(false);
 				})
 
