@@ -54,7 +54,7 @@ public class GuiUrl extends GuiBase
 
 			flowPanel(
 
-				button(I18n.localize("GuiUrl.button.ok"), e -> {
+				button(I18n.localize("GuiUrl.buttonOk"), e -> {
 					try {
 						uri = new URI(textArea.getText());
 						url = new URL(textArea.getText());
@@ -65,7 +65,7 @@ public class GuiUrl extends GuiBase
 					}
 				}),
 
-				button(I18n.localize("GuiUrl.button.cancel"), e -> {
+				button(I18n.localize("GuiUrl.buttonCancel"), e -> {
 					windowWrapper.getWindow().setVisible(false);
 				})
 

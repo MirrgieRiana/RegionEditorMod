@@ -36,11 +36,11 @@ public class GuiData extends GuiBase
 
 			flowPanel(
 
-				button(I18n.localize("GuiData.button.export"), e2 -> {
+				button(I18n.localize("GuiData.buttonExport"), e2 -> {
 					textArea.setText(listener.onExport());
 				}),
 
-				button(I18n.localize("GuiData.button.import"), e2 -> {
+				button(I18n.localize("GuiData.buttonImport"), e2 -> {
 					listener.onImport(textArea.getText());
 				})
 

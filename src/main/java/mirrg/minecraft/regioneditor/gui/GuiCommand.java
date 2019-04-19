@@ -119,7 +119,7 @@ public class GuiCommand extends GuiBase
 
 				flowPanel(
 
-					new JLabel(I18n.localize("GuiCommand.label.set")),
+					new JLabel(I18n.localize("GuiCommand.labelSet")),
 
 					textAreaSet = new JTextField("markers", 10)
 
@@ -129,11 +129,11 @@ public class GuiCommand extends GuiBase
 
 					flowPanel(
 
-						button(I18n.localize("GuiCommand.button.generateCommandAdd"), e -> {
+						button(I18n.localize("GuiCommand.buttonGenerateCommandAdd"), e -> {
 							textAreaCommand.setText(getCommandAdd(areas, textAreaSet.getText()));
 						}),
 
-						get(new JButton(I18n.localize("GuiCommand.button.generateCommandDelete")), c -> {
+						get(new JButton(I18n.localize("GuiCommand.buttonGenerateCommandDelete")), c -> {
 							c.setEnabled(oChatMessageProvider.isPresent());
 							if (oChatMessageProvider.isPresent()) {
 								c.addMouseListener(new MouseAdapter() {
@@ -159,7 +159,7 @@ public class GuiCommand extends GuiBase
 
 					flowPanel(
 
-						get(button(I18n.localize("GuiCommand.button.send"), e -> {
+						get(button(I18n.localize("GuiCommand.buttonSend"), e -> {
 							if (oSender.isPresent()) {
 								oSender.get().accept(ISuppliterator.of(textAreaCommand.getText().trim().split("\\n")).toList());
 							}
