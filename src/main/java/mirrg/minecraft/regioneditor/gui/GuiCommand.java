@@ -77,7 +77,7 @@ public class GuiCommand extends GuiBase
 	 * 	+ String.format("%06x", m.getFillColor()) + ", fillopacity:" + m.getFillOpacity() + ", boost:"
 	 * 	+ m.getBoostFlag() + ", markup:" + m.isLabelMarkup();
 	 */
-	private static Pattern pattern = Pattern.compile("\\A(.*): label:\".*\", set:([^ ]*)");
+	private static Pattern pattern = Pattern.compile("\\A(.*): label:\".*\", set:(.*), world:");
 
 	public static String getCommandDeleteAreas(ImmutableArray<String> messages, String setExpected)
 	{
