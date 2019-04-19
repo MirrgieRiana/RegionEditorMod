@@ -26,12 +26,12 @@ public class I18n
 	/**
 	 * 優先度の高い順に格納されている。
 	 */
-	private static Deque<Supplier<Optional<? extends ILocalizer>>> listSOLocalizer = new ArrayDeque<>();
+	private Deque<Supplier<Optional<? extends ILocalizer>>> listSOLocalizer = new ArrayDeque<>();
 
 	/**
 	 * 現在登録されているローカライザーを優先度の高い順に返します。
 	 */
-	public synchronized static ISuppliterator<ILocalizer> getLocalizers()
+	public synchronized ISuppliterator<ILocalizer> getLocalizers()
 	{
 		return ISuppliterator.ofIterable(listSOLocalizer)
 			.mapIfPresent(Supplier::get);
@@ -40,7 +40,7 @@ public class I18n
 	/**
 	 * ローカライザーエンジンを最も優先度の高いものとして追加します。
 	 */
-	public synchronized static void registerLocalizerEngine(Supplier<Optional<? extends ILocalizer>> soLocalizer)
+	public synchronized void registerLocalizerEngine(Supplier<Optional<? extends ILocalizer>> soLocalizer)
 	{
 		listSOLocalizer.addFirst(soLocalizer);
 	}
@@ -48,13 +48,13 @@ public class I18n
 	/**
 	 * ローカライザーエンジンを最も優先度の高いものとして追加します。
 	 */
-	public synchronized static void registerLocalizerEngine(ILocalizer localizer)
+	public synchronized void registerLocalizerEngine(ILocalizer localizer)
 	{
 		Optional<ILocalizer> oLocalizer = Optional.of(localizer);
 		listSOLocalizer.addFirst(() -> oLocalizer);
 	}
 
-	public synchronized static String localize(String unlocalizedString)
+	public synchronized String localize(String unlocalizedString)
 	{
 		for (ILocalizer localizer : getLocalizers()) {
 			if (localizer.canLocalize(unlocalizedString)) {

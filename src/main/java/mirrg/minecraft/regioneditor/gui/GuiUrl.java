@@ -17,9 +17,9 @@ import mirrg.minecraft.regioneditor.gui.lang.I18n;
 public class GuiUrl extends GuiBase
 {
 
-	public GuiUrl(WindowWrapper owner)
+	public GuiUrl(WindowWrapper owner, I18n i18n)
 	{
-		super(owner, I18n.localize("GuiUrl.title"), ModalityType.DOCUMENT_MODAL);
+		super(owner, i18n, i18n.localize("GuiUrl.title"), ModalityType.DOCUMENT_MODAL);
 	}
 
 	private JTextArea textArea;
@@ -54,7 +54,7 @@ public class GuiUrl extends GuiBase
 
 			flowPanel(
 
-				button(I18n.localize("GuiUrl.buttonOk"), e -> {
+				button(localize("GuiUrl.buttonOk"), e -> {
 					try {
 						uri = new URI(textArea.getText());
 						url = new URL(textArea.getText());
@@ -65,7 +65,7 @@ public class GuiUrl extends GuiBase
 					}
 				}),
 
-				button(I18n.localize("GuiUrl.buttonCancel"), e -> {
+				button(localize("GuiUrl.buttonCancel"), e -> {
 					windowWrapper.getWindow().setVisible(false);
 				})
 

@@ -12,6 +12,8 @@ import mirrg.minecraft.regioneditor.gui.lang.I18n;
 public class MainRegionEditor
 {
 
+	public static I18n i18n = new I18n();
+
 	public static void main(String[] args)
 	{
 
@@ -22,26 +24,26 @@ public class MainRegionEditor
 		}
 
 		try {
-			I18n.registerLocalizerEngine(I18n.getLocalizerResourceBundle(Locale.ENGLISH));
+			i18n.registerLocalizerEngine(I18n.getLocalizerResourceBundle(Locale.ENGLISH));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 		try {
-			I18n.registerLocalizerEngine(I18n.getLocalizerResourceBundle(Locale.getDefault()));
+			i18n.registerLocalizerEngine(I18n.getLocalizerResourceBundle(Locale.getDefault()));
 		} catch (IOException e) {
 			System.err.println("Could not load the language file: " + Locale.getDefault().toLanguageTag());
 		}
 
 		if (args.length >= 1) {
 			try {
-				I18n.registerLocalizerEngine(I18n.getLocalizerResourceBundle(Locale.forLanguageTag(args[0].replace('_', '-'))));
+				i18n.registerLocalizerEngine(I18n.getLocalizerResourceBundle(Locale.forLanguageTag(args[0].replace('_', '-'))));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 
-		new GuiRegionEditor(null, Optional.empty(), Optional.empty()).show();
+		new GuiRegionEditor(null, i18n, Optional.empty(), Optional.empty()).show();
 	}
 
 }

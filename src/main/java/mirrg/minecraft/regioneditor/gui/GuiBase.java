@@ -2,13 +2,17 @@ package mirrg.minecraft.regioneditor.gui;
 
 import java.awt.Dialog.ModalityType;
 
+import mirrg.minecraft.regioneditor.gui.lang.I18n;
+
 public abstract class GuiBase
 {
 
 	protected WindowWrapper windowWrapper;
+	protected I18n i18n;
 
-	public GuiBase(WindowWrapper owner, String title, ModalityType modalityType)
+	public GuiBase(WindowWrapper owner, I18n i18n, String title, ModalityType modalityType)
 	{
+		this.i18n = i18n;
 		windowWrapper = WindowWrapper.createWindow(owner, title, modalityType);
 	}
 
@@ -19,6 +23,11 @@ public abstract class GuiBase
 		initComponenets();
 		windowWrapper.getWindow().pack();
 		windowWrapper.getWindow().setVisible(true);
+	}
+
+	protected String localize(String unlocalizedString)
+	{
+		return i18n.localize(unlocalizedString);
 	}
 
 }

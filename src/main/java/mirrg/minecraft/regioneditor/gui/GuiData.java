@@ -15,9 +15,9 @@ public class GuiData extends GuiBase
 
 	private IDialogDataListener listener;
 
-	public GuiData(WindowWrapper owner, IDialogDataListener listener)
+	public GuiData(WindowWrapper owner, I18n i18n, IDialogDataListener listener)
 	{
-		super(owner, I18n.localize("GuiData.title"), ModalityType.MODELESS);
+		super(owner, i18n, i18n.localize("GuiData.title"), ModalityType.MODELESS);
 		this.listener = listener;
 	}
 
@@ -36,11 +36,11 @@ public class GuiData extends GuiBase
 
 			flowPanel(
 
-				button(I18n.localize("GuiData.buttonExport"), e2 -> {
+				button(localize("GuiData.buttonExport"), e2 -> {
 					textArea.setText(listener.onExport());
 				}),
 
-				button(I18n.localize("GuiData.buttonImport"), e2 -> {
+				button(localize("GuiData.buttonImport"), e2 -> {
 					listener.onImport(textArea.getText());
 				})
 

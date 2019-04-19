@@ -55,6 +55,13 @@ public class CanvasMap extends Canvas
 	private int positionX = 0;
 	private int positionZ = 0;
 
+	private I18n i18n;
+
+	public CanvasMap(I18n i18n)
+	{
+		this.i18n = i18n;
+	}
+
 	private Optional<ITool> oTool = Optional.empty();
 
 	public void setTool(Optional<ITool> oTool)
@@ -165,8 +172,8 @@ public class CanvasMap extends Canvas
 			addRegionInfo(
 				RegionIdentifier.decode(new Gson().fromJson("[\"DUMY\",\"1234\"]", JsonElement.class)),
 				RegionInfo.decode(new Gson().fromJson("[\"" +
-					I18n.localize("CanvasMap.defaultCountry") + "\",\"#FF0000\",\"" +
-					I18n.localize("CanvasMap.defaultState") + "\",\"#823413\"]", JsonElement.class)));
+					i18n.localize("CanvasMap.defaultCountry") + "\",\"#FF0000\",\"" +
+					i18n.localize("CanvasMap.defaultState") + "\",\"#823413\"]", JsonElement.class)));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

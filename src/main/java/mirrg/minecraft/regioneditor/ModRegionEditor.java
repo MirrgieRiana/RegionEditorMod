@@ -46,17 +46,17 @@ public class ModRegionEditor
 		logger = event.getModLog();
 
 		try {
-			I18n.registerLocalizerEngine(I18n.getLocalizerResourceBundle(Locale.ENGLISH));
+			MainRegionEditor.i18n.registerLocalizerEngine(I18n.getLocalizerResourceBundle(Locale.ENGLISH));
 		} catch (IOException e) {
 			logger.warn(e);
 		}
 		try {
-			I18n.registerLocalizerEngine(I18n.getLocalizerResourceBundle(Locale.getDefault()));
+			MainRegionEditor.i18n.registerLocalizerEngine(I18n.getLocalizerResourceBundle(Locale.getDefault()));
 		} catch (IOException e) {
 			logger.warn("Could not load the language file: " + Locale.getDefault().toLanguageTag());
 		}
 
-		I18n.registerLocalizerEngine(() -> Optional.ofNullable(localizer));
+		MainRegionEditor.i18n.registerLocalizerEngine(() -> Optional.ofNullable(localizer));
 
 	}
 
@@ -98,7 +98,7 @@ public class ModRegionEditor
 									}
 								}
 
-								new GuiRegionEditor(null, Optional.of(ss -> {
+								new GuiRegionEditor(null, MainRegionEditor.i18n, Optional.of(ss -> {
 
 									for (String s : ss) {
 										send(s);

@@ -33,9 +33,9 @@ public class GuiCommand extends GuiBase
 	private Optional<Consumer<List<String>>> oSender;
 	private Optional<IChatMessageProvider> oChatMessageProvider;
 
-	public GuiCommand(WindowWrapper owner, ImmutableArray<Area> areas, Optional<Consumer<List<String>>> oSender, Optional<IChatMessageProvider> oChatMessageProvider)
+	public GuiCommand(WindowWrapper owner, I18n i18n, ImmutableArray<Area> areas, Optional<Consumer<List<String>>> oSender, Optional<IChatMessageProvider> oChatMessageProvider)
 	{
-		super(owner, I18n.localize("GuiCommand.title"), ModalityType.MODELESS);
+		super(owner, i18n, i18n.localize("GuiCommand.title"), ModalityType.MODELESS);
 		this.areas = areas;
 		this.oSender = oSender;
 		this.oChatMessageProvider = oChatMessageProvider;
@@ -119,7 +119,7 @@ public class GuiCommand extends GuiBase
 
 				flowPanel(
 
-					new JLabel(I18n.localize("GuiCommand.labelSet")),
+					new JLabel(localize("GuiCommand.labelSet")),
 
 					textAreaSet = new JTextField("markers", 10)
 
@@ -129,11 +129,11 @@ public class GuiCommand extends GuiBase
 
 					flowPanel(
 
-						button(I18n.localize("GuiCommand.buttonGenerateCommandAdd"), e -> {
+						button(localize("GuiCommand.buttonGenerateCommandAdd"), e -> {
 							textAreaCommand.setText(getCommandAdd(areas, textAreaSet.getText()));
 						}),
 
-						get(new JButton(I18n.localize("GuiCommand.buttonGenerateCommandDelete")), c -> {
+						get(new JButton(localize("GuiCommand.buttonGenerateCommandDelete")), c -> {
 							c.setEnabled(oChatMessageProvider.isPresent());
 							if (oChatMessageProvider.isPresent()) {
 								c.addMouseListener(new MouseAdapter() {
@@ -159,7 +159,7 @@ public class GuiCommand extends GuiBase
 
 					flowPanel(
 
-						get(button(I18n.localize("GuiCommand.buttonSend"), e -> {
+						get(button(localize("GuiCommand.buttonSend"), e -> {
 							if (oSender.isPresent()) {
 								oSender.get().accept(ISuppliterator.of(textAreaCommand.getText().trim().split("\\n")).toList());
 							}
