@@ -8,6 +8,8 @@ import java.awt.Font;
 
 import javax.swing.JTextArea;
 
+import mirrg.minecraft.regioneditor.gui.lang.I18n;
+
 public class GuiData extends GuiBase
 {
 
@@ -15,7 +17,7 @@ public class GuiData extends GuiBase
 
 	public GuiData(WindowWrapper owner, IDialogDataListener listener)
 	{
-		super(owner, "Data", ModalityType.MODELESS);
+		super(owner, I18n.localize("GuiData.title"), ModalityType.MODELESS);
 		this.listener = listener;
 	}
 
@@ -34,11 +36,11 @@ public class GuiData extends GuiBase
 
 			flowPanel(
 
-				button("↑Export↑", e2 -> {
+				button(I18n.localize("GuiData.button.export"), e2 -> {
 					textArea.setText(listener.onExport());
 				}),
 
-				button("↓Import↓", e2 -> {
+				button(I18n.localize("GuiData.button.import"), e2 -> {
 					listener.onImport(textArea.getText());
 				})
 
