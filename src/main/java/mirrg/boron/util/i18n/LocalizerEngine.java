@@ -9,6 +9,11 @@ public class LocalizerEngine implements ILocalizerEngine
 
 	private Optional<ILocalizer> oLocalizer = Optional.empty();
 
+	public LocalizerEngine()
+	{
+		this(null);
+	}
+
 	/**
 	 * @param localizer
 	 *            nullable

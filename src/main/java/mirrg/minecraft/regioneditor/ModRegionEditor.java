@@ -38,7 +38,7 @@ public class ModRegionEditor
 	private static Logger logger;
 
 	private Locale locale;
-	private LocalizerEngine localizerEngine;
+	private LocalizerEngine localizerEngine = new LocalizerEngine();
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
