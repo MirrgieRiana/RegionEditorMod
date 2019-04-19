@@ -678,126 +678,135 @@ public class GuiRegionEditor extends GuiBase
 
 				borderPanelDown(
 
-					// 領地一覧
-					scrollPane(tableRegion = get(new JList<>(modelTableRegion = new DefaultListModel<>()), c -> {
-						c.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-						c.addMouseListener(new MouseAdapter() {
-							@Override
-							public void mouseReleased(MouseEvent e)
-							{
-								if (e.getButton() == MouseEvent.BUTTON1) {
-									canvasMap.setCurrentRegionIdentifier(getSelectedItem());
-								} else if (e.getButton() == MouseEvent.BUTTON3) {
+					borderPanelDown(
 
-									int index = c.locationToIndex(e.getPoint());
-									if (index < 0) return;
-									if (index >= c.getModel().getSize()) return;
-									Optional<RegionIdentifier> oRegionIdentifier = c.getModel().getElementAt(index);
-									if (!oRegionIdentifier.isPresent()) return;
+						// 領地一覧
+						scrollPane(tableRegion = get(new JList<>(modelTableRegion = new DefaultListModel<>()), c -> {
+							c.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+							c.addMouseListener(new MouseAdapter() {
+								@Override
+								public void mouseReleased(MouseEvent e)
+								{
+									if (e.getButton() == MouseEvent.BUTTON1) {
+										canvasMap.setCurrentRegionIdentifier(getSelectedItem());
+									} else if (e.getButton() == MouseEvent.BUTTON3) {
 
-									scrollToRegion(oRegionIdentifier.get());
+										int index = c.locationToIndex(e.getPoint());
+										if (index < 0) return;
+										if (index >= c.getModel().getSize()) return;
+										Optional<RegionIdentifier> oRegionIdentifier = c.getModel().getElementAt(index);
+										if (!oRegionIdentifier.isPresent()) return;
 
-								}
-							}
+										scrollToRegion(oRegionIdentifier.get());
 
-							private Optional<RegionIdentifier> getSelectedItem()
-							{
-								int index = tableRegion.getSelectedIndex();
-								if (index < 0) return Optional.empty();
-								if (index >= tableRegion.getModel().getSize()) return Optional.empty();
-								return tableRegion.getModel().getElementAt(index);
-							}
-						});
-						c.setCellRenderer(new ListCellRenderer<Optional<RegionIdentifier>>() {
-							private BufferedImage image = new BufferedImage(17, 17, BufferedImage.TYPE_INT_RGB);
-							private Graphics2D graphics = image.createGraphics();
-
-							private JLabel label = new JLabel();
-							{
-								label.setOpaque(true);
-							}
-
-							public Component getListCellRendererComponent(
-								JList<? extends Optional<RegionIdentifier>> list,
-								Optional<RegionIdentifier> value,
-								int index,
-								boolean isSelected,
-								boolean cellHasFocus)
-							{
-								if (value.isPresent()) {
-									RegionIdentifier regionIdentifier = value.get();
-									RegionEntry regionEntry = new RegionEntry(
-										regionIdentifier,
-										canvasMap.possessionMapModel.regionTableModel.getDataReader().get(regionIdentifier));
-
-									label.setText(regionEntry.toString());
-								} else {
-									label.setText(I18n.localize("GuiRegionEditor.tableRegion.empty"));
+									}
 								}
 
-								graphics.setBackground(Color.gray);
-								graphics.clearRect(0, 0, 17, 17);
-								if (value.isPresent()) {
-									RegionIdentifier regionIdentifier = value.get();
-									RegionEntry regionEntry = new RegionEntry(
-										regionIdentifier,
-										canvasMap.possessionMapModel.regionTableModel.getDataReader().get(regionIdentifier));
-
-									ImageLayerTile.drawArea(graphics, regionEntry, 0, 0, 16);
-									ImageLayerTile.drawBorder(graphics, regionEntry, 0, 0, 16, true, true, true, true);
-									ImageLayerTile.drawIdentifier(image, regionEntry, 0, 0, 16);
-									ImageLayerTile.drawGrid(graphics, 0, 0, 16);
+								private Optional<RegionIdentifier> getSelectedItem()
+								{
+									int index = tableRegion.getSelectedIndex();
+									if (index < 0) return Optional.empty();
+									if (index >= tableRegion.getModel().getSize()) return Optional.empty();
+									return tableRegion.getModel().getElementAt(index);
 								}
-								label.setIcon(new ImageIcon(image));
+							});
+							c.setCellRenderer(new ListCellRenderer<Optional<RegionIdentifier>>() {
+								private BufferedImage image = new BufferedImage(17, 17, BufferedImage.TYPE_INT_RGB);
+								private Graphics2D graphics = image.createGraphics();
 
-								Color background;
-								Color foreground;
-
-								JList.DropLocation dropLocation = list.getDropLocation();
-								if (dropLocation != null
-									&& !dropLocation.isInsert()
-									&& dropLocation.getIndex() == index) {
-									background = Color.BLUE;
-									foreground = Color.WHITE;
-								} else if (isSelected) {
-									background = list.getSelectionBackground();
-									foreground = list.getSelectionForeground();
-								} else {
-									background = list.getBackground();
-									foreground = list.getForeground();
+								private JLabel label = new JLabel();
+								{
+									label.setOpaque(true);
 								}
 
-								label.setBackground(background);
-								label.setForeground(foreground);
+								public Component getListCellRendererComponent(
+									JList<? extends Optional<RegionIdentifier>> list,
+									Optional<RegionIdentifier> value,
+									int index,
+									boolean isSelected,
+									boolean cellHasFocus)
+								{
+									if (value.isPresent()) {
+										RegionIdentifier regionIdentifier = value.get();
+										RegionEntry regionEntry = new RegionEntry(
+											regionIdentifier,
+											canvasMap.possessionMapModel.regionTableModel.getDataReader().get(regionIdentifier));
 
-								return label;
-							}
-						});
-						canvasMap.possessionMapModel.regionTableModel.addListener(new IRegionTableListener() {
-							@Override
-							public void onChange()
-							{
-								modelTableRegion.clear();
-								modelTableRegion.addElement(Optional.empty());
-								for (RegionIdentifier regionIdentifier : canvasMap.possessionMapModel.regionTableModel.getDataReader().getKeys()) {
-									modelTableRegion.addElement(Optional.of(regionIdentifier));
+										label.setText(regionEntry.toString());
+									} else {
+										label.setText(I18n.localize("GuiRegionEditor.tableRegion.empty"));
+									}
+
+									graphics.setBackground(Color.gray);
+									graphics.clearRect(0, 0, 17, 17);
+									if (value.isPresent()) {
+										RegionIdentifier regionIdentifier = value.get();
+										RegionEntry regionEntry = new RegionEntry(
+											regionIdentifier,
+											canvasMap.possessionMapModel.regionTableModel.getDataReader().get(regionIdentifier));
+
+										ImageLayerTile.drawArea(graphics, regionEntry, 0, 0, 16);
+										ImageLayerTile.drawBorder(graphics, regionEntry, 0, 0, 16, true, true, true, true);
+										ImageLayerTile.drawIdentifier(image, regionEntry, 0, 0, 16);
+										ImageLayerTile.drawGrid(graphics, 0, 0, 16);
+									}
+									label.setIcon(new ImageIcon(image));
+
+									Color background;
+									Color foreground;
+
+									JList.DropLocation dropLocation = list.getDropLocation();
+									if (dropLocation != null
+										&& !dropLocation.isInsert()
+										&& dropLocation.getIndex() == index) {
+										background = Color.BLUE;
+										foreground = Color.WHITE;
+									} else if (isSelected) {
+										background = list.getSelectionBackground();
+										foreground = list.getSelectionForeground();
+									} else {
+										background = list.getBackground();
+										foreground = list.getForeground();
+									}
+
+									label.setBackground(background);
+									label.setForeground(foreground);
+
+									return label;
 								}
+							});
+							canvasMap.possessionMapModel.regionTableModel.addListener(new IRegionTableListener() {
+								@Override
+								public void onChange()
+								{
+									modelTableRegion.clear();
+									modelTableRegion.addElement(Optional.empty());
+									for (RegionIdentifier regionIdentifier : canvasMap.possessionMapModel.regionTableModel.getDataReader().getKeys()) {
+										modelTableRegion.addElement(Optional.of(regionIdentifier));
+									}
 
-								updateSelection(canvasMap.getCurrentRegionIdentifier());
-							}
-						});
-					}), 300, 600),
+									updateSelection(canvasMap.getCurrentRegionIdentifier());
+								}
+							});
+						}), 300, 600),
+
+						// 操作ボタン
+						flowPanel(
+
+							button(I18n.localize("GuiRegionEditor.button.actionCreateRegion"), actionCreateRegion),
+
+							button(I18n.localize("GuiRegionEditor.button.actionEditRegion"), actionEditRegion),
+
+							button(I18n.localize("GuiRegionEditor.button.actionDeleteRegion"), actionDeleteRegion),
+
+							button(I18n.localize("GuiRegionEditor.button.actionChangeRegionIdentifier"), actionChangeRegionIdentifier)
+
+						)
+
+					),
 
 					// 操作ボタン
 					flowPanel(
-
-						button(I18n.localize("GuiRegionEditor.button.actionCreateRegion"), actionCreateRegion),
-
-						button(I18n.localize("GuiRegionEditor.button.actionEditRegion"), actionEditRegion),
-
-						button(I18n.localize("GuiRegionEditor.button.actionDeleteRegion"), actionDeleteRegion),
-
-						button(I18n.localize("GuiRegionEditor.button.actionChangeRegionIdentifier"), actionChangeRegionIdentifier),
 
 						button("B", e -> {
 							try {
