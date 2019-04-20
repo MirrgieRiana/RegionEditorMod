@@ -21,20 +21,20 @@ public final class RegionIdentifier implements Comparable<RegionIdentifier>
 	public JsonElement encode()
 	{
 		JsonArray array = new JsonArray();
-		array.add(countryNumber);
-		array.add(stateNumber);
+		array.add(countryId);
+		array.add(stateId);
 		return array;
 	}
 
 	//
 
-	public final String countryNumber;
-	public final String stateNumber;
+	public final String countryId;
+	public final String stateId;
 
-	public RegionIdentifier(String countryNumber, String stateNumber)
+	public RegionIdentifier(String countryId, String stateId)
 	{
-		this.countryNumber = countryNumber;
-		this.stateNumber = stateNumber;
+		this.countryId = countryId;
+		this.stateId = stateId;
 	}
 
 	//
@@ -50,8 +50,8 @@ public final class RegionIdentifier implements Comparable<RegionIdentifier>
 	{
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + countryNumber.hashCode();
-		result = prime * result + stateNumber.hashCode();
+		result = prime * result + countryId.hashCode();
+		result = prime * result + stateId.hashCode();
 		return result;
 	}
 
@@ -62,8 +62,8 @@ public final class RegionIdentifier implements Comparable<RegionIdentifier>
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 		RegionIdentifier other = (RegionIdentifier) obj;
-		if (!countryNumber.equals(other.countryNumber)) return false;
-		if (!stateNumber.equals(other.stateNumber)) return false;
+		if (!countryId.equals(other.countryId)) return false;
+		if (!stateId.equals(other.stateId)) return false;
 		return true;
 	}
 
@@ -72,10 +72,10 @@ public final class RegionIdentifier implements Comparable<RegionIdentifier>
 	{
 		int a;
 
-		a = countryNumber.compareTo(other.countryNumber);
+		a = countryId.compareTo(other.countryId);
 		if (a != 0) return a;
 
-		a = stateNumber.compareTo(other.stateNumber);
+		a = stateId.compareTo(other.stateId);
 		if (a != 0) return a;
 
 		return 0;
