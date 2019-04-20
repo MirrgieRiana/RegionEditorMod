@@ -30,7 +30,7 @@ public class LocalizerEngine implements ILocalizerEngine
 	public void setLocalizer(ILocalizer localizer)
 	{
 		oLocalizer = Optional.ofNullable(localizer);
-		eventProvider.trigger().run();
+		epChanged.trigger().run();
 	}
 
 	@Override
@@ -39,12 +39,12 @@ public class LocalizerEngine implements ILocalizerEngine
 		return oLocalizer;
 	}
 
-	private EventProviderRunnable eventProvider = new EventProviderRunnable();
+	private EventProviderRunnable epChanged = new EventProviderRunnable();
 
 	@Override
 	public EventProviderRunnable epChanged()
 	{
-		return eventProvider;
+		return epChanged;
 	}
 
 }
