@@ -1,35 +1,35 @@
 package mirrg.minecraft.regioneditor.data.model;
 
-public final class TileIndex implements Comparable<TileIndex>
+public final class TileCoordinate implements Comparable<TileCoordinate>
 {
 
 	public final int x;
 	public final int z;
 
-	public TileIndex(int x, int z)
+	public TileCoordinate(int x, int z)
 	{
 		this.x = x;
 		this.z = z;
 	}
 
-	public TileIndex minus(TileIndex tileIndex)
+	public TileCoordinate minus(TileCoordinate tileCoordinate)
 	{
-		return minus(tileIndex.x, tileIndex.z);
+		return minus(tileCoordinate.x, tileCoordinate.z);
 	}
 
-	public TileIndex minus(int xi, int zi)
+	public TileCoordinate minus(int xi, int zi)
 	{
 		return plus(-xi, -zi);
 	}
 
-	public TileIndex plus(TileIndex tileIndex)
+	public TileCoordinate plus(TileCoordinate tileCoordinate)
 	{
-		return plus(tileIndex.x, tileIndex.z);
+		return plus(tileCoordinate.x, tileCoordinate.z);
 	}
 
-	public TileIndex plus(int xi, int zi)
+	public TileCoordinate plus(int xi, int zi)
 	{
-		return new TileIndex(x + xi, z + zi);
+		return new TileCoordinate(x + xi, z + zi);
 	}
 
 	@Override
@@ -54,21 +54,21 @@ public final class TileIndex implements Comparable<TileIndex>
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
-		TileIndex other = (TileIndex) obj;
+		TileCoordinate other = (TileCoordinate) obj;
 		if (x != other.x) return false;
 		if (z != other.z) return false;
 		return true;
 	}
 
 	@Override
-	public int compareTo(TileIndex other)
+	public int compareTo(TileCoordinate other)
 	{
 		int a;
 
-		a = z - other.z;
+		a = Integer.compare(z, other.z);
 		if (a != 0) return a;
 
-		a = x - other.x;
+		a = Integer.compare(x, other.x);
 		if (a != 0) return a;
 
 		return 0;
