@@ -15,10 +15,10 @@ public final class RegionEntry
 	@Override
 	public String toString()
 	{
-		return String.format("(%s)%s:(%s)%s",
-			regionIdentifier.countryNumber,
+		return String.format("(%s)%s / (%s)%s",
+			regionIdentifier.countryId,
 			regionInfo.countryName,
-			regionIdentifier.stateNumber,
+			regionIdentifier.stateId,
 			regionInfo.stateName);
 	}
 
