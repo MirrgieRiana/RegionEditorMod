@@ -1,49 +1,43 @@
 package mirrg.minecraft.regioneditor.data.model;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 
 import mirrg.boron.util.struct.Tuple;
 import mirrg.boron.util.suppliterator.ISuppliterator;
-import mirrg.minecraft.regioneditor.data.controller.ITileMapReader;
-import mirrg.minecraft.regioneditor.data.controller.ITileMapWriter;
 
-public class TileMap implements ITileMapReader, ITileMapWriter
+public class TileMap
 {
 
-	private Map<TileIndex, RegionIdentifier> map = new TreeMap<>();
+	private static final Optional<RegionIdentifier> empty = Optional.empty();
 
-	@Override
-	public Optional<RegionIdentifier> get(TileIndex tileIndex)
+	private TreeMap<TileCoordinate, Optional<RegionIdentifier>> map = new TreeMap<>();
+
+	public Optional<RegionIdentifier> get(TileCoordinate tileCoordinate)
 	{
-		return Optional.ofNullable(map.get(tileIndex));
+		return map.getOrDefault(tileCoordinate, empty);
 	}
 
-	@Override
-	public ISuppliterator<TileIndex> getKeys()
+	public ISuppliterator<TileCoordinate> getKeys()
 	{
 		return ISuppliterator.ofIterable(map.keySet());
 	}
 
-	@Override
-	public ISuppliterator<Tuple<TileIndex, RegionIdentifier>> getEntries()
+	public ISuppliterator<Tuple<TileCoordinate, RegionIdentifier>> getEntries()
 	{
 		return ISuppliterator.ofIterable(map.entrySet())
-			.map(e -> new Tuple<>(e.getKey(), e.getValue()));
+			.map(e -> new Tuple<>(e.getKey(), e.getValue().get()));
 	}
 
-	@Override
-	public void set(TileIndex tileIndex, Optional<RegionIdentifier> oRegionInfo)
+	public void set(TileCoordinate tileCoordinate, Optional<RegionIdentifier> oRegionInfo)
 	{
 		if (oRegionInfo.isPresent()) {
-			map.put(tileIndex, oRegionInfo.get());
+			map.put(tileCoordinate, oRegionInfo);
 		} else {
-			map.remove(tileIndex);
+			map.remove(tileCoordinate);
 		}
 	}
 
-	@Override
 	public void clear()
 	{
 		map.clear();
