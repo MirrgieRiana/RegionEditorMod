@@ -1,12 +1,12 @@
 package mirrg.minecraft.regioneditor.data.model;
 
-public final class TileBoundingBox
+public final class TileRectangle
 {
 
-	public final TileIndex min;
-	public final TileIndex max;
+	public final TileCoordinate min;
+	public final TileCoordinate max;
 
-	public TileBoundingBox(TileIndex min, TileIndex max)
+	public TileRectangle(TileCoordinate min, TileCoordinate max)
 	{
 		this.min = min;
 		this.max = max;
@@ -15,7 +15,7 @@ public final class TileBoundingBox
 	@Override
 	public String toString()
 	{
-		return "[" + min + "],[" + max + "]";
+		return "[" + min + "," + max + "]";
 	}
 
 	@Override
@@ -34,18 +34,18 @@ public final class TileBoundingBox
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
-		TileBoundingBox other = (TileBoundingBox) obj;
+		TileRectangle other = (TileRectangle) obj;
 		if (!min.equals(other.min)) return false;
 		if (!max.equals(other.max)) return false;
 		return true;
 	}
 
-	public boolean contains(TileIndex tileIndex)
+	public boolean contains(TileCoordinate tileCoordinate)
 	{
-		if (tileIndex.x < min.x) return false;
-		if (tileIndex.x > max.x) return false;
-		if (tileIndex.z < min.z) return false;
-		if (tileIndex.z > max.z) return false;
+		if (tileCoordinate.x < min.x) return false;
+		if (tileCoordinate.x > max.x) return false;
+		if (tileCoordinate.z < min.z) return false;
+		if (tileCoordinate.z > max.z) return false;
 		return true;
 	}
 

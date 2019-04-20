@@ -35,7 +35,7 @@ public final class TileCoordinate implements Comparable<TileCoordinate>
 	@Override
 	public String toString()
 	{
-		return x + "," + z;
+		return "(" + x + "," + z + ")";
 	}
 
 	@Override
