@@ -1,7 +1,5 @@
 package mirrg.minecraft.regioneditor.data.model;
 
-import java.text.ParseException;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
@@ -10,10 +8,14 @@ public final class RegionIdentifier implements Comparable<RegionIdentifier>
 
 	public static RegionIdentifier decode(JsonElement json) throws ParseException
 	{
-		JsonArray array = json.getAsJsonArray();
-		return new RegionIdentifier(
-			array.get(0).getAsString(),
-			array.get(1).getAsString());
+		try {
+			JsonArray array = json.getAsJsonArray();
+			return new RegionIdentifier(
+				array.get(0).getAsString(),
+				array.get(1).getAsString());
+		} catch (IllegalStateException | IndexOutOfBoundsException e) {
+			throw new ParseException(e);
+		}
 	}
 
 	public JsonElement encode()
