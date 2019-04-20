@@ -1,7 +1,6 @@
 package mirrg.minecraft.regioneditor.data.model;
 
 import java.awt.Color;
-import java.text.ParseException;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -13,12 +12,16 @@ public final class RegionInfo
 
 	public static RegionInfo decode(JsonElement json) throws ParseException
 	{
-		JsonArray array = json.getAsJsonArray();
-		return new RegionInfo(
-			array.get(0).getAsString(),
-			Color.decode(array.get(1).getAsString()),
-			array.get(2).getAsString(),
-			Color.decode(array.get(3).getAsString()));
+		try {
+			JsonArray array = json.getAsJsonArray();
+			return new RegionInfo(
+				array.get(0).getAsString(),
+				Color.decode(array.get(1).getAsString()),
+				array.get(2).getAsString(),
+				Color.decode(array.get(3).getAsString()));
+		} catch (RuntimeException e) {
+			throw new ParseException(e);
+		}
 	}
 
 	public JsonElement encode()
@@ -30,6 +33,8 @@ public final class RegionInfo
 		array.add(String.format("#%06x", stateColor.getRGB() & 0xffffff));
 		return array;
 	}
+
+	//
 
 	public final String countryName;
 	public final Color countryColor;
