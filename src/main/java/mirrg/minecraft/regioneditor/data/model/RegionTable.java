@@ -1,10 +1,12 @@
-package mirrg.minecraft.regioneditor.data;
+package mirrg.minecraft.regioneditor.data.model;
 
 import java.util.Map;
 import java.util.TreeMap;
 
 import mirrg.boron.util.struct.Tuple;
 import mirrg.boron.util.suppliterator.ISuppliterator;
+import mirrg.minecraft.regioneditor.data.controller.IRegionTableReader;
+import mirrg.minecraft.regioneditor.data.controller.IRegionTableWriter;
 
 public class RegionTable implements IRegionTableReader, IRegionTableWriter
 {

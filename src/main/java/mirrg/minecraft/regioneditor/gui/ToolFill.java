@@ -8,10 +8,10 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import mirrg.minecraft.regioneditor.data.ITileMapReader;
-import mirrg.minecraft.regioneditor.data.RegionIdentifier;
-import mirrg.minecraft.regioneditor.data.TileBoundingBox;
-import mirrg.minecraft.regioneditor.data.TileIndex;
+import mirrg.minecraft.regioneditor.data.controller.ITileMapReader;
+import mirrg.minecraft.regioneditor.data.model.RegionIdentifier;
+import mirrg.minecraft.regioneditor.data.model.TileBoundingBox;
+import mirrg.minecraft.regioneditor.data.model.TileIndex;
 
 public class ToolFill implements ITool
 {

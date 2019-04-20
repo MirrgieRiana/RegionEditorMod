@@ -1,6 +1,7 @@
-package mirrg.minecraft.regioneditor.data;
+package mirrg.minecraft.regioneditor.data.controller;
 
 import mirrg.boron.util.struct.ImmutableArray;
+import mirrg.minecraft.regioneditor.data.model.Area;
 
 public interface IPossessionMapReader
 {

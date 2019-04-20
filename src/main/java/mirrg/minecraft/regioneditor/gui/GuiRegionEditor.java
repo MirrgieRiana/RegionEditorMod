@@ -60,10 +60,10 @@ import javax.swing.event.MenuListener;
 
 import mirrg.boron.util.UtilsString;
 import mirrg.boron.util.i18n.I18n;
-import mirrg.minecraft.regioneditor.data.IRegionTableListener;
-import mirrg.minecraft.regioneditor.data.RegionEntry;
-import mirrg.minecraft.regioneditor.data.RegionIdentifier;
-import mirrg.minecraft.regioneditor.data.TileIndex;
+import mirrg.minecraft.regioneditor.data.controller.IRegionTableListener;
+import mirrg.minecraft.regioneditor.data.model.RegionEntry;
+import mirrg.minecraft.regioneditor.data.model.RegionIdentifier;
+import mirrg.minecraft.regioneditor.data.model.TileIndex;
 import mirrg.minecraft.regioneditor.gui.CanvasMap.ICanvasMapListener;
 import mirrg.minecraft.regioneditor.gui.GuiData.IDialogDataListener;
 

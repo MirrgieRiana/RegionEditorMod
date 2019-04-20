@@ -23,8 +23,8 @@ import mirrg.boron.util.i18n.I18n;
 import mirrg.boron.util.struct.ImmutableArray;
 import mirrg.boron.util.struct.Tuple;
 import mirrg.boron.util.suppliterator.ISuppliterator;
-import mirrg.minecraft.regioneditor.data.Area;
-import mirrg.minecraft.regioneditor.data.RegionIdentifier;
+import mirrg.minecraft.regioneditor.data.model.Area;
+import mirrg.minecraft.regioneditor.data.model.RegionIdentifier;
 
 public class GuiCommand extends GuiBase
 {

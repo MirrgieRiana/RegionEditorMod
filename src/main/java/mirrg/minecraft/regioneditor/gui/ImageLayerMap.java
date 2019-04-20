@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Image;
 import java.awt.Point;
 
-import mirrg.minecraft.regioneditor.data.PossessionMapModel;
+import mirrg.minecraft.regioneditor.data.controller.PossessionMapModel;
 
 public class ImageLayerMap extends ImageLayer
 {

@@ -1,4 +1,4 @@
-package mirrg.minecraft.regioneditor.data;
+package mirrg.minecraft.regioneditor.data.model;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -11,6 +11,9 @@ import java.util.function.BiConsumer;
 
 import mirrg.boron.util.struct.ImmutableArray;
 import mirrg.boron.util.struct.Tuple;
+import mirrg.minecraft.regioneditor.data.controller.IPossessionMapReader;
+import mirrg.minecraft.regioneditor.data.controller.IRegionTableReader;
+import mirrg.minecraft.regioneditor.data.controller.ITileMapReader;
 
 public class PossessionMap implements IPossessionMapReader
 {

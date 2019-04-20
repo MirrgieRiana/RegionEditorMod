@@ -1,8 +1,12 @@
-package mirrg.minecraft.regioneditor.data;
+package mirrg.minecraft.regioneditor.data.controller;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
+
+import mirrg.minecraft.regioneditor.data.model.RegionIdentifier;
+import mirrg.minecraft.regioneditor.data.model.RegionInfo;
+import mirrg.minecraft.regioneditor.data.model.RegionTable;
 
 public class RegionTableModel implements IRegionTableWriter
 {

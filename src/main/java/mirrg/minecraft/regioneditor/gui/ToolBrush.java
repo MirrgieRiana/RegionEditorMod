@@ -16,9 +16,9 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.util.Optional;
 
-import mirrg.minecraft.regioneditor.data.RegionIdentifier;
-import mirrg.minecraft.regioneditor.data.RegionInfo;
-import mirrg.minecraft.regioneditor.data.TileIndex;
+import mirrg.minecraft.regioneditor.data.model.RegionIdentifier;
+import mirrg.minecraft.regioneditor.data.model.RegionInfo;
+import mirrg.minecraft.regioneditor.data.model.TileIndex;
 
 public class ToolBrush implements ITool
 {

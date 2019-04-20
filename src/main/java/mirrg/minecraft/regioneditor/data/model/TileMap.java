@@ -1,4 +1,4 @@
-package mirrg.minecraft.regioneditor.data;
+package mirrg.minecraft.regioneditor.data.model;
 
 import java.util.Map;
 import java.util.Optional;
@@ -6,6 +6,8 @@ import java.util.TreeMap;
 
 import mirrg.boron.util.struct.Tuple;
 import mirrg.boron.util.suppliterator.ISuppliterator;
+import mirrg.minecraft.regioneditor.data.controller.ITileMapReader;
+import mirrg.minecraft.regioneditor.data.controller.ITileMapWriter;
 
 public class TileMap implements ITileMapReader, ITileMapWriter
 {

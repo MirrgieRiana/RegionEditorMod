@@ -3,7 +3,7 @@ package mirrg.minecraft.regioneditor.gui;
 import java.awt.Image;
 import java.util.Optional;
 
-import mirrg.minecraft.regioneditor.data.PossessionMapModel;
+import mirrg.minecraft.regioneditor.data.controller.PossessionMapModel;
 
 public class ImageLayerOverlay extends ImageLayer
 {

@@ -1,4 +1,4 @@
-package mirrg.minecraft.regioneditor.data;
+package mirrg.minecraft.regioneditor.data.model;
 
 public final class RegionEntry
 {

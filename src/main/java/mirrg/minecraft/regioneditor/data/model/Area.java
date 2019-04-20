@@ -1,4 +1,4 @@
-package mirrg.minecraft.regioneditor.data;
+package mirrg.minecraft.regioneditor.data.model;
 
 import mirrg.boron.util.struct.ImmutableArray;
 

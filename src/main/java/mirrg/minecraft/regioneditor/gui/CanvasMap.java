@@ -29,16 +29,16 @@ import com.google.gson.stream.JsonWriter;
 
 import mirrg.boron.util.i18n.I18n;
 import mirrg.boron.util.struct.Tuple;
-import mirrg.minecraft.regioneditor.data.IPossessionMapReader;
-import mirrg.minecraft.regioneditor.data.IRegionTableListener;
-import mirrg.minecraft.regioneditor.data.ITileMapListener;
-import mirrg.minecraft.regioneditor.data.ITileMapReader;
-import mirrg.minecraft.regioneditor.data.PossessionMap;
-import mirrg.minecraft.regioneditor.data.PossessionMapModel;
-import mirrg.minecraft.regioneditor.data.RegionIdentifier;
-import mirrg.minecraft.regioneditor.data.RegionInfo;
-import mirrg.minecraft.regioneditor.data.TileIndex;
-import mirrg.minecraft.regioneditor.data.TileMap;
+import mirrg.minecraft.regioneditor.data.controller.IPossessionMapReader;
+import mirrg.minecraft.regioneditor.data.controller.IRegionTableListener;
+import mirrg.minecraft.regioneditor.data.controller.ITileMapListener;
+import mirrg.minecraft.regioneditor.data.controller.ITileMapReader;
+import mirrg.minecraft.regioneditor.data.controller.PossessionMapModel;
+import mirrg.minecraft.regioneditor.data.model.PossessionMap;
+import mirrg.minecraft.regioneditor.data.model.RegionIdentifier;
+import mirrg.minecraft.regioneditor.data.model.RegionInfo;
+import mirrg.minecraft.regioneditor.data.model.TileIndex;
+import mirrg.minecraft.regioneditor.data.model.TileMap;
 
 public class CanvasMap extends Canvas
 {

@@ -4,9 +4,9 @@ import java.awt.Component;
 import java.awt.Point;
 import java.util.Optional;
 
-import mirrg.minecraft.regioneditor.data.PossessionMapModel;
-import mirrg.minecraft.regioneditor.data.RegionIdentifier;
-import mirrg.minecraft.regioneditor.data.TileIndex;
+import mirrg.minecraft.regioneditor.data.controller.PossessionMapModel;
+import mirrg.minecraft.regioneditor.data.model.RegionIdentifier;
+import mirrg.minecraft.regioneditor.data.model.TileIndex;
 
 public interface IToolContext
 {

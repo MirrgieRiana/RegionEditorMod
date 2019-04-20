@@ -1,4 +1,7 @@
-package mirrg.minecraft.regioneditor.data;
+package mirrg.minecraft.regioneditor.data.controller;
+
+import mirrg.minecraft.regioneditor.data.model.RegionIdentifier;
+import mirrg.minecraft.regioneditor.data.model.RegionInfo;
 
 public interface IRegionTableWriter
 {

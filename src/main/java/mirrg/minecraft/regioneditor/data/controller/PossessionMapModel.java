@@ -1,4 +1,6 @@
-package mirrg.minecraft.regioneditor.data;
+package mirrg.minecraft.regioneditor.data.controller;
+
+import mirrg.minecraft.regioneditor.data.model.PossessionMap;
 
 public class PossessionMapModel
 {

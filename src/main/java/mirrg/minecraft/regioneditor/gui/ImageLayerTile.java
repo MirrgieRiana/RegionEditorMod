@@ -6,11 +6,11 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.Optional;
 
-import mirrg.minecraft.regioneditor.data.PossessionMapModel;
-import mirrg.minecraft.regioneditor.data.RegionEntry;
-import mirrg.minecraft.regioneditor.data.RegionIdentifier;
-import mirrg.minecraft.regioneditor.data.RegionInfo;
-import mirrg.minecraft.regioneditor.data.TileIndex;
+import mirrg.minecraft.regioneditor.data.controller.PossessionMapModel;
+import mirrg.minecraft.regioneditor.data.model.RegionEntry;
+import mirrg.minecraft.regioneditor.data.model.RegionIdentifier;
+import mirrg.minecraft.regioneditor.data.model.RegionInfo;
+import mirrg.minecraft.regioneditor.data.model.TileIndex;
 
 public class ImageLayerTile extends ImageLayer
 {
