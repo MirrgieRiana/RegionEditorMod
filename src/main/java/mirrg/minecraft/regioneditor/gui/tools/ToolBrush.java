@@ -3,12 +3,7 @@ package mirrg.minecraft.regioneditor.gui.tools;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -17,126 +12,73 @@ import java.awt.event.MouseMotionListener;
 import java.util.Optional;
 
 import mirrg.minecraft.regioneditor.data.objects.RegionIdentifier;
-import mirrg.minecraft.regioneditor.data.objects.RegionInfo;
 import mirrg.minecraft.regioneditor.data.objects.TileCoordinate;
-import mirrg.minecraft.regioneditor.gui.tool.ITool;
 import mirrg.minecraft.regioneditor.gui.tool.IToolContext;
 
-public class ToolBrush implements ITool
+public class ToolBrush extends ToolBase
 {
-
-	protected final IToolContext toolContext;
-
-	private boolean[] mouseButtons = new boolean[8];
-	private boolean[] keys = new boolean[2048];
-	private Optional<Point> oMousePosition = Optional.empty();
 
 	public ToolBrush(IToolContext toolContext)
 	{
-		this.toolContext = toolContext;
+		super(toolContext);
 	}
 
-	private FocusListener focusListener = new FocusAdapter() {
-		@Override
-		public void focusLost(FocusEvent e)
-		{
-			for (int i = 0; i < mouseButtons.length; i++) {
-				mouseButtons[i] = false;
-			}
-			for (int i = 0; i < keys.length; i++) {
-				keys[i] = false;
-			}
-		}
-	};
-	private KeyListener keyListener = new KeyAdapter() {
-		@Override
-		public void keyPressed(KeyEvent e)
-		{
-			keys[Math.min(e.getKeyCode(), keys.length - 1)] = true;
-			toolContext.repaintOverlay();
-		}
-
-		@Override
-		public void keyReleased(KeyEvent e)
-		{
-			keys[Math.min(e.getKeyCode(), keys.length - 1)] = false;
-			toolContext.repaintOverlay();
-		}
-	};
 	private MouseListener mouseListener = new MouseAdapter() {
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
-			oMousePosition = Optional.of(e.getPoint());
-			mouseButtons[Math.min(e.getButton(), mouseButtons.length - 1)] = true;
-			toolContext.repaintOverlay();
-
 			Point point = e.getPoint();
-			if (e.getButton() == MouseEvent.BUTTON2) {
-				toolContext.setCurrentRegionIdentifier(toolContext.getLayerController().tileMapController.model.get(toolContext.getTileCoordinate(point)));
-			} else {
+
+			// 左クリックで塗る
+			if (e.getButton() == MouseEvent.BUTTON1) {
 				int brushSize = keys[KeyEvent.VK_SHIFT] ? 1 : toolContext.getBrushSize();
 				if (brushSize % 2 == 0) point.translate(toolContext.getTileSize() / 2, toolContext.getTileSize() / 2);
-				if (e.getButton() == MouseEvent.BUTTON1) {
-					setTile(toolContext.getTileCoordinate(point), toolContext.getCurrentRegionIdentifier(), brushSize);
-				} else if (e.getButton() == MouseEvent.BUTTON3) {
-					setTile(toolContext.getTileCoordinate(point), Optional.empty(), brushSize);
-				}
+				setTile(toolContext.getTileCoordinate(point), toolContext.getCurrentRegionIdentifier(), brushSize);
 			}
-		}
 
-		@Override
-		public void mouseReleased(MouseEvent e)
-		{
-			oMousePosition = Optional.of(e.getPoint());
-			mouseButtons[Math.min(e.getButton(), mouseButtons.length - 1)] = false;
-			toolContext.repaintOverlay();
-		}
+			// 中央クリックでスポイト
+			if (e.getButton() == MouseEvent.BUTTON2) {
+				toolContext.setCurrentRegionIdentifier(toolContext.getLayerController().tileMapController.model.get(toolContext.getTileCoordinate(point)));
+			}
 
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-			oMousePosition = Optional.of(e.getPoint());
-			toolContext.repaintOverlay();
-		}
+			// 右クリックで破壊
+			if (e.getButton() == MouseEvent.BUTTON3) {
+				int brushSize = keys[KeyEvent.VK_SHIFT] ? 1 : toolContext.getBrushSize();
+				if (brushSize % 2 == 0) point.translate(toolContext.getTileSize() / 2, toolContext.getTileSize() / 2);
+				setTile(toolContext.getTileCoordinate(point), Optional.empty(), brushSize);
+			}
 
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-			oMousePosition = Optional.empty();
 			toolContext.repaintOverlay();
 		}
 	};
 	private MouseMotionListener mouseMotionListener = new MouseMotionAdapter() {
 		@Override
-		public void mouseMoved(MouseEvent e)
-		{
-			oMousePosition = Optional.of(e.getPoint());
-			toolContext.repaintOverlay();
-		}
-
-		@Override
 		public void mouseDragged(MouseEvent e)
 		{
-			oMousePosition = Optional.of(e.getPoint());
-			toolContext.repaintOverlay();
-
 			Point point = e.getPoint();
-			int brushSize = keys[KeyEvent.VK_SHIFT] ? 1 : toolContext.getBrushSize();
-			if (brushSize % 2 == 0) point.translate(toolContext.getTileSize() / 2, toolContext.getTileSize() / 2);
-			if (mouseButtons[MouseEvent.BUTTON1]) {
+
+			// 左クリックで塗る
+			if (e.getButton() == MouseEvent.BUTTON1) {
+				int brushSize = keys[KeyEvent.VK_SHIFT] ? 1 : toolContext.getBrushSize();
+				if (brushSize % 2 == 0) point.translate(toolContext.getTileSize() / 2, toolContext.getTileSize() / 2);
 				setTile(toolContext.getTileCoordinate(point), toolContext.getCurrentRegionIdentifier(), brushSize);
-			} else if (mouseButtons[MouseEvent.BUTTON3]) {
+			}
+
+			// 右クリックで破壊
+			if (e.getButton() == MouseEvent.BUTTON3) {
+				int brushSize = keys[KeyEvent.VK_SHIFT] ? 1 : toolContext.getBrushSize();
+				if (brushSize % 2 == 0) point.translate(toolContext.getTileSize() / 2, toolContext.getTileSize() / 2);
 				setTile(toolContext.getTileCoordinate(point), Optional.empty(), brushSize);
 			}
+
+			toolContext.repaintOverlay();
 		}
 	};
 
 	@Override
 	public void on()
 	{
-		toolContext.getComponent().addFocusListener(focusListener);
-		toolContext.getComponent().addKeyListener(keyListener);
+		super.on();
 		toolContext.getComponent().addMouseListener(mouseListener);
 		toolContext.getComponent().addMouseMotionListener(mouseMotionListener);
 	}
@@ -144,8 +86,7 @@ public class ToolBrush implements ITool
 	@Override
 	public void off()
 	{
-		toolContext.getComponent().removeFocusListener(focusListener);
-		toolContext.getComponent().removeKeyListener(keyListener);
+		super.off();
 		toolContext.getComponent().removeMouseListener(mouseListener);
 		toolContext.getComponent().removeMouseMotionListener(mouseMotionListener);
 	}
@@ -154,58 +95,40 @@ public class ToolBrush implements ITool
 	public void draw(Graphics2D graphics)
 	{
 		if (oMousePosition.isPresent()) {
-			Point point = new Point(oMousePosition.get());
-			int brushSize = keys[KeyEvent.VK_SHIFT] ? 1 : toolContext.getBrushSize();
-			if (brushSize % 2 == 0) point.translate(toolContext.getTileSize() / 2, toolContext.getTileSize() / 2);
-			TileCoordinate tileCoordinate = toolContext.getTileCoordinate(point);
-			int size = toolContext.getTileSize();
-			for (int xi = -brushSize / 2; xi < (brushSize + 1) / 2; xi++) {
-				for (int zi = -brushSize / 2; zi < (brushSize + 1) / 2; zi++) {
-					Point position = toolContext.getTilePosition(tileCoordinate.plus(xi, zi));
 
-					graphics.setColor(Color.white);
-					graphics.drawLine(
-						position.x,
-						position.y,
-						position.x + size,
-						position.y + size);
-					graphics.drawLine(
-						position.x + size,
-						position.y,
-						position.x,
-						position.y + size);
+			// ブラシの影響範囲を描画
+			{
 
+				// ブラシサイズ
+				int brushSize = keys[KeyEvent.VK_SHIFT] ? 1 : toolContext.getBrushSize();
+
+				// タイル座標
+				Point point = new Point(oMousePosition.get());
+				if (brushSize % 2 == 0) point.translate(toolContext.getTileSize() / 2, toolContext.getTileSize() / 2);
+				TileCoordinate tileCoordinate = toolContext.getTileCoordinate(point);
+
+				// タイルの表示大きさ
+				int size = toolContext.getTileSize();
+
+				// 描画
+				for (int xi = -brushSize / 2; xi < (brushSize + 1) / 2; xi++) {
+					for (int zi = -brushSize / 2; zi < (brushSize + 1) / 2; zi++) {
+						Point position = toolContext.getTilePosition(tileCoordinate.plus(xi, zi));
+
+						graphics.setColor(Color.white);
+						graphics.drawLine(
+							position.x,
+							position.y,
+							position.x + size,
+							position.y + size);
+						graphics.drawLine(
+							position.x + size,
+							position.y,
+							position.x,
+							position.y + size);
+
+					}
 				}
-			}
-		}
-	}
-
-	@Override
-	public void drawTooltip(Graphics2D graphics)
-	{
-		if (oMousePosition.isPresent()) {
-
-			int height = graphics.getFontMetrics().getHeight();
-
-			TileCoordinate tileCoordinate = toolContext.getTileCoordinate(oMousePosition.get());
-
-			graphics.drawString(
-				tileCoordinate.x + ", " + tileCoordinate.z,
-				oMousePosition.get().x + 2,
-				oMousePosition.get().y - height * 2 - 2);
-
-			Optional<RegionIdentifier> oRegionIdentifier = toolContext.getLayerController().tileMapController.model.get(tileCoordinate);
-			if (oRegionIdentifier.isPresent()) {
-				RegionInfo regionInfo = toolContext.getLayerController().regionTableController.model.get(oRegionIdentifier.get());
-
-				graphics.drawString(
-					"Country: (" + oRegionIdentifier.get().countryId + ") " + regionInfo.countryName,
-					oMousePosition.get().x + 2,
-					oMousePosition.get().y - height * 1 - 2);
-				graphics.drawString(
-					"State: (" + oRegionIdentifier.get().stateId + ") " + regionInfo.stateName,
-					oMousePosition.get().x + 2,
-					oMousePosition.get().y - height * 0 - 2);
 
 			}
 
@@ -225,6 +148,7 @@ public class ToolBrush implements ITool
 	{
 		if (!toolContext.getLayerController().tileMapController.model.get(tileCoordinate).equals(oRegionIdentifier)) {
 			toolContext.getLayerController().tileMapController.model.set(tileCoordinate, oRegionIdentifier);
+			toolContext.getLayerController().tileMapController.epChangedTileSpecified.trigger().accept(tileCoordinate);
 		}
 	}
 

@@ -13,6 +13,8 @@ public interface IToolContext
 
 	public Component getComponent();
 
+	public String localize(String unlocalizedString);
+
 	public LayerController getLayerController();
 
 	/**

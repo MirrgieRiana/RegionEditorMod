@@ -74,6 +74,12 @@ public class CanvasMap extends Canvas
 		}
 
 		@Override
+		public String localize(String unlocalizedString)
+		{
+			return i18n.localize(unlocalizedString);
+		}
+
+		@Override
 		public LayerController getLayerController()
 		{
 			return CanvasMap.this.layerController;
