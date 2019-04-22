@@ -1,21 +1,28 @@
-package mirrg.minecraft.regioneditor.data.model;
+package mirrg.minecraft.regioneditor.data.models;
 
 import java.util.Optional;
 import java.util.TreeMap;
 
 import mirrg.boron.util.struct.Tuple;
 import mirrg.boron.util.suppliterator.ISuppliterator;
+import mirrg.minecraft.regioneditor.data.objects.RegionIdentifier;
+import mirrg.minecraft.regioneditor.data.objects.TileCoordinate;
 
-public class TileMap
+public class TileMapModel
 {
 
 	private static final Optional<RegionIdentifier> empty = Optional.empty();
 
-	private TreeMap<TileCoordinate, Optional<RegionIdentifier>> map = new TreeMap<>();
+	public TreeMap<TileCoordinate, Optional<RegionIdentifier>> map = new TreeMap<>();
 
 	public Optional<RegionIdentifier> get(TileCoordinate tileCoordinate)
 	{
 		return map.getOrDefault(tileCoordinate, empty);
+	}
+
+	public int size()
+	{
+		return map.size();
 	}
 
 	public ISuppliterator<TileCoordinate> getKeys()
@@ -36,6 +43,11 @@ public class TileMap
 		} else {
 			map.remove(tileCoordinate);
 		}
+	}
+
+	public void remove(TileCoordinate tileCoordinate)
+	{
+		map.remove(tileCoordinate);
 	}
 
 	public void clear()

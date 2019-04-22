@@ -1,9 +1,11 @@
-package mirrg.minecraft.regioneditor.data.model;
+package mirrg.minecraft.regioneditor.data.objects;
 
 import java.awt.Color;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+
+import mirrg.minecraft.regioneditor.data.ParseException;
 
 public final class RegionInfo
 {

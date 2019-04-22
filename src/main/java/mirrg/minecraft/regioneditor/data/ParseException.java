@@ -1,4 +1,4 @@
-package mirrg.minecraft.regioneditor.data.model;
+package mirrg.minecraft.regioneditor.data;
 
 public class ParseException extends Exception
 {

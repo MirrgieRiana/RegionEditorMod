@@ -1,4 +1,4 @@
-package mirrg.minecraft.regioneditor.data.model;
+package mirrg.minecraft.regioneditor.data.objects;
 
 public final class TileRectangle
 {
@@ -10,6 +10,12 @@ public final class TileRectangle
 	{
 		this.min = min;
 		this.max = max;
+	}
+
+	public TileRectangle(int minX, int minZ, int maxX, int maxZ)
+	{
+		this.min = new TileCoordinate(minX, minZ);
+		this.max = new TileCoordinate(maxX, maxZ);
 	}
 
 	@Override
