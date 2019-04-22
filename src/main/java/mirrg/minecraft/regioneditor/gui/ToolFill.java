@@ -8,10 +8,11 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import mirrg.minecraft.regioneditor.data.controller.ITileMapReader;
-import mirrg.minecraft.regioneditor.data.model.RegionIdentifier;
-import mirrg.minecraft.regioneditor.data.model.TileBoundingBox;
-import mirrg.minecraft.regioneditor.data.model.TileIndex;
+import mirrg.minecraft.regioneditor.data.AreaExtractor;
+import mirrg.minecraft.regioneditor.data.models.TileMapModel;
+import mirrg.minecraft.regioneditor.data.objects.RegionIdentifier;
+import mirrg.minecraft.regioneditor.data.objects.TileCoordinate;
+import mirrg.minecraft.regioneditor.data.objects.TileRectangle;
 
 public class ToolFill implements ITool
 {
@@ -27,7 +28,7 @@ public class ToolFill implements ITool
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
-			TileIndex tileIndex = toolContext.getTileIndex(e.getPoint());
+			TileCoordinate tileCoordinate = toolContext.getTileCoordinate(e.getPoint());
 
 			Optional<RegionIdentifier> tile;
 			if (e.getButton() == MouseEvent.BUTTON1) {
@@ -38,61 +39,61 @@ public class ToolFill implements ITool
 				return;
 			}
 
-			Optional<Set<TileIndex>> oTileIndexes = calc(tileIndex);
-			if (!oTileIndexes.isPresent()) return;
+			Optional<Set<TileCoordinate>> oTileCoordinates = calc(tileCoordinate);
+			if (!oTileCoordinates.isPresent()) return;
 
-			setTiles(oTileIndexes.get(), tile);
+			setTiles(oTileCoordinates.get(), tile);
 		}
 
-		private Optional<Set<TileIndex>> calc(TileIndex tileIndexOrigin)
+		private Optional<Set<TileCoordinate>> calc(TileCoordinate tileCoordinateOrigin)
 		{
-			ITileMapReader tileMap = toolContext.getPossessionMapModel().tileMapModel.getDataReader();
-			TileBoundingBox boundingBox = tileMap.getBoundingBox();
-			Optional<RegionIdentifier> tileOrigin = tileMap.get(tileIndexOrigin);
+			TileMapModel tileMapModel = toolContext.getLayerController().tileMapController.model;
+			TileRectangle boundingBox = AreaExtractor.getBoundingBox(tileMapModel);
+			Optional<RegionIdentifier> tileOrigin = tileMapModel.get(tileCoordinateOrigin);
 
 			return new Object() {
-				private HashSet<TileIndex> tileIndexesVisited;
-				private ArrayDeque<TileIndex> tileIndexesWaiting;
+				private HashSet<TileCoordinate> tileCoordinatesVisited;
+				private ArrayDeque<TileCoordinate> tileCoordinatesWaiting;
 
-				private Optional<Set<TileIndex>> calc()
+				private Optional<Set<TileCoordinate>> calc()
 				{
-					tileIndexesVisited = new HashSet<>();
-					tileIndexesWaiting = new ArrayDeque<>();
+					tileCoordinatesVisited = new HashSet<>();
+					tileCoordinatesWaiting = new ArrayDeque<>();
 
-					visit(tileIndexOrigin);
+					visit(tileCoordinateOrigin);
 
-					while (!tileIndexesWaiting.isEmpty()) {
-						TileIndex tileIndex = tileIndexesWaiting.removeFirst();
+					while (!tileCoordinatesWaiting.isEmpty()) {
+						TileCoordinate tileCoordinate = tileCoordinatesWaiting.removeFirst();
 
 						// 四方のマスが踏める（同属性かつ未訪問）場合、そのマスを踏みつつ訪問先に予約する
 						try {
-							tryVisit(tileIndex.plus(-1, 0));
-							tryVisit(tileIndex.plus(1, 0));
-							tryVisit(tileIndex.plus(0, -1));
-							tryVisit(tileIndex.plus(0, 1));
+							tryVisit(tileCoordinate.plus(-1, 0));
+							tryVisit(tileCoordinate.plus(1, 0));
+							tryVisit(tileCoordinate.plus(0, -1));
+							tryVisit(tileCoordinate.plus(0, 1));
 						} catch (BoundingBoxOverflowException e) {
 							return Optional.empty();
 						}
 
 					}
 
-					return Optional.of(tileIndexesVisited);
+					return Optional.of(tileCoordinatesVisited);
 				}
 
-				private void tryVisit(TileIndex tileIndex) throws BoundingBoxOverflowException
+				private void tryVisit(TileCoordinate tileCoordinate) throws BoundingBoxOverflowException
 				{
-					Optional<RegionIdentifier> tile = tileMap.get(tileIndex);
+					Optional<RegionIdentifier> tile = tileMapModel.get(tileCoordinate);
 
 					if (!tile.equals(tileOrigin)) return; // 原点と同じ属性のマスで、
-					if (!tile.isPresent() && !boundingBox.contains(tileIndex)) throw new BoundingBoxOverflowException(); // 範囲が無限ではなく
-					if (tileIndexesVisited.contains(tileIndex)) return; // かつ訪問済みでなければ
-					visit(tileIndex);
+					if (!tile.isPresent() && !boundingBox.contains(tileCoordinate)) throw new BoundingBoxOverflowException(); // 範囲が無限ではなく
+					if (tileCoordinatesVisited.contains(tileCoordinate)) return; // かつ訪問済みでなければ
+					visit(tileCoordinate);
 				}
 
-				private void visit(TileIndex tileIndex)
+				private void visit(TileCoordinate tileCoordinate)
 				{
-					tileIndexesVisited.add(tileIndex);
-					tileIndexesWaiting.addLast(tileIndex);
+					tileCoordinatesVisited.add(tileCoordinate);
+					tileCoordinatesWaiting.addLast(tileCoordinate);
 				}
 
 				class BoundingBoxOverflowException extends Exception
@@ -102,14 +103,20 @@ public class ToolFill implements ITool
 			}.calc();
 		}
 
-		private void setTiles(Set<TileIndex> tileIndexes, Optional<RegionIdentifier> tile)
+		private void setTiles(Set<TileCoordinate> tileCoordinates, Optional<RegionIdentifier> tile)
 		{
-
-			toolContext.getPossessionMapModel().tileMapModel.modify(tileMap -> {
-				for (TileIndex tileIndex : tileIndexes) {
-					toolContext.getPossessionMapModel().tileMapModel.set(tileIndex, tile);
+			if (tileCoordinates.size() > 20) {
+				for (TileCoordinate tileCoordinate : tileCoordinates) {
+					toolContext.getLayerController().tileMapController.model.set(tileCoordinate, tile);
 				}
-			});
+				toolContext.getLayerController().tileMapController.epChangedTileUnspecified.trigger().run();
+			} else {
+				for (TileCoordinate tileCoordinate : tileCoordinates) {
+					toolContext.getLayerController().tileMapController.model.set(tileCoordinate, tile);
+					toolContext.getLayerController().tileMapController.epChangedTileSpecified.trigger().accept(tileCoordinate);
+				}
+			}
+			toolContext.getLayerController().tileMapController.epChangedState.trigger().run();
 		}
 	};
 

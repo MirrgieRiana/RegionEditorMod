@@ -60,10 +60,10 @@ import javax.swing.event.MenuListener;
 
 import mirrg.boron.util.UtilsString;
 import mirrg.boron.util.i18n.I18n;
-import mirrg.minecraft.regioneditor.data.controller.IRegionTableListener;
-import mirrg.minecraft.regioneditor.data.model.RegionEntry;
-import mirrg.minecraft.regioneditor.data.model.RegionIdentifier;
-import mirrg.minecraft.regioneditor.data.model.TileIndex;
+import mirrg.minecraft.regioneditor.data.AreaExtractor;
+import mirrg.minecraft.regioneditor.data.objects.RegionEntry;
+import mirrg.minecraft.regioneditor.data.objects.RegionIdentifier;
+import mirrg.minecraft.regioneditor.data.objects.TileCoordinate;
 import mirrg.minecraft.regioneditor.gui.CanvasMap.ICanvasMapListener;
 import mirrg.minecraft.regioneditor.gui.GuiData.IDialogDataListener;
 
@@ -178,7 +178,7 @@ public class GuiRegionEditor extends GuiBase
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK))
 				.register();
 			actionOpenGuiCommand = new ActionBuilder<>(new ActionButton(e -> {
-				new GuiCommand(windowWrapper, i18n, canvasMap.possessionMapModel.getDataReader().getAreas(), oSender, oChatMessageProvider).show();
+				new GuiCommand(windowWrapper, i18n, new AreaExtractor(canvasMap.layerController.model).getAreas(), oSender, oChatMessageProvider).show();
 			}))
 				.value(Action.NAME, localize("GuiRegionEditor.actionOpenGuiCommand") + "(D)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)
@@ -351,8 +351,8 @@ public class GuiRegionEditor extends GuiBase
 					JOptionPane.OK_CANCEL_OPTION,
 					JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
 
-					for (TileIndex tileIndex : canvasMap.possessionMapModel.tileMapModel.getDataReader().getKeys().toCollection()) {
-						canvasMap.possessionMapModel.tileMapModel.set(tileIndex, Optional.empty());
+					for (TileCoordinate tileCoordinate : canvasMap.layerController.tileMapController.model.getKeys().toCollection()) {
+						canvasMap.layerController.tileMapController.model.set(tileCoordinate, Optional.empty());
 					}
 					canvasMap.update();
 
@@ -379,7 +379,7 @@ public class GuiRegionEditor extends GuiBase
 			actionDeleteRegion = new ActionBuilder<>(new ActionButton(e -> {
 				Optional<RegionIdentifier> oRegionIdentifier = canvasMap.getCurrentRegionIdentifier();
 				if (oRegionIdentifier.isPresent()) {
-					canvasMap.possessionMapModel.regionTableModel.remove(oRegionIdentifier.get());
+					canvasMap.layerController.regionTableController.model.remove(oRegionIdentifier.get());
 					canvasMap.update();
 				}
 			}))
@@ -730,7 +730,7 @@ public class GuiRegionEditor extends GuiBase
 										RegionIdentifier regionIdentifier = value.get();
 										RegionEntry regionEntry = new RegionEntry(
 											regionIdentifier,
-											canvasMap.possessionMapModel.regionTableModel.getDataReader().get(regionIdentifier));
+											canvasMap.layerController.regionTableController.model.get(regionIdentifier));
 
 										label.setText(regionEntry.toString());
 									} else {
@@ -743,7 +743,7 @@ public class GuiRegionEditor extends GuiBase
 										RegionIdentifier regionIdentifier = value.get();
 										RegionEntry regionEntry = new RegionEntry(
 											regionIdentifier,
-											canvasMap.possessionMapModel.regionTableModel.getDataReader().get(regionIdentifier));
+											canvasMap.layerController.regionTableController.model.get(regionIdentifier));
 
 										ImageLayerTile.drawArea(graphics, regionEntry, 0, 0, 16);
 										ImageLayerTile.drawBorder(graphics, regionEntry, 0, 0, 16, true, true, true, true);
@@ -775,18 +775,14 @@ public class GuiRegionEditor extends GuiBase
 									return label;
 								}
 							});
-							canvasMap.possessionMapModel.regionTableModel.addListener(new IRegionTableListener() {
-								@Override
-								public void onChange()
-								{
-									modelTableRegion.clear();
-									modelTableRegion.addElement(Optional.empty());
-									for (RegionIdentifier regionIdentifier : canvasMap.possessionMapModel.regionTableModel.getDataReader().getKeys()) {
-										modelTableRegion.addElement(Optional.of(regionIdentifier));
-									}
-
-									updateSelection(canvasMap.getCurrentRegionIdentifier());
+							canvasMap.layerController.regionTableController.epChangedState.register(() -> {
+								modelTableRegion.clear();
+								modelTableRegion.addElement(Optional.empty());
+								for (RegionIdentifier regionIdentifier : canvasMap.layerController.regionTableController.model.getKeys()) {
+									modelTableRegion.addElement(Optional.of(regionIdentifier));
 								}
+
+								updateSelection(canvasMap.getCurrentRegionIdentifier());
 							});
 						}), 300, 600),
 
@@ -1144,8 +1140,8 @@ public class GuiRegionEditor extends GuiBase
 
 	private void scrollToRegion(RegionIdentifier regionIdentifier)
 	{
-		ArrayList<TileIndex> list = canvasMap.possessionMapModel.tileMapModel.getDataReader().getKeys().stream()
-			.filter(cp -> regionIdentifier.equals(canvasMap.possessionMapModel.tileMapModel.getDataReader().get(cp).orElse(null)))
+		ArrayList<TileCoordinate> list = canvasMap.layerController.tileMapController.model.getKeys().stream()
+			.filter(cp -> regionIdentifier.equals(canvasMap.layerController.tileMapController.model.get(cp).orElse(null)))
 			.collect(Collectors.toCollection(ArrayList::new));
 		if (list.size() <= 0) return;
 

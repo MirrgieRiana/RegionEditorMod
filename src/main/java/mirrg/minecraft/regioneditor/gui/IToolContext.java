@@ -4,24 +4,24 @@ import java.awt.Component;
 import java.awt.Point;
 import java.util.Optional;
 
-import mirrg.minecraft.regioneditor.data.controller.PossessionMapModel;
-import mirrg.minecraft.regioneditor.data.model.RegionIdentifier;
-import mirrg.minecraft.regioneditor.data.model.TileIndex;
+import mirrg.minecraft.regioneditor.data.controller.LayerController;
+import mirrg.minecraft.regioneditor.data.objects.RegionIdentifier;
+import mirrg.minecraft.regioneditor.data.objects.TileCoordinate;
 
 public interface IToolContext
 {
 
 	public Component getComponent();
 
-	public PossessionMapModel getPossessionMapModel();
+	public LayerController getLayerController();
 
 	public int getWidth();
 
 	public int getHeight();
 
-	public TileIndex getTileIndex(Point point);
+	public TileCoordinate getTileCoordinate(Point point);
 
-	public Point getTilePosition(TileIndex tileIndex);
+	public Point getTilePosition(TileCoordinate tileCoordinate);
 
 	public int getTileSize();
 
@@ -33,7 +33,7 @@ public interface IToolContext
 
 	public void repaintTile();
 
-	public void repaintTile(TileIndex tileIndex);
+	public void repaintTile(TileCoordinate tileCoordinate);
 
 	public void repaintOverlay();
 

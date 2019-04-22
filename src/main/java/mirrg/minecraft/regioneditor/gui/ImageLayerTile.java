@@ -6,11 +6,11 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.Optional;
 
-import mirrg.minecraft.regioneditor.data.controller.PossessionMapModel;
-import mirrg.minecraft.regioneditor.data.model.RegionEntry;
-import mirrg.minecraft.regioneditor.data.model.RegionIdentifier;
-import mirrg.minecraft.regioneditor.data.model.RegionInfo;
-import mirrg.minecraft.regioneditor.data.model.TileIndex;
+import mirrg.minecraft.regioneditor.data.controller.LayerController;
+import mirrg.minecraft.regioneditor.data.objects.RegionEntry;
+import mirrg.minecraft.regioneditor.data.objects.RegionIdentifier;
+import mirrg.minecraft.regioneditor.data.objects.RegionInfo;
+import mirrg.minecraft.regioneditor.data.objects.TileCoordinate;
 
 public class ImageLayerTile extends ImageLayer
 {
@@ -21,7 +21,7 @@ public class ImageLayerTile extends ImageLayer
 	public boolean showIdentifier = true;
 	public boolean showGrid = true;
 
-	public void update(Image imageBackground, PossessionMapModel possessionMapModel, int tileXCenter, int tileZCenter)
+	public void update(Image imageBackground, LayerController layerController, int tileXCenter, int tileZCenter)
 	{
 		// width = 255, maptipWidth = 16 -> xRadius = (254 / 2 / 16 + 1) = (127 / 16 + 1) = (7 + 1) = 8
 		// width = 256, maptipWidth = 16 -> xRadius = (255 / 2 / 16 + 1) = (127 / 16 + 1) = (7 + 1) = 8
@@ -32,52 +32,52 @@ public class ImageLayerTile extends ImageLayer
 
 		update(
 			imageBackground,
-			possessionMapModel,
+			layerController,
 			tileXCenter,
 			tileZCenter,
-			new TileIndex(
+			new TileCoordinate(
 				tileXCenter - xRadius,
 				tileZCenter - zRadius),
-			new TileIndex(
+			new TileCoordinate(
 				tileXCenter + xRadius,
 				tileZCenter + zRadius));
 	}
 
 	/**
-	 * @param tileIndexEnd
+	 * @param tileCoordinateEnd
 	 *            このチャンクまでが描画範囲に含まれる。
 	 */
-	public void update(Image imageBackground, PossessionMapModel possessionMapModel, int tileXCenter, int tileZCenter, TileIndex tileIndexStart, TileIndex tileIndexEnd)
+	public void update(Image imageBackground, LayerController layerController, int tileXCenter, int tileZCenter, TileCoordinate tileCoordinateStart, TileCoordinate tileCoordinateEnd)
 	{
 		graphics.drawImage(
 			imageBackground,
-			(tileIndexStart.x - tileXCenter) * 16 + width / 2,
-			(tileIndexStart.z - tileZCenter) * 16 + height / 2,
-			(tileIndexEnd.x - tileXCenter) * 16 + width / 2 + 16,
-			(tileIndexEnd.z - tileZCenter) * 16 + height / 2 + 16,
-			(tileIndexStart.x - tileXCenter) * 16 + width / 2,
-			(tileIndexStart.z - tileZCenter) * 16 + height / 2,
-			(tileIndexEnd.x - tileXCenter) * 16 + width / 2 + 16,
-			(tileIndexEnd.z - tileZCenter) * 16 + height / 2 + 16,
+			(tileCoordinateStart.x - tileXCenter) * 16 + width / 2,
+			(tileCoordinateStart.z - tileZCenter) * 16 + height / 2,
+			(tileCoordinateEnd.x - tileXCenter) * 16 + width / 2 + 16,
+			(tileCoordinateEnd.z - tileZCenter) * 16 + height / 2 + 16,
+			(tileCoordinateStart.x - tileXCenter) * 16 + width / 2,
+			(tileCoordinateStart.z - tileZCenter) * 16 + height / 2,
+			(tileCoordinateEnd.x - tileXCenter) * 16 + width / 2 + 16,
+			(tileCoordinateEnd.z - tileZCenter) * 16 + height / 2 + 16,
 			null);
 
-		for (int tileX = tileIndexStart.x; tileX <= tileIndexEnd.x; tileX++) {
-			for (int tileZ = tileIndexStart.z; tileZ <= tileIndexEnd.z; tileZ++) {
-				TileIndex tileIndex = new TileIndex(tileX, tileZ);
+		for (int tileX = tileCoordinateStart.x; tileX <= tileCoordinateEnd.x; tileX++) {
+			for (int tileZ = tileCoordinateStart.z; tileZ <= tileCoordinateEnd.z; tileZ++) {
+				TileCoordinate tileCoordinate = new TileCoordinate(tileX, tileZ);
 
 				if (showTile) {
-					Optional<RegionIdentifier> oRegionIdentifier = possessionMapModel.tileMapModel.getDataReader().get(tileIndex);
+					Optional<RegionIdentifier> oRegionIdentifier = layerController.tileMapController.model.get(tileCoordinate);
 					if (oRegionIdentifier.isPresent()) {
-						RegionInfo regionInfo = possessionMapModel.regionTableModel.getDataReader().get(oRegionIdentifier.get());
+						RegionInfo regionInfo = layerController.regionTableController.model.get(oRegionIdentifier.get());
 
 						drawRegionInfo(
 							new RegionEntry(oRegionIdentifier.get(), regionInfo),
 							tileX - tileXCenter,
 							tileZ - tileZCenter,
-							!possessionMapModel.tileMapModel.getDataReader().get(tileIndex.plus(-1, 0)).equals(oRegionIdentifier),
-							!possessionMapModel.tileMapModel.getDataReader().get(tileIndex.plus(1, 0)).equals(oRegionIdentifier),
-							!possessionMapModel.tileMapModel.getDataReader().get(tileIndex.plus(0, -1)).equals(oRegionIdentifier),
-							!possessionMapModel.tileMapModel.getDataReader().get(tileIndex.plus(0, 1)).equals(oRegionIdentifier));
+							!layerController.tileMapController.model.get(tileCoordinate.plus(-1, 0)).equals(oRegionIdentifier),
+							!layerController.tileMapController.model.get(tileCoordinate.plus(1, 0)).equals(oRegionIdentifier),
+							!layerController.tileMapController.model.get(tileCoordinate.plus(0, -1)).equals(oRegionIdentifier),
+							!layerController.tileMapController.model.get(tileCoordinate.plus(0, 1)).equals(oRegionIdentifier));
 
 					}
 				}
@@ -158,13 +158,13 @@ public class ImageLayerTile extends ImageLayer
 	{
 		FontRenderer.drawString(
 			image,
-			"" + regionEntry.regionIdentifier.countryNumber,
+			"" + regionEntry.regionIdentifier.countryId,
 			x + tileSize / 2,
 			y + tileSize / 2 - 6,
 			regionEntry.regionInfo.countryColor);
 		FontRenderer.drawString(
 			image,
-			"" + regionEntry.regionIdentifier.stateNumber,
+			"" + regionEntry.regionIdentifier.stateId,
 			x + tileSize / 2,
 			y + tileSize / 2,
 			regionEntry.regionInfo.stateColor);

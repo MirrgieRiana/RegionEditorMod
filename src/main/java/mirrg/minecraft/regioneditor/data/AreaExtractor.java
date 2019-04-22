@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 import mirrg.boron.util.struct.ImmutableArray;
 import mirrg.boron.util.struct.Tuple;
 import mirrg.minecraft.regioneditor.data.models.LayerModel;
+import mirrg.minecraft.regioneditor.data.models.TileMapModel;
 import mirrg.minecraft.regioneditor.data.objects.Area;
 import mirrg.minecraft.regioneditor.data.objects.RegionEntry;
 import mirrg.minecraft.regioneditor.data.objects.RegionIdentifier;
@@ -21,6 +22,32 @@ import mirrg.minecraft.regioneditor.data.objects.TileRectangle;
 
 public class AreaExtractor
 {
+
+	public static TileRectangle getBoundingBox(TileMapModel tileMapModel)
+	{
+		return new Supplier<TileRectangle>() {
+			private int minX = 0;
+			private int minZ = 0;
+			private int maxX = 0;
+			private int maxZ = 0;
+
+			@Override
+			public TileRectangle get()
+			{
+				tileMapModel.getKeys()
+					.forEach(tc -> {
+						if (tc.x < minX) minX = tc.x;
+						if (tc.z < minZ) minZ = tc.z;
+						if (tc.x > maxX) maxX = tc.x;
+						if (tc.z > maxZ) maxZ = tc.z;
+					});
+
+				return new TileRectangle(minX, minZ, maxX, maxZ);
+			}
+		}.get();
+	}
+
+	//
 
 	private final LayerModel layerModel;
 
@@ -35,7 +62,7 @@ public class AreaExtractor
 
 		Set<TileCoordinate> visited = new HashSet<>();
 
-		TileRectangle tileRectangle = getBoundingBox();
+		TileRectangle tileRectangle = getBoundingBox(layerModel.tileMapModel);
 		for (int z = tileRectangle.min.z; z <= tileRectangle.max.z; z++) { // 左上から順に見ていき、
 			for (int x = tileRectangle.min.x; x <= tileRectangle.max.x; x++) {
 				TileCoordinate tileCoordinate = new TileCoordinate(x, z);
@@ -55,30 +82,6 @@ public class AreaExtractor
 		}
 
 		return ImmutableArray.ofIterable(areas);
-	}
-
-	private TileRectangle getBoundingBox()
-	{
-		return new Supplier<TileRectangle>() {
-			private int minX = 0;
-			private int minZ = 0;
-			private int maxX = 0;
-			private int maxZ = 0;
-
-			@Override
-			public TileRectangle get()
-			{
-				layerModel.tileMapModel.getKeys()
-					.forEach(tc -> {
-						if (tc.x < minX) minX = tc.x;
-						if (tc.z < minZ) minZ = tc.z;
-						if (tc.x > maxX) maxX = tc.x;
-						if (tc.z > maxZ) maxZ = tc.z;
-					});
-
-				return new TileRectangle(minX, minZ, maxX, maxZ);
-			}
-		}.get();
 	}
 
 	/**
@@ -126,7 +129,7 @@ public class AreaExtractor
 
 	/**
 	 * 起点マスから四方に
-	 * {@link #tryVisit(TileIndex, Optional, Set, Deque, Node, BiConsumer)}
+	 * {@link #tryVisit(TileCoordinate, TileRectangle, Optional, Set, Deque, Node, BiConsumer)}
 	 * を試みる。
 	 */
 	private void tryVisitNeighbor(

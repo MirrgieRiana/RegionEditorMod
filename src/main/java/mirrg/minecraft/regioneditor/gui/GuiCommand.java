@@ -23,8 +23,8 @@ import mirrg.boron.util.i18n.I18n;
 import mirrg.boron.util.struct.ImmutableArray;
 import mirrg.boron.util.struct.Tuple;
 import mirrg.boron.util.suppliterator.ISuppliterator;
-import mirrg.minecraft.regioneditor.data.model.Area;
-import mirrg.minecraft.regioneditor.data.model.RegionIdentifier;
+import mirrg.minecraft.regioneditor.data.objects.Area;
+import mirrg.minecraft.regioneditor.data.objects.RegionIdentifier;
 
 public class GuiCommand extends GuiBase
 {
@@ -49,7 +49,7 @@ public class GuiCommand extends GuiBase
 		list.forEach((area, i) -> {
 			sb.append("/dmarker clearcorners");
 			sb.append("\n");
-			area.vertexes.stream()
+			area.tileCoordinates.stream()
 				.forEach(a -> {
 					sb.append("/dmarker addcorner " + (a.x * 16) + " 0 " + (a.z * 16) + " world");
 					sb.append("\n");
@@ -59,7 +59,7 @@ public class GuiCommand extends GuiBase
 				area.regionEntry.regionInfo.countryColor.getRGB() & 0xFFFFFF,
 				area.regionEntry.regionInfo.stateColor.getRGB() & 0xFFFFFF,
 				area.regionEntry.regionInfo.countryName + " / " + area.regionEntry.regionInfo.stateName,
-				area.regionEntry.regionIdentifier.countryNumber + "_" + area.regionEntry.regionIdentifier.stateNumber + "_" + areaId));
+				area.regionEntry.regionIdentifier.countryId + "_" + area.regionEntry.regionIdentifier.stateId + "_" + areaId));
 			sb.append("\n");
 		});
 
