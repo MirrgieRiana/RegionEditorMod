@@ -64,8 +64,8 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
-	compile group: 'mirrg.boron', name: 'mirrg.boron.util', version: '[3.9,4['
-	adder group: 'mirrg.boron', name: 'mirrg.boron.util', version: '[3.9,4['
+	compile group: 'mirrg.boron', name: 'mirrg.boron.util', version: '[3.10,4['
+	adder group: 'mirrg.boron', name: 'mirrg.boron.util', version: '[3.10,4['
     adder "com.google.code.gson:gson:2.8+"
 }
 
