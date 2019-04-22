@@ -182,6 +182,7 @@ public class CanvasMap extends Canvas
 	public void addRegionInfo(RegionIdentifier regionIdentifier, RegionInfo regionInfo)
 	{
 		layerController.regionTableController.model.set(regionIdentifier, regionInfo);
+		layerController.regionTableController.epChangedState.trigger().run();
 	}
 
 	public CanvasMap(I18n i18n, ICanvasMapListener listener)
