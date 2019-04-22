@@ -1,5 +1,6 @@
 package mirrg.minecraft.regioneditor.gui.tools;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.FocusAdapter;
@@ -140,7 +141,9 @@ public abstract class ToolBase implements ITool
 			TileCoordinate tileCoordinate = toolContext.getTileCoordinate(oMousePosition.get());
 
 			// 座標表示
-			graphics.drawString(
+			drawBoldString(
+				graphics,
+				Color.white,
 				tileCoordinate.x + ", " + tileCoordinate.z,
 				oMousePosition.get().x + 2,
 				oMousePosition.get().y - height * 2 - 2);
@@ -150,11 +153,15 @@ public abstract class ToolBase implements ITool
 			if (oRegionIdentifier.isPresent()) {
 				RegionInfo regionInfo = toolContext.getLayerController().regionTableController.model.get(oRegionIdentifier.get());
 
-				graphics.drawString(
+				drawBoldString(
+					graphics,
+					Color.white,
 					toolContext.localize("ToolBase.label.country") + ": (" + oRegionIdentifier.get().countryId + ") " + regionInfo.countryName,
 					oMousePosition.get().x + 2,
 					oMousePosition.get().y - height * 1 - 2);
-				graphics.drawString(
+				drawBoldString(
+					graphics,
+					Color.white,
 					toolContext.localize("ToolBase.label.state") + ": (" + oRegionIdentifier.get().stateId + ") " + regionInfo.stateName,
 					oMousePosition.get().x + 2,
 					oMousePosition.get().y - height * 0 - 2);
@@ -162,6 +169,17 @@ public abstract class ToolBase implements ITool
 			}
 
 		}
+	}
+
+	protected void drawBoldString(Graphics2D graphics, Color color, String string, int x, int y)
+	{
+		graphics.setColor(Color.black);
+		graphics.drawString(string, x - 1, y);
+		graphics.drawString(string, x, y - 1);
+		graphics.drawString(string, x + 1, y);
+		graphics.drawString(string, x, y + 1);
+		graphics.setColor(color);
+		graphics.drawString(string, x, y);
 	}
 
 }
