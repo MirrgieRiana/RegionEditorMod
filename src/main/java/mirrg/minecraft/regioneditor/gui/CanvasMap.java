@@ -36,6 +36,8 @@ import mirrg.minecraft.regioneditor.data.objects.RegionEntry;
 import mirrg.minecraft.regioneditor.data.objects.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.objects.RegionInfo;
 import mirrg.minecraft.regioneditor.data.objects.TileCoordinate;
+import mirrg.minecraft.regioneditor.gui.tool.ITool;
+import mirrg.minecraft.regioneditor.gui.tool.IToolContext;
 
 public class CanvasMap extends Canvas
 {

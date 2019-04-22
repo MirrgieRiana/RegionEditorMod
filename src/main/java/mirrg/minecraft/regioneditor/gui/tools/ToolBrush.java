@@ -1,4 +1,4 @@
-package mirrg.minecraft.regioneditor.gui;
+package mirrg.minecraft.regioneditor.gui.tools;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -19,6 +19,8 @@ import java.util.Optional;
 import mirrg.minecraft.regioneditor.data.objects.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.objects.RegionInfo;
 import mirrg.minecraft.regioneditor.data.objects.TileCoordinate;
+import mirrg.minecraft.regioneditor.gui.tool.ITool;
+import mirrg.minecraft.regioneditor.gui.tool.IToolContext;
 
 public class ToolBrush implements ITool
 {

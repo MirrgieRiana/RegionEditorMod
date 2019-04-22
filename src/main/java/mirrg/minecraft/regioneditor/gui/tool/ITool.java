@@ -1,4 +1,4 @@
-package mirrg.minecraft.regioneditor.gui;
+package mirrg.minecraft.regioneditor.gui.tool;
 
 import java.awt.Graphics2D;
 

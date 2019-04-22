@@ -1,4 +1,7 @@
-package mirrg.minecraft.regioneditor.gui;
+package mirrg.minecraft.regioneditor.gui.tools;
+
+import mirrg.minecraft.regioneditor.gui.tool.ITool;
+import mirrg.minecraft.regioneditor.gui.tool.IToolContext;
 
 public class ToolNothing implements ITool
 {

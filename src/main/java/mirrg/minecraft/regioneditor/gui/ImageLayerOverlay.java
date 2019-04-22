@@ -4,6 +4,7 @@ import java.awt.Image;
 import java.util.Optional;
 
 import mirrg.minecraft.regioneditor.data.controller.LayerController;
+import mirrg.minecraft.regioneditor.gui.tool.ITool;
 
 public class ImageLayerOverlay extends ImageLayer
 {

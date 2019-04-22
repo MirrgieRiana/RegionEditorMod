@@ -1,4 +1,4 @@
-package mirrg.minecraft.regioneditor.gui;
+package mirrg.minecraft.regioneditor.gui.tools;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -13,6 +13,8 @@ import mirrg.minecraft.regioneditor.data.models.TileMapModel;
 import mirrg.minecraft.regioneditor.data.objects.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.objects.TileCoordinate;
 import mirrg.minecraft.regioneditor.data.objects.TileRectangle;
+import mirrg.minecraft.regioneditor.gui.tool.ITool;
+import mirrg.minecraft.regioneditor.gui.tool.IToolContext;
 
 public class ToolFill implements ITool
 {
