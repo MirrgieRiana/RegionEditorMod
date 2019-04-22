@@ -58,14 +58,14 @@ public class ToolBrush extends ToolBase
 			Point point = e.getPoint();
 
 			// 左クリックで塗る
-			if (e.getButton() == MouseEvent.BUTTON1) {
+			if (mouseButtons[1]) {
 				int brushSize = keys[KeyEvent.VK_SHIFT] ? 1 : toolContext.getBrushSize();
 				if (brushSize % 2 == 0) point.translate(toolContext.getTileSize() / 2, toolContext.getTileSize() / 2);
 				setTile(toolContext.getTileCoordinate(point), toolContext.getCurrentRegionIdentifier(), brushSize);
 			}
 
 			// 右クリックで破壊
-			if (e.getButton() == MouseEvent.BUTTON3) {
+			if (mouseButtons[3]) {
 				int brushSize = keys[KeyEvent.VK_SHIFT] ? 1 : toolContext.getBrushSize();
 				if (brushSize % 2 == 0) point.translate(toolContext.getTileSize() / 2, toolContext.getTileSize() / 2);
 				setTile(toolContext.getTileCoordinate(point), Optional.empty(), brushSize);
