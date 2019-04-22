@@ -31,9 +31,7 @@ public class ToolBrush extends ToolBase
 
 			// 左クリックで塗る
 			if (e.getButton() == MouseEvent.BUTTON1) {
-				int brushSize = toolContext.getBrushSize();
-				if (keys[KeyEvent.VK_CONTROL]) brushSize = 1;
-				if (keys[KeyEvent.VK_SHIFT]) brushSize *= 2;
+				int brushSize = getBrushSize();
 				if (brushSize % 2 == 0) point.translate(toolContext.getTileSize() / 2, toolContext.getTileSize() / 2);
 				setTile(toolContext.getTileCoordinate(point), toolContext.getCurrentRegionIdentifier(), brushSize);
 			}
@@ -45,9 +43,7 @@ public class ToolBrush extends ToolBase
 
 			// 右クリックで破壊
 			if (e.getButton() == MouseEvent.BUTTON3) {
-				int brushSize = toolContext.getBrushSize();
-				if (keys[KeyEvent.VK_CONTROL]) brushSize = 1;
-				if (keys[KeyEvent.VK_SHIFT]) brushSize *= 2;
+				int brushSize = getBrushSize();
 				if (brushSize % 2 == 0) point.translate(toolContext.getTileSize() / 2, toolContext.getTileSize() / 2);
 				setTile(toolContext.getTileCoordinate(point), Optional.empty(), brushSize);
 			}
@@ -63,18 +59,14 @@ public class ToolBrush extends ToolBase
 
 			// 左クリックで塗る
 			if (mouseButtons[1]) {
-				int brushSize = toolContext.getBrushSize();
-				if (keys[KeyEvent.VK_CONTROL]) brushSize = 1;
-				if (keys[KeyEvent.VK_SHIFT]) brushSize *= 2;
+				int brushSize = getBrushSize();
 				if (brushSize % 2 == 0) point.translate(toolContext.getTileSize() / 2, toolContext.getTileSize() / 2);
 				setTile(toolContext.getTileCoordinate(point), toolContext.getCurrentRegionIdentifier(), brushSize);
 			}
 
 			// 右クリックで破壊
 			if (mouseButtons[3]) {
-				int brushSize = toolContext.getBrushSize();
-				if (keys[KeyEvent.VK_CONTROL]) brushSize = 1;
-				if (keys[KeyEvent.VK_SHIFT]) brushSize *= 2;
+				int brushSize = getBrushSize();
 				if (brushSize % 2 == 0) point.translate(toolContext.getTileSize() / 2, toolContext.getTileSize() / 2);
 				setTile(toolContext.getTileCoordinate(point), Optional.empty(), brushSize);
 			}
@@ -108,9 +100,7 @@ public class ToolBrush extends ToolBase
 			{
 
 				// ブラシサイズ
-				int brushSize = toolContext.getBrushSize();
-				if (keys[KeyEvent.VK_CONTROL]) brushSize = 1;
-				if (keys[KeyEvent.VK_SHIFT]) brushSize *= 2;
+				int brushSize = getBrushSize();
 
 				// タイル座標
 				Point point = new Point(oMousePosition.get());
@@ -143,6 +133,14 @@ public class ToolBrush extends ToolBase
 			}
 
 		}
+	}
+
+	protected int getBrushSize()
+	{
+		int brushSize = toolContext.getBrushSize();
+		if (keys[KeyEvent.VK_CONTROL]) brushSize = 1;
+		if (keys[KeyEvent.VK_SHIFT]) brushSize *= 2;
+		return brushSize;
 	}
 
 	private void setTile(TileCoordinate tileCoordinate, Optional<RegionIdentifier> oRegionIdentifier, int brushSize)
