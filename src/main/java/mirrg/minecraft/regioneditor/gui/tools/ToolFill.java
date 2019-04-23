@@ -115,7 +115,6 @@ public class ToolFill extends ToolBase
 					toolContext.getLayerController().tileMapController.epChangedTileSpecified.trigger().accept(tileCoordinate);
 				}
 			}
-			toolContext.getLayerController().tileMapController.epChangedState.trigger().run();
 		}
 	};
 
