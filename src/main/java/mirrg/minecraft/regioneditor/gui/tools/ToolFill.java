@@ -13,17 +13,14 @@ import mirrg.minecraft.regioneditor.data.models.TileMapModel;
 import mirrg.minecraft.regioneditor.data.objects.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.objects.TileCoordinate;
 import mirrg.minecraft.regioneditor.data.objects.TileRectangle;
-import mirrg.minecraft.regioneditor.gui.tool.ITool;
 import mirrg.minecraft.regioneditor.gui.tool.IToolContext;
 
-public class ToolFill implements ITool
+public class ToolFill extends ToolBase
 {
-
-	protected final IToolContext toolContext;
 
 	public ToolFill(IToolContext toolContext)
 	{
-		this.toolContext = toolContext;
+		super(toolContext);
 	}
 
 	private MouseListener mouseListener = new MouseAdapter() {
@@ -125,12 +122,14 @@ public class ToolFill implements ITool
 	@Override
 	public void on()
 	{
+		super.on();
 		toolContext.getComponent().addMouseListener(mouseListener);
 	}
 
 	@Override
 	public void off()
 	{
+		super.off();
 		toolContext.getComponent().removeMouseListener(mouseListener);
 	}
 
