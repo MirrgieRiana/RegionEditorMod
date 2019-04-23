@@ -205,10 +205,13 @@ public class CanvasMap extends Canvas
 			}
 		});
 		layerController.regionTableController.epChangedState.register(() -> {
-			update();
+			updateLayerTile();
 		});
 		layerController.tileMapController.epChangedTileSpecified.register(tileCoordinate -> {
 			updateLayerTile(tileCoordinate);
+		});
+		layerController.tileMapController.epChangedTileUnspecified.register(() -> {
+			updateLayerTile();
 		});
 
 		setSize(1, 1);
