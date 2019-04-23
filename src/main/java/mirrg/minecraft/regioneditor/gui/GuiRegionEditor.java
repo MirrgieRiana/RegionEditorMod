@@ -351,7 +351,7 @@ public class GuiRegionEditor extends GuiBase
 				.register();
 			actionDecrementBrushSize = new ActionBuilder<>(new ActionButton(e -> plusBrushSize(-1)))
 				.value(Action.NAME, localize("GuiRegionEditor.actionDecrementBrushSize") + "(D)")
-				.value(Action.MNEMONIC_KEY, KeyEvent.VK_L)
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, 0))
 				.register();
 
