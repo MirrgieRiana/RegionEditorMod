@@ -66,18 +66,18 @@ public class ImageLayerTile extends ImageLayer
 				TileCoordinate tileCoordinate = new TileCoordinate(tileX, tileZ);
 
 				if (showTile) {
-					Optional<RegionIdentifier> oRegionIdentifier = layerController.tileMapController.model.get(tileCoordinate);
-					if (oRegionIdentifier.isPresent()) {
-						RegionInfo regionInfo = layerController.regionTableController.model.get(oRegionIdentifier.get());
+					Optional<RegionIdentifier> tile = layerController.tileMapController.model.getTile(tileCoordinate);
+					if (tile.isPresent()) {
+						RegionInfo regionInfo = layerController.regionTableController.model.get(tile.get());
 
 						drawRegionInfo(
-							new RegionEntry(oRegionIdentifier.get(), regionInfo),
+							new RegionEntry(tile.get(), regionInfo),
 							tileX - tileXCenter,
 							tileZ - tileZCenter,
-							!layerController.tileMapController.model.get(tileCoordinate.plus(-1, 0)).equals(oRegionIdentifier),
-							!layerController.tileMapController.model.get(tileCoordinate.plus(1, 0)).equals(oRegionIdentifier),
-							!layerController.tileMapController.model.get(tileCoordinate.plus(0, -1)).equals(oRegionIdentifier),
-							!layerController.tileMapController.model.get(tileCoordinate.plus(0, 1)).equals(oRegionIdentifier));
+							!layerController.tileMapController.model.getTile(tileCoordinate.plus(-1, 0)).equals(tile),
+							!layerController.tileMapController.model.getTile(tileCoordinate.plus(1, 0)).equals(tile),
+							!layerController.tileMapController.model.getTile(tileCoordinate.plus(0, -1)).equals(tile),
+							!layerController.tileMapController.model.getTile(tileCoordinate.plus(0, 1)).equals(tile));
 
 					}
 				}

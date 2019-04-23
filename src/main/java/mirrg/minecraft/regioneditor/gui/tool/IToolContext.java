@@ -42,9 +42,9 @@ public interface IToolContext
 	 */
 	public int getTileSize();
 
-	public Optional<RegionIdentifier> getCurrentRegionIdentifier();
+	public Optional<RegionIdentifier> getTileCurrent();
 
-	public void setCurrentRegionIdentifier(Optional<RegionIdentifier> oCurrentRegionIdentifier);
+	public void setTileCurrent(Optional<RegionIdentifier> tileCurrent);
 
 	public int getBrushSize();
 

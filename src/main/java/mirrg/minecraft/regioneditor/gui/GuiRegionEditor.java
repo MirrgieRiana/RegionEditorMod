@@ -357,7 +357,7 @@ public class GuiRegionEditor extends GuiBase
 					JOptionPane.WARNING_MESSAGE) == JOptionPane.OK_OPTION) {
 
 					for (TileCoordinate tileCoordinate : canvasMap.layerController.tileMapController.model.getKeys().toCollection()) {
-						canvasMap.layerController.tileMapController.model.set(tileCoordinate, Optional.empty());
+						canvasMap.layerController.tileMapController.model.setTile(tileCoordinate, Optional.empty());
 					}
 					canvasMap.update();
 
@@ -382,9 +382,9 @@ public class GuiRegionEditor extends GuiBase
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.SHIFT_DOWN_MASK))
 				.register();
 			actionDeleteRegion = new ActionBuilder<>(new ActionButton(e -> {
-				Optional<RegionIdentifier> oRegionIdentifier = canvasMap.getCurrentRegionIdentifier();
-				if (oRegionIdentifier.isPresent()) {
-					canvasMap.layerController.regionTableController.model.remove(oRegionIdentifier.get());
+				Optional<RegionIdentifier> tileCurrent = canvasMap.getTileCurrent();
+				if (tileCurrent.isPresent()) {
+					canvasMap.layerController.regionTableController.model.remove(tileCurrent.get());
 					canvasMap.update();
 				}
 			}))
@@ -400,9 +400,9 @@ public class GuiRegionEditor extends GuiBase
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK))
 				.register();
 			actionScrollToRegion = new ActionBuilder<>(new ActionButton(e -> {
-				Optional<RegionIdentifier> oRegionIdentifier = canvasMap.getCurrentRegionIdentifier();
-				if (oRegionIdentifier.isPresent()) {
-					scrollToRegion(oRegionIdentifier.get());
+				Optional<RegionIdentifier> tileCurrent = canvasMap.getTileCurrent();
+				if (tileCurrent.isPresent()) {
+					scrollToRegion(tileCurrent.get());
 				}
 			}))
 				.value(Action.NAME, localize("GuiRegionEditor.actionScrollToRegion") + "(S)")
@@ -571,9 +571,9 @@ public class GuiRegionEditor extends GuiBase
 									// 地図
 									canvasMap = get(new CanvasMap(i18n, new ICanvasMapListener() {
 										@Override
-										public void onCurrentRegionIdentifierChange(Optional<RegionIdentifier> oCurrentRegionIdentifier)
+										public void onChangeTileCurrent(Optional<RegionIdentifier> tileCurrent)
 										{
-											updateSelection(oCurrentRegionIdentifier);
+											updateSelection(tileCurrent);
 										}
 
 										@Override
@@ -693,16 +693,16 @@ public class GuiRegionEditor extends GuiBase
 								public void mouseReleased(MouseEvent e)
 								{
 									if (e.getButton() == MouseEvent.BUTTON1) {
-										canvasMap.setCurrentRegionIdentifier(getSelectedItem());
+										canvasMap.setTileCurrent(getSelectedItem());
 									} else if (e.getButton() == MouseEvent.BUTTON3) {
 
 										int index = c.locationToIndex(e.getPoint());
 										if (index < 0) return;
 										if (index >= c.getModel().getSize()) return;
-										Optional<RegionIdentifier> oRegionIdentifier = c.getModel().getElementAt(index);
-										if (!oRegionIdentifier.isPresent()) return;
+										Optional<RegionIdentifier> tile = c.getModel().getElementAt(index);
+										if (!tile.isPresent()) return;
 
-										scrollToRegion(oRegionIdentifier.get());
+										scrollToRegion(tile.get());
 
 									}
 								}
@@ -787,7 +787,7 @@ public class GuiRegionEditor extends GuiBase
 									modelTableRegion.addElement(Optional.of(regionIdentifier));
 								}
 
-								updateSelection(canvasMap.getCurrentRegionIdentifier());
+								updateSelection(canvasMap.getTileCurrent());
 							});
 						}), 300, 600),
 
@@ -926,14 +926,14 @@ public class GuiRegionEditor extends GuiBase
 		canvasMap.setBrushSize(Math.max(Math.min(canvasMap.getBrushSize() + dBrushSize, 100), 1));
 	}
 
-	private void updateSelection(Optional<RegionIdentifier> oCurrentRegionIdentifier)
+	private void updateSelection(Optional<RegionIdentifier> tileCurrent)
 	{
 		tableRegion.getSelectionModel().clearSelection();
 		Enumeration<Optional<RegionIdentifier>> elements = modelTableRegion.elements();
 		int i = 0;
 		while (elements.hasMoreElements()) {
-			Optional<RegionIdentifier> oRegionIdentifier = elements.nextElement();
-			if (oRegionIdentifier.equals(oCurrentRegionIdentifier)) {
+			Optional<RegionIdentifier> tile = elements.nextElement();
+			if (tile.equals(tileCurrent)) {
 				tableRegion.setSelectedIndex(i);
 				break;
 			}
@@ -1146,7 +1146,7 @@ public class GuiRegionEditor extends GuiBase
 	private void scrollToRegion(RegionIdentifier regionIdentifier)
 	{
 		ArrayList<TileCoordinate> list = canvasMap.layerController.tileMapController.model.getKeys().stream()
-			.filter(cp -> regionIdentifier.equals(canvasMap.layerController.tileMapController.model.get(cp).orElse(null)))
+			.filter(cp -> regionIdentifier.equals(canvasMap.layerController.tileMapController.model.getTile(cp).orElse(null)))
 			.collect(Collectors.toCollection(ArrayList::new));
 		if (list.size() <= 0) return;
 

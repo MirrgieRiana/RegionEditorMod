@@ -15,7 +15,7 @@ public class TileMapModel
 
 	public TreeMap<TileCoordinate, Optional<RegionIdentifier>> map = new TreeMap<>();
 
-	public Optional<RegionIdentifier> get(TileCoordinate tileCoordinate)
+	public Optional<RegionIdentifier> getTile(TileCoordinate tileCoordinate)
 	{
 		return map.getOrDefault(tileCoordinate, empty);
 	}
@@ -36,10 +36,10 @@ public class TileMapModel
 			.map(e -> new Tuple<>(e.getKey(), e.getValue().get()));
 	}
 
-	public void set(TileCoordinate tileCoordinate, Optional<RegionIdentifier> oRegionInfo)
+	public void setTile(TileCoordinate tileCoordinate, Optional<RegionIdentifier> tile)
 	{
-		if (oRegionInfo.isPresent()) {
-			map.put(tileCoordinate, oRegionInfo);
+		if (tile.isPresent()) {
+			map.put(tileCoordinate, tile);
 		} else {
 			map.remove(tileCoordinate);
 		}

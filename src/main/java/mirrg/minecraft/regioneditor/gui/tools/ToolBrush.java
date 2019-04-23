@@ -33,12 +33,12 @@ public class ToolBrush extends ToolBase
 			if (e.getButton() == MouseEvent.BUTTON1) {
 				int brushSize = getBrushSize();
 				if (brushSize % 2 == 0) point.translate(toolContext.getTileSize() / 2, toolContext.getTileSize() / 2);
-				setTile(toolContext.getTileCoordinate(point), toolContext.getCurrentRegionIdentifier(), brushSize);
+				setTile(toolContext.getTileCoordinate(point), toolContext.getTileCurrent(), brushSize);
 			}
 
 			// 中央クリックでスポイト
 			if (e.getButton() == MouseEvent.BUTTON2) {
-				toolContext.setCurrentRegionIdentifier(toolContext.getLayerController().tileMapController.model.get(toolContext.getTileCoordinate(point)));
+				toolContext.setTileCurrent(toolContext.getLayerController().tileMapController.model.getTile(toolContext.getTileCoordinate(point)));
 			}
 
 			// 右クリックで破壊
@@ -61,7 +61,7 @@ public class ToolBrush extends ToolBase
 			if (mouseButtons[1]) {
 				int brushSize = getBrushSize();
 				if (brushSize % 2 == 0) point.translate(toolContext.getTileSize() / 2, toolContext.getTileSize() / 2);
-				setTile(toolContext.getTileCoordinate(point), toolContext.getCurrentRegionIdentifier(), brushSize);
+				setTile(toolContext.getTileCoordinate(point), toolContext.getTileCurrent(), brushSize);
 			}
 
 			// 右クリックで破壊
@@ -143,19 +143,19 @@ public class ToolBrush extends ToolBase
 		return brushSize;
 	}
 
-	private void setTile(TileCoordinate tileCoordinate, Optional<RegionIdentifier> oRegionIdentifier, int brushSize)
+	private void setTile(TileCoordinate tileCoordinate, Optional<RegionIdentifier> tile, int brushSize)
 	{
 		for (int xi = -brushSize / 2; xi < (brushSize + 1) / 2; xi++) {
 			for (int zi = -brushSize / 2; zi < (brushSize + 1) / 2; zi++) {
-				setTile(tileCoordinate.plus(xi, zi), oRegionIdentifier);
+				setTile(tileCoordinate.plus(xi, zi), tile);
 			}
 		}
 	}
 
-	private void setTile(TileCoordinate tileCoordinate, Optional<RegionIdentifier> oRegionIdentifier)
+	private void setTile(TileCoordinate tileCoordinate, Optional<RegionIdentifier> tile)
 	{
-		if (!toolContext.getLayerController().tileMapController.model.get(tileCoordinate).equals(oRegionIdentifier)) {
-			toolContext.getLayerController().tileMapController.model.set(tileCoordinate, oRegionIdentifier);
+		if (!toolContext.getLayerController().tileMapController.model.getTile(tileCoordinate).equals(tile)) {
+			toolContext.getLayerController().tileMapController.model.setTile(tileCoordinate, tile);
 			toolContext.getLayerController().tileMapController.epChangedTileSpecified.trigger().accept(tileCoordinate);
 		}
 	}

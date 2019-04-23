@@ -120,15 +120,15 @@ public class CanvasMap extends Canvas
 		}
 
 		@Override
-		public Optional<RegionIdentifier> getCurrentRegionIdentifier()
+		public Optional<RegionIdentifier> getTileCurrent()
 		{
-			return CanvasMap.this.oCurrentRegionIdentifier;
+			return CanvasMap.this.tileCurrent;
 		}
 
 		@Override
-		public void setCurrentRegionIdentifier(Optional<RegionIdentifier> oCurrentRegionIdentifier)
+		public void setTileCurrent(Optional<RegionIdentifier> tileCurrent)
 		{
-			CanvasMap.this.setCurrentRegionIdentifier(oCurrentRegionIdentifier);
+			CanvasMap.this.setTileCurrent(tileCurrent);
 		}
 
 		@Override
@@ -161,7 +161,7 @@ public class CanvasMap extends Canvas
 		return toolContext;
 	}
 
-	private Optional<RegionIdentifier> oCurrentRegionIdentifier = Optional.empty();
+	private Optional<RegionIdentifier> tileCurrent = Optional.empty();
 	private int brushSize = 1;
 
 	public final LayerController layerController = new LayerController(new LayerModel());
@@ -210,15 +210,15 @@ public class CanvasMap extends Canvas
 		updateLayerMap();
 	}
 
-	public Optional<RegionIdentifier> getCurrentRegionIdentifier()
+	public Optional<RegionIdentifier> getTileCurrent()
 	{
-		return oCurrentRegionIdentifier;
+		return tileCurrent;
 	}
 
-	public void setCurrentRegionIdentifier(Optional<RegionIdentifier> oCurrentRegionIdentifier)
+	public void setTileCurrent(Optional<RegionIdentifier> tileCurrent)
 	{
-		this.oCurrentRegionIdentifier = oCurrentRegionIdentifier;
-		listener.onCurrentRegionIdentifierChange(oCurrentRegionIdentifier);
+		this.tileCurrent = tileCurrent;
+		listener.onChangeTileCurrent(tileCurrent);
 		updateLayerOverlay();
 	}
 
@@ -237,7 +237,7 @@ public class CanvasMap extends Canvas
 	public static interface ICanvasMapListener
 	{
 
-		public default void onCurrentRegionIdentifierChange(Optional<RegionIdentifier> oCurrentRegionIdentifier)
+		public default void onChangeTileCurrent(Optional<RegionIdentifier> tile)
 		{
 
 		}
@@ -394,7 +394,7 @@ public class CanvasMap extends Canvas
 		int length = 0;
 
 		for (TileCoordinate tileCoordinate : tileMapModel.getKeys()) {
-			RegionIdentifier regionIdentifier = tileMapModel.get(tileCoordinate).get();
+			RegionIdentifier regionIdentifier = tileMapModel.getTile(tileCoordinate).get();
 
 			if (tileCoordinateLast != null) {
 				// 1個前の領地がある場合
@@ -481,7 +481,7 @@ public class CanvasMap extends Canvas
 
 			// 配置実行
 			for (int xi = 0; xi < length; xi++) {
-				tileMap.set(new TileCoordinate(x + xi, z), Optional.of(regionIdentifier));
+				tileMap.setTile(new TileCoordinate(x + xi, z), Optional.of(regionIdentifier));
 			}
 
 		}

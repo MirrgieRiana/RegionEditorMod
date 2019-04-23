@@ -34,7 +34,7 @@ public class ToolFill implements ITool
 
 			Optional<RegionIdentifier> tile;
 			if (e.getButton() == MouseEvent.BUTTON1) {
-				tile = toolContext.getCurrentRegionIdentifier();
+				tile = toolContext.getTileCurrent();
 			} else if (e.getButton() == MouseEvent.BUTTON3) {
 				tile = Optional.empty();
 			} else {
@@ -51,7 +51,7 @@ public class ToolFill implements ITool
 		{
 			TileMapModel tileMapModel = toolContext.getLayerController().tileMapController.model;
 			TileRectangle boundingBox = AreaExtractor.getBoundingBox(tileMapModel);
-			Optional<RegionIdentifier> tileOrigin = tileMapModel.get(tileCoordinateOrigin);
+			Optional<RegionIdentifier> tileOrigin = tileMapModel.getTile(tileCoordinateOrigin);
 
 			return new Object() {
 				private HashSet<TileCoordinate> tileCoordinatesVisited;
@@ -84,7 +84,7 @@ public class ToolFill implements ITool
 
 				private void tryVisit(TileCoordinate tileCoordinate) throws BoundingBoxOverflowException
 				{
-					Optional<RegionIdentifier> tile = tileMapModel.get(tileCoordinate);
+					Optional<RegionIdentifier> tile = tileMapModel.getTile(tileCoordinate);
 
 					if (!tile.equals(tileOrigin)) return; // 原点と同じ属性のマスで、
 					if (!tile.isPresent() && !boundingBox.contains(tileCoordinate)) throw new BoundingBoxOverflowException(); // 範囲が無限ではなく
@@ -109,12 +109,12 @@ public class ToolFill implements ITool
 		{
 			if (tileCoordinates.size() > 20) {
 				for (TileCoordinate tileCoordinate : tileCoordinates) {
-					toolContext.getLayerController().tileMapController.model.set(tileCoordinate, tile);
+					toolContext.getLayerController().tileMapController.model.setTile(tileCoordinate, tile);
 				}
 				toolContext.getLayerController().tileMapController.epChangedTileUnspecified.trigger().run();
 			} else {
 				for (TileCoordinate tileCoordinate : tileCoordinates) {
-					toolContext.getLayerController().tileMapController.model.set(tileCoordinate, tile);
+					toolContext.getLayerController().tileMapController.model.setTile(tileCoordinate, tile);
 					toolContext.getLayerController().tileMapController.epChangedTileSpecified.trigger().accept(tileCoordinate);
 				}
 			}

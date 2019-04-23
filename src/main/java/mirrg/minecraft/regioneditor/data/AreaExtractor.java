@@ -66,9 +66,9 @@ public class AreaExtractor
 		for (int z = tileRectangle.min.z; z <= tileRectangle.max.z; z++) { // 左上から順に見ていき、
 			for (int x = tileRectangle.min.x; x <= tileRectangle.max.x; x++) {
 				TileCoordinate tileCoordinate = new TileCoordinate(x, z);
-				Optional<RegionIdentifier> oRegionIdentifier = layerModel.tileMapModel.get(tileCoordinate);
-				if (oRegionIdentifier.isPresent()) { // 空白地ではなく、
-					RegionIdentifier regionIdentifier = oRegionIdentifier.get();
+				Optional<RegionIdentifier> tile = layerModel.tileMapModel.getTile(tileCoordinate);
+				if (tile.isPresent()) { // 空白地ではなく、
+					RegionIdentifier regionIdentifier = tile.get();
 					if (!visited.contains(tileCoordinate)) { // 未訪問の場合、
 
 						// 一続きのマスをすべて訪問する
@@ -94,9 +94,9 @@ public class AreaExtractor
 	{
 
 		// 今調査している領地の識別番号（空白地の場合は空白地を調査中）
-		Optional<RegionIdentifier> regionType = layerModel.tileMapModel.get(tileCoordinate);
+		Optional<RegionIdentifier> tile = layerModel.tileMapModel.getTile(tileCoordinate);
 
-		if (regionType.isPresent()) {
+		if (tile.isPresent()) {
 
 		}
 
@@ -118,7 +118,7 @@ public class AreaExtractor
 				Tuple<TileCoordinate, Node> tuple = waitings.removeFirst();
 
 				// 隣接マスへの訪問を試みる
-				tryVisitNeighbor(tuple.x, tileRectangle, regionType, visited, waitings, tuple.y);
+				tryVisitNeighbor(tuple.x, tileRectangle, tile, visited, waitings, tuple.y);
 
 			}
 
@@ -135,15 +135,15 @@ public class AreaExtractor
 	private void tryVisitNeighbor(
 		TileCoordinate tileCoordinate,
 		TileRectangle tileRectangle,
-		Optional<RegionIdentifier> regionType,
+		Optional<RegionIdentifier> tile,
 		Set<TileCoordinate> visited,
 		Deque<Tuple<TileCoordinate, Node>> waitings,
 		Node parent)
 	{
-		tryVisit(tileCoordinate.plus(0, -1), tileRectangle, regionType, visited, waitings, parent, (p, n) -> p.up = n);
-		tryVisit(tileCoordinate.plus(1, 0), tileRectangle, regionType, visited, waitings, parent, (p, n) -> p.right = n);
-		tryVisit(tileCoordinate.plus(0, 1), tileRectangle, regionType, visited, waitings, parent, (p, n) -> p.down = n);
-		tryVisit(tileCoordinate.plus(-1, 0), tileRectangle, regionType, visited, waitings, parent, (p, n) -> p.left = n);
+		tryVisit(tileCoordinate.plus(0, -1), tileRectangle, tile, visited, waitings, parent, (p, n) -> p.up = n);
+		tryVisit(tileCoordinate.plus(1, 0), tileRectangle, tile, visited, waitings, parent, (p, n) -> p.right = n);
+		tryVisit(tileCoordinate.plus(0, 1), tileRectangle, tile, visited, waitings, parent, (p, n) -> p.down = n);
+		tryVisit(tileCoordinate.plus(-1, 0), tileRectangle, tile, visited, waitings, parent, (p, n) -> p.left = n);
 	}
 
 	/**
@@ -174,11 +174,11 @@ public class AreaExtractor
 	private boolean canVisit(
 		TileCoordinate tileCoordinate,
 		TileRectangle tileRectangle,
-		Optional<RegionIdentifier> regionType,
+		Optional<RegionIdentifier> tile,
 		Set<TileCoordinate> visited)
 	{
 		return tileRectangle.contains(tileCoordinate)
-			&& layerModel.tileMapModel.get(tileCoordinate).equals(regionType)
+			&& layerModel.tileMapModel.getTile(tileCoordinate).equals(tile)
 			&& !visited.contains(tileCoordinate);
 	}
 

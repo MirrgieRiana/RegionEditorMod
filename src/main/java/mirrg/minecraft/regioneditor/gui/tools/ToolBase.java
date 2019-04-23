@@ -149,20 +149,20 @@ public abstract class ToolBase implements ITool
 				oMousePosition.get().y - height * 2 - 2);
 
 			// 領域情報表示
-			Optional<RegionIdentifier> oRegionIdentifier = toolContext.getLayerController().tileMapController.model.get(tileCoordinate);
-			if (oRegionIdentifier.isPresent()) {
-				RegionInfo regionInfo = toolContext.getLayerController().regionTableController.model.get(oRegionIdentifier.get());
+			Optional<RegionIdentifier> tile = toolContext.getLayerController().tileMapController.model.getTile(tileCoordinate);
+			if (tile.isPresent()) {
+				RegionInfo regionInfo = toolContext.getLayerController().regionTableController.model.get(tile.get());
 
 				drawBoldString(
 					graphics,
 					Color.white,
-					toolContext.localize("ToolBase.label.country") + ": (" + oRegionIdentifier.get().countryId + ") " + regionInfo.countryName,
+					toolContext.localize("ToolBase.label.country") + ": (" + tile.get().countryId + ") " + regionInfo.countryName,
 					oMousePosition.get().x + 2,
 					oMousePosition.get().y - height * 1 - 2);
 				drawBoldString(
 					graphics,
 					Color.white,
-					toolContext.localize("ToolBase.label.state") + ": (" + oRegionIdentifier.get().stateId + ") " + regionInfo.stateName,
+					toolContext.localize("ToolBase.label.state") + ": (" + tile.get().stateId + ") " + regionInfo.stateName,
 					oMousePosition.get().x + 2,
 					oMousePosition.get().y - height * 0 - 2);
 
