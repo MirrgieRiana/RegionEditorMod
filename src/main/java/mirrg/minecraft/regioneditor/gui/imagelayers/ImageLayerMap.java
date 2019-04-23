@@ -1,4 +1,4 @@
-package mirrg.minecraft.regioneditor.gui;
+package mirrg.minecraft.regioneditor.gui.imagelayers;
 
 import java.awt.Color;
 import java.awt.Image;
