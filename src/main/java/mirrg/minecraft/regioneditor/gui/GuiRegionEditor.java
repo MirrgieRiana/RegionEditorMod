@@ -27,6 +27,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -73,6 +74,8 @@ import mirrg.minecraft.regioneditor.gui.tools.ToolBrush;
 import mirrg.minecraft.regioneditor.gui.tools.ToolFill;
 import mirrg.minecraft.regioneditor.gui.tools.ToolNothing;
 import mirrg.minecraft.regioneditor.gui.tools.ToolPencil;
+import mirrg.minecraft.regioneditor.util.gui.BitMapFont;
+import mirrg.minecraft.regioneditor.util.gui.FontRenderer;
 import mirrg.minecraft.regioneditor.util.gui.WindowWrapper;
 
 public class GuiRegionEditor extends GuiBase
@@ -80,6 +83,7 @@ public class GuiRegionEditor extends GuiBase
 
 	private Optional<Consumer<List<String>>> oSender;
 	private Optional<IChatMessageProvider> oChatMessageProvider;
+	private FontRenderer fontRenderer = new FontRenderer(new BitMapFont(Objects.requireNonNull(GuiRegionEditor.class.getResource("font.png")), 5, 7, 4));
 
 	private InputMap inputMap;
 	private ActionMap actionMap;
@@ -130,7 +134,7 @@ public class GuiRegionEditor extends GuiBase
 	private JList<Optional<RegionIdentifier>> tableRegion;
 	private DefaultListModel<Optional<RegionIdentifier>> modelTableRegion;
 
-	public GuiRegionEditor(WindowWrapper owner, I18n i18n, Optional<Consumer<List<String>>> oSender, Optional<IChatMessageProvider> oChatMessageProvider)
+	public GuiRegionEditor(WindowWrapper owner, I18n i18n, Optional<Consumer<List<String>>> oSender, Optional<IChatMessageProvider> oChatMessageProvider) throws IOException
 	{
 		super(owner, i18n, i18n.localize("GuiRegionEditor.title"), ModalityType.MODELESS);
 		this.oSender = oSender;
@@ -572,7 +576,7 @@ public class GuiRegionEditor extends GuiBase
 								borderPanelRight(
 
 									// 地図
-									canvasMap = get(new CanvasMap(i18n, new ICanvasMapListener() {
+									canvasMap = get(new CanvasMap(fontRenderer, i18n, new ICanvasMapListener() {
 										@Override
 										public void onChangeTileCurrent(Optional<RegionIdentifier> tileCurrent)
 										{
@@ -755,7 +759,7 @@ public class GuiRegionEditor extends GuiBase
 
 										ImageLayerTile.drawArea(graphics, regionEntry, 0, 0, 16);
 										ImageLayerTile.drawBorder(graphics, regionEntry, 0, 0, 16, true, true, true, true);
-										ImageLayerTile.drawIdentifier(image, regionEntry, 0, 0, 16);
+										ImageLayerTile.drawIdentifier(image, regionEntry, 0, 0, 16, fontRenderer);
 										ImageLayerTile.drawGrid(graphics, 0, 0, 16);
 									}
 									label.setIcon(new ImageIcon(image));

@@ -1,6 +1,7 @@
 package mirrg.minecraft.regioneditor;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -45,7 +46,12 @@ public class MainRegionEditor
 			}
 		}
 
-		new GuiRegionEditor(null, i18n, Optional.empty(), Optional.empty()).show();
+		try {
+			new GuiRegionEditor(null, i18n, Optional.empty(), Optional.empty()).show();
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+
 	}
 
 }

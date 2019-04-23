@@ -97,34 +97,39 @@ public class ModRegionEditor
 									}
 								}
 
-								new GuiRegionEditor(null, MainRegionEditor.i18n, Optional.of(ss -> {
+								try {
+									new GuiRegionEditor(null, MainRegionEditor.i18n, Optional.of(ss -> {
 
-									for (String s : ss) {
-										send(s);
-									}
-
-								}), Optional.of(new IChatMessageProvider() {
-									@Override
-									public void startCapture(String command)
-									{
-										synchronized (lock) {
-											doCapture = true;
+										for (String s : ss) {
+											send(s);
 										}
-										send(command);
-									}
 
-									@Override
-									public ImmutableArray<String> stopCapture()
-									{
-										ImmutableArray<String> array;
-										synchronized (lock) {
-											doCapture = false;
-											array = ImmutableArray.ofList(chatMessage);
-											chatMessage.clear();
+									}), Optional.of(new IChatMessageProvider() {
+										@Override
+										public void startCapture(String command)
+										{
+											synchronized (lock) {
+												doCapture = true;
+											}
+											send(command);
 										}
-										return array;
-									}
-								})).show();
+
+										@Override
+										public ImmutableArray<String> stopCapture()
+										{
+											ImmutableArray<String> array;
+											synchronized (lock) {
+												doCapture = false;
+												array = ImmutableArray.ofList(chatMessage);
+												chatMessage.clear();
+											}
+											return array;
+										}
+									})).show();
+								} catch (IOException e) {
+									logger.error(e);
+								}
+
 							}
 						}
 					}

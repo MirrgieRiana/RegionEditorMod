@@ -42,23 +42,22 @@ import mirrg.minecraft.regioneditor.gui.imagelayers.ImageLayerOverlay;
 import mirrg.minecraft.regioneditor.gui.imagelayers.ImageLayerTile;
 import mirrg.minecraft.regioneditor.gui.tool.ITool;
 import mirrg.minecraft.regioneditor.gui.tool.IToolContext;
+import mirrg.minecraft.regioneditor.util.gui.FontRenderer;
 
 public class CanvasMap extends Canvas
 {
 
-	private ICanvasMapListener listener;
+	private final I18n i18n;
+	private final ICanvasMapListener listener;
+	private final ImageLayerMap imageLayerMap;
+	private final ImageLayerTile imageLayerTile;
+	private final ImageLayerOverlay imageLayerOverlay;
 
 	private BufferedImage imageMap = null;
 	private Point mapOrigin = null;
 
-	private ImageLayerMap imageLayerMap = new ImageLayerMap();
-	private ImageLayerTile imageLayerTile = new ImageLayerTile();
-	private ImageLayerOverlay imageLayerOverlay = new ImageLayerOverlay();
-
 	private int positionX = 0;
 	private int positionZ = 0;
-
-	private I18n i18n;
 
 	private Optional<ITool> oTool = Optional.empty();
 
@@ -189,10 +188,13 @@ public class CanvasMap extends Canvas
 		layerController.regionTableController.epChangedState.trigger().run();
 	}
 
-	public CanvasMap(I18n i18n, ICanvasMapListener listener)
+	public CanvasMap(FontRenderer fontRenderer, I18n i18n, ICanvasMapListener listener)
 	{
 		this.i18n = i18n;
 		this.listener = listener;
+		this.imageLayerMap = new ImageLayerMap();
+		this.imageLayerTile = new ImageLayerTile(fontRenderer);
+		this.imageLayerOverlay = new ImageLayerOverlay();
 
 		addComponentListener(new ComponentAdapter() {
 			@Override

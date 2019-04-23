@@ -12,7 +12,7 @@ import mirrg.minecraft.regioneditor.data.objects.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.objects.RegionInfo;
 import mirrg.minecraft.regioneditor.data.objects.TileCoordinate;
 import mirrg.minecraft.regioneditor.data.objects.TileRectangle;
-import mirrg.minecraft.regioneditor.gui.FontRenderer;
+import mirrg.minecraft.regioneditor.util.gui.FontRenderer;
 
 public class ImageLayerTile extends ImageLayer
 {
@@ -22,6 +22,13 @@ public class ImageLayerTile extends ImageLayer
 	public boolean showBorder = true;
 	public boolean showIdentifier = true;
 	public boolean showGrid = true;
+
+	public FontRenderer fontRenderer;
+
+	public ImageLayerTile(FontRenderer fontRenderer)
+	{
+		this.fontRenderer = fontRenderer;
+	}
 
 	/**
 	 * 画面全体を再描画します。
@@ -129,7 +136,7 @@ public class ImageLayerTile extends ImageLayer
 
 		// 識別番号
 		if (showIdentifier) {
-			drawIdentifier(image, regionEntry, x, y, 16);
+			drawIdentifier(image, regionEntry, x, y, 16, fontRenderer);
 		}
 
 	}
@@ -166,15 +173,15 @@ public class ImageLayerTile extends ImageLayer
 		if (borderDown) graphics.fillRect(x + 1 + 0, y + (tileSize - w), tileSize - 1, w);
 	}
 
-	public static void drawIdentifier(BufferedImage image, RegionEntry regionEntry, int x, int y, int tileSize)
+	public static void drawIdentifier(BufferedImage image, RegionEntry regionEntry, int x, int y, int tileSize, FontRenderer fontRenderer)
 	{
-		FontRenderer.drawString(
+		fontRenderer.drawString(
 			image,
 			"" + regionEntry.regionIdentifier.countryId,
 			x + tileSize / 2,
 			y + tileSize / 2 - 6,
 			regionEntry.regionInfo.countryColor);
-		FontRenderer.drawString(
+		fontRenderer.drawString(
 			image,
 			"" + regionEntry.regionIdentifier.stateId,
 			x + tileSize / 2,

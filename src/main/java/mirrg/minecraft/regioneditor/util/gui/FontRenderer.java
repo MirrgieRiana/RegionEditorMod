@@ -1,32 +1,22 @@
-package mirrg.minecraft.regioneditor.gui;
+package mirrg.minecraft.regioneditor.util.gui;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-
-import javax.imageio.ImageIO;
 
 public class FontRenderer
 {
 
-	private static BufferedImage imageFont;
-	static {
-		try {
-			imageFont = ImageIO.read(CanvasMap.class.getResourceAsStream("font.png"));
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}
-	}
+	private BitMapFont font;
 
-	private static final int FONT_WIDTH = 5;
-	private static final int FONT_HEIGHT = 7;
-	private static final int OFFSET_X = 4;
+	public FontRenderer(BitMapFont font)
+	{
+		this.font = font;
+	}
 
 	/**
 	 * 指定座標を左上として描画する。
 	 */
-	public static void drawCharacter(BufferedImage image, char ch, int x, int y, Color color)
+	public void drawCharacter(BufferedImage image, char ch, int x, int y, Color color)
 	{
 		int sx;
 		int sy;
@@ -41,14 +31,14 @@ public class FontRenderer
 		int bg = color.getGreen();
 		int bb = color.getBlue();
 
-		for (int xi = 0; xi < FONT_WIDTH; xi++) {
-			for (int yi = 0; yi < FONT_HEIGHT; yi++) {
+		for (int xi = 0; xi < font.width; xi++) {
+			for (int yi = 0; yi < font.height; yi++) {
 				if (x + xi < 0) continue;
 				if (x + xi >= image.getWidth()) continue;
 				if (y + yi < 0) continue;
 				if (y + yi >= image.getHeight()) continue;
 
-				int s = imageFont.getRGB(sx * FONT_WIDTH + xi, sy * FONT_HEIGHT + yi);
+				int s = font.image.getRGB(sx * font.width + xi, sy * font.height + yi);
 				int d = image.getRGB(x + xi, y + yi);
 
 				int sa = (s >> 24) & 0xff;
@@ -74,13 +64,13 @@ public class FontRenderer
 	/**
 	 * 指定座標を上端中心として描画する。
 	 */
-	public static void drawString(BufferedImage image, String string, int x, int y, Color color)
+	public void drawString(BufferedImage image, String string, int x, int y, Color color)
 	{
 		for (int i = 0; i < string.length(); i++) {
 			drawCharacter(
 				image,
 				string.charAt(i),
-				x - FONT_WIDTH / 2 - OFFSET_X / 2 * (string.length() - 1) + i * OFFSET_X,
+				x - font.width / 2 - font.offsetX / 2 * (string.length() - 1) + i * font.offsetX,
 				y,
 				color);
 		}
