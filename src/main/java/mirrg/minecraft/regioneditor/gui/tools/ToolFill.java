@@ -107,7 +107,7 @@ public class ToolFill implements ITool
 
 		private void setTiles(Set<TileCoordinate> tileCoordinates, Optional<RegionIdentifier> tile)
 		{
-			if (tileCoordinates.size() > 20) {
+			if (tileCoordinates.size() > 50) {
 				for (TileCoordinate tileCoordinate : tileCoordinates) {
 					toolContext.getLayerController().tileMapController.model.setTile(tileCoordinate, tile);
 				}
