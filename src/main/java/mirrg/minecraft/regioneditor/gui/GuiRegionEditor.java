@@ -324,6 +324,15 @@ public class GuiRegionEditor extends GuiBase
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_F)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_F, 0))
 				.register();
+			/*
+			actionToolLine = new ActionBuilder<>(new ActionRadio(groupTool, v -> {
+				canvasMap.setTool(Optional.of(new ToolLine(canvasMap.getToolContext())));
+			}))
+				.value(Action.NAME, localize("GuiRegionEditor.actionToolLine") + "(L)")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_L)
+				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_L, 0))
+				.register();
+			*/
 			actionToolSpuit = new ActionBuilder<>(new ActionRadio(groupTool, v -> {
 				canvasMap.setTool(Optional.of(new ITool() { // TODO
 					@Override
