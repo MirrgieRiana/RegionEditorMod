@@ -1,6 +1,6 @@
 package mirrg.minecraft.regioneditor.gui;
 
-import static mirrg.minecraft.regioneditor.gui.SwingUtils.*;
+import static mirrg.minecraft.regioneditor.util.gui.SwingUtils.*;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -60,6 +60,7 @@ import javax.swing.event.MenuListener;
 
 import mirrg.boron.util.UtilsString;
 import mirrg.boron.util.i18n.I18n;
+import mirrg.minecraft.regioneditor.IChatMessageProvider;
 import mirrg.minecraft.regioneditor.data.AreaExtractor;
 import mirrg.minecraft.regioneditor.data.objects.RegionEntry;
 import mirrg.minecraft.regioneditor.data.objects.RegionIdentifier;
@@ -71,6 +72,7 @@ import mirrg.minecraft.regioneditor.gui.tools.ToolBrush;
 import mirrg.minecraft.regioneditor.gui.tools.ToolFill;
 import mirrg.minecraft.regioneditor.gui.tools.ToolNothing;
 import mirrg.minecraft.regioneditor.gui.tools.ToolPencil;
+import mirrg.minecraft.regioneditor.util.gui.WindowWrapper;
 
 public class GuiRegionEditor extends GuiBase
 {

@@ -1,6 +1,6 @@
 package mirrg.minecraft.regioneditor.gui;
 
-import static mirrg.minecraft.regioneditor.gui.SwingUtils.*;
+import static mirrg.minecraft.regioneditor.util.gui.SwingUtils.*;
 
 import java.awt.CardLayout;
 import java.awt.Dialog.ModalityType;
@@ -9,6 +9,7 @@ import java.awt.Font;
 import javax.swing.JTextArea;
 
 import mirrg.boron.util.i18n.I18n;
+import mirrg.minecraft.regioneditor.util.gui.WindowWrapper;
 
 public class GuiData extends GuiBase
 {

@@ -12,7 +12,6 @@ import mirrg.boron.util.i18n.LocalizerEngine;
 import mirrg.boron.util.i18n.localizers.LocalizerResourceBundle;
 import mirrg.boron.util.struct.ImmutableArray;
 import mirrg.minecraft.regioneditor.gui.GuiRegionEditor;
-import mirrg.minecraft.regioneditor.gui.IChatMessageProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;

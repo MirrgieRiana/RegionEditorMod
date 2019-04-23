@@ -1,6 +1,6 @@
 package mirrg.minecraft.regioneditor.gui;
 
-import static mirrg.minecraft.regioneditor.gui.SwingUtils.*;
+import static mirrg.minecraft.regioneditor.util.gui.SwingUtils.*;
 
 import java.awt.CardLayout;
 import java.awt.Dialog.ModalityType;
@@ -23,8 +23,10 @@ import mirrg.boron.util.i18n.I18n;
 import mirrg.boron.util.struct.ImmutableArray;
 import mirrg.boron.util.struct.Tuple;
 import mirrg.boron.util.suppliterator.ISuppliterator;
+import mirrg.minecraft.regioneditor.IChatMessageProvider;
 import mirrg.minecraft.regioneditor.data.objects.Area;
 import mirrg.minecraft.regioneditor.data.objects.RegionIdentifier;
+import mirrg.minecraft.regioneditor.util.gui.WindowWrapper;
 
 public class GuiCommand extends GuiBase
 {

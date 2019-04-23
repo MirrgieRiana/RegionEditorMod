@@ -1,4 +1,4 @@
-package mirrg.minecraft.regioneditor.gui;
+package mirrg.minecraft.regioneditor.util.gui;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;

@@ -3,6 +3,7 @@ package mirrg.minecraft.regioneditor.gui;
 import java.awt.Dialog.ModalityType;
 
 import mirrg.boron.util.i18n.I18n;
+import mirrg.minecraft.regioneditor.util.gui.WindowWrapper;
 
 public abstract class GuiBase
 {
