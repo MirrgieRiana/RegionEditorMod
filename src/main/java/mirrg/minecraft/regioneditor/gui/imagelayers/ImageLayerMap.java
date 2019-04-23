@@ -13,8 +13,12 @@ public class ImageLayerMap extends ImageLayer
 
 	public void update(Image imageBackground, LayerController layerController, int tileXCenter, int tileZCenter, Point mapOrigin)
 	{
+
+		// 灰色で塗りつぶし
 		graphics.setBackground(new Color(128, 128, 128));
 		graphics.clearRect(0, 0, width, height);
+
+		// 地図画像描画
 		if (showMap) {
 			if (imageBackground != null) {
 				graphics.drawImage(
@@ -24,6 +28,7 @@ public class ImageLayerMap extends ImageLayer
 					null);
 			}
 		}
+
 	}
 
 }

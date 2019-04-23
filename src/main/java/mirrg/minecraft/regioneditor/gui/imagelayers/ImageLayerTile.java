@@ -11,6 +11,7 @@ import mirrg.minecraft.regioneditor.data.objects.RegionEntry;
 import mirrg.minecraft.regioneditor.data.objects.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.objects.RegionInfo;
 import mirrg.minecraft.regioneditor.data.objects.TileCoordinate;
+import mirrg.minecraft.regioneditor.data.objects.TileRectangle;
 import mirrg.minecraft.regioneditor.gui.FontRenderer;
 
 public class ImageLayerTile extends ImageLayer
@@ -22,8 +23,13 @@ public class ImageLayerTile extends ImageLayer
 	public boolean showIdentifier = true;
 	public boolean showGrid = true;
 
+	/**
+	 * 画面全体を再描画します。
+	 */
 	public void update(Image imageBackground, LayerController layerController, int tileXCenter, int tileZCenter)
 	{
+
+		// 表示矩形範囲の「半径」の算出
 		// width = 255, maptipWidth = 16 -> xRadius = (254 / 2 / 16 + 1) = (127 / 16 + 1) = (7 + 1) = 8
 		// width = 256, maptipWidth = 16 -> xRadius = (255 / 2 / 16 + 1) = (127 / 16 + 1) = (7 + 1) = 8
 		// width = 257, maptipWidth = 16 -> xRadius = (256 / 2 / 16 + 1) = (128 / 16 + 1) = (8 + 1) = 9
@@ -31,46 +37,51 @@ public class ImageLayerTile extends ImageLayer
 		int xRadius = ((width - 1) / 2 / 16 + 1);
 		int zRadius = ((height - 1) / 2 / 16 + 1);
 
+		// 範囲を描画
 		update(
 			imageBackground,
 			layerController,
 			tileXCenter,
 			tileZCenter,
-			new TileCoordinate(
+			new TileRectangle(
 				tileXCenter - xRadius,
-				tileZCenter - zRadius),
-			new TileCoordinate(
+				tileZCenter - zRadius,
 				tileXCenter + xRadius,
 				tileZCenter + zRadius));
+
 	}
 
 	/**
-	 * @param tileCoordinateEnd
-	 *            このチャンクまでが描画範囲に含まれる。
+	 * 画面の一部分のタイルを再描画します。
 	 */
-	public void update(Image imageBackground, LayerController layerController, int tileXCenter, int tileZCenter, TileCoordinate tileCoordinateStart, TileCoordinate tileCoordinateEnd)
+	public void update(Image imageBackground, LayerController layerController, int tileXCenter, int tileZCenter, TileRectangle tileRactangle)
 	{
+
+		// 透過レイヤー貼り付け
 		graphics.drawImage(
 			imageBackground,
-			(tileCoordinateStart.x - tileXCenter) * 16 + width / 2,
-			(tileCoordinateStart.z - tileZCenter) * 16 + height / 2,
-			(tileCoordinateEnd.x - tileXCenter) * 16 + width / 2 + 16,
-			(tileCoordinateEnd.z - tileZCenter) * 16 + height / 2 + 16,
-			(tileCoordinateStart.x - tileXCenter) * 16 + width / 2,
-			(tileCoordinateStart.z - tileZCenter) * 16 + height / 2,
-			(tileCoordinateEnd.x - tileXCenter) * 16 + width / 2 + 16,
-			(tileCoordinateEnd.z - tileZCenter) * 16 + height / 2 + 16,
+			(tileRactangle.min.x - tileXCenter) * 16 + width / 2,
+			(tileRactangle.min.z - tileZCenter) * 16 + height / 2,
+			(tileRactangle.max.x - tileXCenter) * 16 + width / 2 + 16,
+			(tileRactangle.max.z - tileZCenter) * 16 + height / 2 + 16,
+			(tileRactangle.min.x - tileXCenter) * 16 + width / 2,
+			(tileRactangle.min.z - tileZCenter) * 16 + height / 2,
+			(tileRactangle.max.x - tileXCenter) * 16 + width / 2 + 16,
+			(tileRactangle.max.z - tileZCenter) * 16 + height / 2 + 16,
 			null);
 
-		for (int tileX = tileCoordinateStart.x; tileX <= tileCoordinateEnd.x; tileX++) {
-			for (int tileZ = tileCoordinateStart.z; tileZ <= tileCoordinateEnd.z; tileZ++) {
+		// タイルごとに処理
+		for (int tileX = tileRactangle.min.x; tileX <= tileRactangle.max.x; tileX++) {
+			for (int tileZ = tileRactangle.min.z; tileZ <= tileRactangle.max.z; tileZ++) {
 				TileCoordinate tileCoordinate = new TileCoordinate(tileX, tileZ);
 
+				// タイルの描画
 				if (showTile) {
 					Optional<RegionIdentifier> tile = layerController.tileMapController.model.getTile(tileCoordinate);
 					if (tile.isPresent()) {
 						RegionInfo regionInfo = layerController.regionTableController.model.get(tile.get());
 
+						// 1個のタイルを描画する
 						drawRegionInfo(
 							new RegionEntry(tile.get(), regionInfo),
 							tileX - tileXCenter,
@@ -83,7 +94,7 @@ public class ImageLayerTile extends ImageLayer
 					}
 				}
 
-				// グリッド
+				// グリッドの描画
 				if (showGrid) {
 					drawGrid(graphics, (tileX - tileXCenter) * 16 + width / 2, (tileZ - tileZCenter) * 16 + height / 2, 16);
 				}
@@ -116,7 +127,7 @@ public class ImageLayerTile extends ImageLayer
 			drawBorder(graphics, regionEntry, x, y, 16, borderLeft, borderRight, borderUp, borderDown);
 		}
 
-		// 数値
+		// 識別番号
 		if (showIdentifier) {
 			drawIdentifier(image, regionEntry, x, y, 16);
 		}

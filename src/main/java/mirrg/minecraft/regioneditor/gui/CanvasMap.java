@@ -36,6 +36,7 @@ import mirrg.minecraft.regioneditor.data.objects.RegionEntry;
 import mirrg.minecraft.regioneditor.data.objects.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.objects.RegionInfo;
 import mirrg.minecraft.regioneditor.data.objects.TileCoordinate;
+import mirrg.minecraft.regioneditor.data.objects.TileRectangle;
 import mirrg.minecraft.regioneditor.gui.imagelayers.ImageLayerMap;
 import mirrg.minecraft.regioneditor.gui.imagelayers.ImageLayerOverlay;
 import mirrg.minecraft.regioneditor.gui.imagelayers.ImageLayerTile;
@@ -675,7 +676,7 @@ public class CanvasMap extends Canvas
 
 	private void updateLayerTile(TileCoordinate tileCoordinate)
 	{
-		imageLayerTile.update(imageLayerMap.getImage(), layerController, positionX, positionZ, tileCoordinate.plus(-1, -1), tileCoordinate.plus(1, 1));
+		imageLayerTile.update(imageLayerMap.getImage(), layerController, positionX, positionZ, new TileRectangle(tileCoordinate.plus(-1, -1), tileCoordinate.plus(1, 1)));
 		updateLayerOverlay();
 	}
 

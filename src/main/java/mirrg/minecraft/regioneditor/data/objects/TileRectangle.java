@@ -4,6 +4,10 @@ public final class TileRectangle
 {
 
 	public final TileCoordinate min;
+
+	/**
+	 * 範囲はこの座標を含みます。
+	 */
 	public final TileCoordinate max;
 
 	public TileRectangle(TileCoordinate min, TileCoordinate max)
