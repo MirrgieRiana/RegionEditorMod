@@ -140,6 +140,7 @@ public class ToolBrush extends ToolBase
 		int brushSize = toolContext.getBrushSize();
 		if (keys[KeyEvent.VK_CONTROL]) brushSize = 1;
 		if (keys[KeyEvent.VK_SHIFT]) brushSize *= 2;
+		if (brushSize <= 0) brushSize = 1;
 		return brushSize;
 	}
 

@@ -684,7 +684,7 @@ public class GuiRegionEditor extends GuiBase
 
 					new JLabel(localize("GuiRegionEditor.labelBrushSize") + ":"),
 
-					spinnerBrushSize = get(new JSpinner(modelSpinnerBrushSize = get(new SpinnerNumberModel(7, 1, 100, 1), c -> {
+					spinnerBrushSize = get(new JSpinner(modelSpinnerBrushSize = get(new SpinnerNumberModel(7, 0, 100, 1), c -> {
 						c.addChangeListener(e -> {
 							canvasMap.setBrushSize(c.getNumber().intValue());
 						});
@@ -939,7 +939,7 @@ public class GuiRegionEditor extends GuiBase
 
 	private void plusBrushSize(int dBrushSize)
 	{
-		canvasMap.setBrushSize(Math.max(Math.min(canvasMap.getBrushSize() + dBrushSize, 100), 1));
+		canvasMap.setBrushSize(Math.max(Math.min(canvasMap.getBrushSize() + dBrushSize, 100), 0));
 	}
 
 	private void updateSelection(Optional<RegionIdentifier> tileCurrent)
