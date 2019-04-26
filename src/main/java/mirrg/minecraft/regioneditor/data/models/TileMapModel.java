@@ -1,12 +1,16 @@
 package mirrg.minecraft.regioneditor.data.models;
 
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import mirrg.boron.util.struct.Tuple;
 import mirrg.boron.util.suppliterator.ISuppliterator;
 import mirrg.minecraft.regioneditor.data.objects.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.objects.TileCoordinate;
+import mirrg.minecraft.regioneditor.data.objects.TileRectangle;
 
 public class TileMapModel
 {
@@ -18,6 +22,20 @@ public class TileMapModel
 	public Optional<RegionIdentifier> getTile(TileCoordinate tileCoordinate)
 	{
 		return map.getOrDefault(tileCoordinate, empty);
+	}
+
+	public TileMapModel subMap(TileRectangle region)
+	{
+		List<Entry<TileCoordinate, Optional<RegionIdentifier>>> entries = map.entrySet().stream()
+			.parallel()
+			.filter(e -> region.contains(e.getKey()))
+			.collect(Collectors.toList());
+
+		TileMapModel tileMapModel = new TileMapModel();
+		ISuppliterator.ofIterable(entries)
+			.forEach(e -> tileMapModel.map.put(e.getKey(), e.getValue()));
+
+		return tileMapModel;
 	}
 
 	public int size()
