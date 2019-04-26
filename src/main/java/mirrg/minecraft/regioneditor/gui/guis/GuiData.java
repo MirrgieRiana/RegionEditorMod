@@ -33,7 +33,7 @@ public class GuiData extends GuiBase
 
 			scrollPane(textArea = get(new JTextArea(), c -> {
 				c.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-			}), 400, 400),
+			}), 800, 800),
 
 			flowPanel(
 
