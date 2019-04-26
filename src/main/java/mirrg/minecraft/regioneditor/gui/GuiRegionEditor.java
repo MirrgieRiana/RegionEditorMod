@@ -72,6 +72,7 @@ import mirrg.minecraft.regioneditor.gui.imagelayers.ImageLayerTile;
 import mirrg.minecraft.regioneditor.gui.tool.ITool;
 import mirrg.minecraft.regioneditor.gui.tools.ToolBrush;
 import mirrg.minecraft.regioneditor.gui.tools.ToolFill;
+import mirrg.minecraft.regioneditor.gui.tools.ToolLine;
 import mirrg.minecraft.regioneditor.gui.tools.ToolNothing;
 import mirrg.minecraft.regioneditor.gui.tools.ToolPencil;
 import mirrg.minecraft.regioneditor.util.gui.BitMapFont;
@@ -109,6 +110,7 @@ public class GuiRegionEditor extends GuiBase
 	private ActionRadio actionToolPencil;
 	private ActionRadio actionToolBrush;
 	private ActionRadio actionToolFill;
+	private ActionRadio actionToolLine;
 	private ActionRadio actionToolSpuit;
 	private ActionButton actionIncrementBrushSize;
 	private ActionButton actionDecrementBrushSize;
@@ -324,7 +326,6 @@ public class GuiRegionEditor extends GuiBase
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_F)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_F, 0))
 				.register();
-			/*
 			actionToolLine = new ActionBuilder<>(new ActionRadio(groupTool, v -> {
 				canvasMap.setTool(Optional.of(new ToolLine(canvasMap.getToolContext())));
 			}))
@@ -332,7 +333,6 @@ public class GuiRegionEditor extends GuiBase
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_L)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_L, 0))
 				.register();
-			*/
 			actionToolSpuit = new ActionBuilder<>(new ActionRadio(groupTool, v -> {
 				canvasMap.setTool(Optional.of(new ITool() { // TODO
 					@Override
@@ -536,6 +536,7 @@ public class GuiRegionEditor extends GuiBase
 					menu.add(new CheckBoxMenuItem(actionToolPencil));
 					menu.add(new CheckBoxMenuItem(actionToolBrush));
 					menu.add(new CheckBoxMenuItem(actionToolFill));
+					menu.add(new CheckBoxMenuItem(actionToolLine));
 					menu.add(new CheckBoxMenuItem(actionToolSpuit));
 					menu.addSeparator();
 					menu.add(new MenuItem(actionIncrementBrushSize));
