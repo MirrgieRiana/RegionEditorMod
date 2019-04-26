@@ -3,6 +3,7 @@ package mirrg.minecraft.regioneditor.gui.tools;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -37,7 +38,7 @@ public class ToolLine extends ToolBase
 			// 左ダウンで押下状態にする
 			if (e.getButton() == MouseEvent.BUTTON1) {
 				oStart = Optional.of(toolContext.getTileCoordinate(point));
-				oEnd = Optional.of(toolContext.getTileCoordinate(point));
+				oEnd = Optional.of(shiftFilter(toolContext.getTileCoordinate(point)));
 			}
 
 			// 中央クリックでスポイト
@@ -48,7 +49,7 @@ public class ToolLine extends ToolBase
 			// 右ダウンで押下状態にする
 			if (e.getButton() == MouseEvent.BUTTON3) {
 				oStart = Optional.of(toolContext.getTileCoordinate(point));
-				oEnd = Optional.of(toolContext.getTileCoordinate(point));
+				oEnd = Optional.of(shiftFilter(toolContext.getTileCoordinate(point)));
 			}
 
 			toolContext.repaintOverlay();
@@ -63,7 +64,7 @@ public class ToolLine extends ToolBase
 			if (e.getButton() == MouseEvent.BUTTON1) {
 
 				// 範囲の終端を更新
-				oEnd = Optional.of(toolContext.getTileCoordinate(point));
+				oEnd = Optional.of(shiftFilter(toolContext.getTileCoordinate(point)));
 
 				// 配置
 				if (oStart.isPresent()) {
@@ -83,7 +84,7 @@ public class ToolLine extends ToolBase
 			if (e.getButton() == MouseEvent.BUTTON3) {
 
 				// 範囲の終端を更新
-				oEnd = Optional.of(toolContext.getTileCoordinate(point));
+				oEnd = Optional.of(shiftFilter(toolContext.getTileCoordinate(point)));
 
 				// 配置
 				if (oStart.isPresent()) {
@@ -109,11 +110,26 @@ public class ToolLine extends ToolBase
 			Point point = e.getPoint();
 
 			// 範囲の終端を更新
-			oEnd = Optional.of(toolContext.getTileCoordinate(point));
+			oEnd = Optional.of(shiftFilter(toolContext.getTileCoordinate(point)));
 
 			toolContext.repaintOverlay();
 		}
 	};
+
+	private TileCoordinate shiftFilter(TileCoordinate end)
+	{
+		if (oStart.isPresent()) {
+			if (keys[KeyEvent.VK_SHIFT]) {
+				TileCoordinate offset = end.minus(oStart.get());
+				if (Math.abs(offset.x) > Math.abs(offset.z)) { // 横長
+					return new TileCoordinate(end.x, oStart.get().z);
+				} else { // 縦長
+					return new TileCoordinate(oStart.get().x, end.z);
+				}
+			}
+		}
+		return end;
+	}
 
 	@Override
 	public void on()
