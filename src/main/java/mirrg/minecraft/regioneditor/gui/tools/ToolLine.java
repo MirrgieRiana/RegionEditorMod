@@ -23,7 +23,7 @@ public class ToolLine extends ToolBase
 
 	public ToolLine(IToolContext toolContext)
 	{
-		super(toolContext);
+		super(toolContext, "ToolLine.name");
 	}
 
 	private Optional<TileCoordinate> oStart = Optional.empty();

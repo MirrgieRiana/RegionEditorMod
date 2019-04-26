@@ -26,14 +26,16 @@ public abstract class ToolBase implements ITool
 {
 
 	protected final IToolContext toolContext;
+	private final String unlocalizedName;
 
 	protected boolean[] mouseButtons = new boolean[8];
 	protected boolean[] keys = new boolean[2048];
 	protected Optional<Point> oMousePosition = Optional.empty();
 
-	public ToolBase(IToolContext toolContext)
+	public ToolBase(IToolContext toolContext, String unlocalizedName)
 	{
 		this.toolContext = toolContext;
+		this.unlocalizedName = unlocalizedName;
 	}
 
 	private FocusListener focusListener = new FocusAdapter() {
@@ -139,6 +141,14 @@ public abstract class ToolBase implements ITool
 
 			// マウスが乗っているタイルの位置
 			TileCoordinate tileCoordinate = toolContext.getTileCoordinate(oMousePosition.get());
+
+			// ツール種類表示
+			drawBoldString(
+				graphics,
+				Color.white,
+				toolContext.localize(unlocalizedName),
+				oMousePosition.get().x + 2,
+				oMousePosition.get().y - height * 3 - 2);
 
 			// 座標表示
 			drawBoldString(

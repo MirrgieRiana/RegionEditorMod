@@ -20,7 +20,7 @@ public class ToolFill extends ToolBase
 
 	public ToolFill(IToolContext toolContext)
 	{
-		super(toolContext);
+		super(toolContext, "ToolFill.name");
 	}
 
 	private MouseListener mouseListener = new MouseAdapter() {

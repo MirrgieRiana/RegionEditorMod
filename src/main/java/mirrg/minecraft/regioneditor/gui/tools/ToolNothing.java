@@ -7,7 +7,7 @@ public class ToolNothing extends ToolBase
 
 	public ToolNothing(IToolContext toolContext)
 	{
-		super(toolContext);
+		super(toolContext, "ToolNothing.name");
 	}
 
 }

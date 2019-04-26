@@ -19,7 +19,7 @@ public class ToolPencil extends ToolBase
 
 	public ToolPencil(IToolContext toolContext)
 	{
-		super(toolContext);
+		super(toolContext, "ToolPencil.name");
 	}
 
 	private Optional<TileCoordinate> oTileCoordinatePrevious = Optional.empty();
