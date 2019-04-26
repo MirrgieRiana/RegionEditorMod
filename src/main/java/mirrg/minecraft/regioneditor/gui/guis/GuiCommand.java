@@ -143,7 +143,7 @@ public class GuiCommand extends GuiBase
 									public void mousePressed(MouseEvent e)
 									{
 										textAreaCommand.setText("");
-										oChatMessageProvider.get().startCapture("/dmarker listareas set:\"" + textAreaSet + "\"");
+										oChatMessageProvider.get().startCapture("/dmarker listareas set:\"" + textAreaSet.getText() + "\"");
 									}
 
 									@Override
