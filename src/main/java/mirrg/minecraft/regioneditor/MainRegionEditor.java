@@ -9,7 +9,7 @@ import javax.swing.UIManager;
 
 import mirrg.boron.util.i18n.I18n;
 import mirrg.boron.util.i18n.localizers.LocalizerResourceBundle;
-import mirrg.minecraft.regioneditor.gui.GuiRegionEditor;
+import mirrg.minecraft.regioneditor.gui.guis.GuiRegionEditor;
 
 public class MainRegionEditor
 {

@@ -1,4 +1,4 @@
-package mirrg.minecraft.regioneditor.gui;
+package mirrg.minecraft.regioneditor.gui.guis;
 
 import static mirrg.minecraft.regioneditor.util.gui.SwingUtils.*;
 
