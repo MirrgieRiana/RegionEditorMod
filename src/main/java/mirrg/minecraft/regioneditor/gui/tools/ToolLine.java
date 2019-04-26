@@ -189,12 +189,12 @@ public class ToolLine extends ToolBase
 	 * @param end
 	 *            この座標を含みます。
 	 */
-	private List<TileCoordinate> calcCoordinates(TileCoordinate start, TileCoordinate end)
+	public static List<TileCoordinate> calcCoordinates(TileCoordinate start, TileCoordinate end)
 	{
 		return a1(end.minus(start), c -> c.plus(start));
 	}
 
-	private List<TileCoordinate> a1(TileCoordinate offset, Function<TileCoordinate, TileCoordinate> function)
+	private static List<TileCoordinate> a1(TileCoordinate offset, Function<TileCoordinate, TileCoordinate> function)
 	{
 		if (Math.abs(offset.x) > Math.abs(offset.z)) { // 横に長い
 			return a2(new TileCoordinate(offset.x, offset.z), c -> function.apply(new TileCoordinate(c.x, c.z)));
@@ -206,7 +206,7 @@ public class ToolLine extends ToolBase
 	/**
 	 * 横に長くなければならない
 	 */
-	private List<TileCoordinate> a2(TileCoordinate offset, Function<TileCoordinate, TileCoordinate> function)
+	private static List<TileCoordinate> a2(TileCoordinate offset, Function<TileCoordinate, TileCoordinate> function)
 	{
 		if (offset.x > 0) { // 右向き
 			return a3(new TileCoordinate(offset.x, offset.z), c -> function.apply(new TileCoordinate(c.x, c.z)));
@@ -218,7 +218,7 @@ public class ToolLine extends ToolBase
 	/**
 	 * 横に長く、+X向きでなければならない
 	 */
-	private List<TileCoordinate> a3(TileCoordinate offset, Function<TileCoordinate, TileCoordinate> function)
+	private static List<TileCoordinate> a3(TileCoordinate offset, Function<TileCoordinate, TileCoordinate> function)
 	{
 		if (offset.z > 0) { // 上り
 			return a4(new TileCoordinate(offset.x, offset.z), c -> function.apply(new TileCoordinate(c.x, c.z)));
@@ -230,7 +230,7 @@ public class ToolLine extends ToolBase
 	/**
 	 * 横に長く、+X+Z向きでなければならない
 	 */
-	private List<TileCoordinate> a4(TileCoordinate offset, Function<TileCoordinate, TileCoordinate> function)
+	private static List<TileCoordinate> a4(TileCoordinate offset, Function<TileCoordinate, TileCoordinate> function)
 	{
 		List<TileCoordinate> result = new ArrayList<>();
 		for (int i = 0; i <= offset.x; i++) {
