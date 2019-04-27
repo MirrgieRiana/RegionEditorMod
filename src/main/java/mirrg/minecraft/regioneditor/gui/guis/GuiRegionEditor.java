@@ -207,17 +207,7 @@ public class GuiRegionEditor extends GuiBase
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_F)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK))
 				.register(inputMap, actionMap);
-			actionLoadMapFromUrl = new ActionBuilder<>(new ActionButton(e -> {
-				GuiUrl guiUrl = new GuiUrl(windowWrapper, i18n);
-				guiUrl.show();
-				if (guiUrl.oResult.isPresent()) {
-					try (InputStream in = guiUrl.oResult.get().url.openStream()) {
-						loadMapFrom(in, new File(guiUrl.oResult.get().uri.getPath()).getName());
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-				}
-			}))
+			actionLoadMapFromUrl = new ActionBuilder<>(new ActionButton(e -> loadMapFromURL()))
 				.value(Action.NAME, localize("GuiRegionEditor.actionLoadMapFromUrl") + "(U)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_U)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK))
@@ -975,7 +965,7 @@ public class GuiRegionEditor extends GuiBase
 		File file = new File(fileDialog.getDirectory(), fileDialog.getFile());
 
 		try (FileInputStream in = new FileInputStream(file)) {
-			loadMapFrom(in, file.getName());
+			loadMap(in, file.getName());
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -983,19 +973,28 @@ public class GuiRegionEditor extends GuiBase
 		}
 	}
 
-	private void loadMapFrom(InputStream in, String fileName)
+	private void loadMapFromURL() // TODO キャッシュ
 	{
-		BufferedImage image;
-		try {
-			image = ImageIO.read(in);
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
-		}
+		GuiUrl gui = new GuiUrl(windowWrapper, i18n);
+		gui.oValidator = Optional.of(result -> {
+			try (InputStream in = result.url.openStream()) {
+				loadMap(in, new File(result.uri.getPath()).getName());
+				return true;
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				gui.setException(e1);
+				return false;
+			}
+		});
+		gui.show();
+	}
+
+	private void loadMap(InputStream in, String fileName) throws IOException
+	{
+		BufferedImage image = ImageIO.read(in);
 
 		if (image == null) {
-			System.err.println("画像の読み込みに失敗しました。");
-			return;
+			throw new IOException("Invalid image type");
 		}
 
 		java.awt.Point mapOrigin = new java.awt.Point(0, 0);
