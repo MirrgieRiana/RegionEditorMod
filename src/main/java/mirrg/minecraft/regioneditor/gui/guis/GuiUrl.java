@@ -4,25 +4,33 @@ import static mirrg.minecraft.regioneditor.util.gui.SwingUtils.*;
 
 import java.awt.CardLayout;
 import java.awt.Dialog.ModalityType;
+import java.awt.Event;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Optional;
 
+import javax.swing.InputMap;
+import javax.swing.JComponent;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
 
 import mirrg.boron.util.i18n.I18n;
+import mirrg.minecraft.regioneditor.gui.PanelResult;
+import mirrg.minecraft.regioneditor.util.gui.ActionBuilder;
+import mirrg.minecraft.regioneditor.util.gui.ActionButton;
 import mirrg.minecraft.regioneditor.util.gui.WindowWrapper;
 
 public class GuiUrl extends GuiBase
 {
 
-	public GuiUrl(WindowWrapper owner, I18n i18n)
-	{
-		super(owner, i18n, i18n.localize("GuiUrl.title"), ModalityType.DOCUMENT_MODAL);
-	}
+	private ActionButton actionOk;
+	private ActionButton actionCancel;
 
 	private JTextArea textArea;
 	private JTextPane textPaneResult;
@@ -43,11 +51,33 @@ public class GuiUrl extends GuiBase
 
 	public Optional<GuiUrlResult> oResult = Optional.empty();
 
+	public GuiUrl(WindowWrapper owner, I18n i18n)
+	{
+		super(owner, i18n, i18n.localize("GuiUrl.title"), ModalityType.DOCUMENT_MODAL);
+	}
+
 	@Override
 	protected void initComponenets()
 	{
-		windowWrapper.getWindow().setLayout(new CardLayout());
 
+		actionOk = new ActionBuilder<>(new ActionButton(e -> {
+			try {
+				oResult = Optional.of(new GuiUrlResult(new URI(textArea.getText()), new URL(textArea.getText())));
+			} catch (URISyntaxException | MalformedURLException e1) {
+				panelResult.setException(e1);
+				return;
+			}
+			windowWrapper.getWindow().setVisible(false);
+		}))
+			.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0))
+			.register(windowWrapper.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW), windowWrapper.getRootPane().getActionMap());
+		actionCancel = new ActionBuilder<>(new ActionButton(e -> {
+			windowWrapper.getWindow().setVisible(false);
+		}))
+			.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0))
+			.register(windowWrapper.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW), windowWrapper.getRootPane().getActionMap());
+
+		windowWrapper.getWindow().setLayout(new CardLayout());
 		windowWrapper.getWindow().add(borderPanelDown(
 
 			splitPaneVertical(1,
@@ -68,18 +98,9 @@ public class GuiUrl extends GuiBase
 
 			flowPanel(
 
-				button(localize("GuiUrl.buttonOk"), e -> {
-					try {
-						oResult = Optional.of(new GuiUrlResult(new URI(textArea.getText()), new URL(textArea.getText())));
-						windowWrapper.getWindow().setVisible(false);
-					} catch (URISyntaxException | MalformedURLException e1) {
-						textPaneResult.setText(e1.getClass().getSimpleName() + ": " + e1.getMessage());
-					}
-				}),
+				button(localize("GuiUrl.buttonOk"), actionOk),
 
-				button(localize("GuiUrl.buttonCancel"), e -> {
-					windowWrapper.getWindow().setVisible(false);
-				})
+				button(localize("GuiUrl.buttonCancel"), actionCancel)
 
 			)
 
