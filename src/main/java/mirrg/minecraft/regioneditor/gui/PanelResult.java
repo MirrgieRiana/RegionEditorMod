@@ -3,11 +3,13 @@ package mirrg.minecraft.regioneditor.gui;
 import static mirrg.minecraft.regioneditor.util.gui.SwingUtils.*;
 
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 
 import javax.swing.JPanel;
 import javax.swing.JTextPane;
+import javax.swing.Timer;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -21,8 +23,16 @@ import mirrg.minecraft.regioneditor.util.gui.WindowWrapper;
 public class PanelResult extends JPanel
 {
 
+	public static Color SUCCESS = Color.decode("#88ff88");
+
+	public static Color ERROR = Color.decode("#ff8888");
+
 	private JTextPane textPaneResult;
+	private Timer timer;
+
 	private String detail = "";
+	private Color color;
+	private int opaque;
 
 	public PanelResult(WindowWrapper owner, I18n i18n)
 	{
@@ -32,7 +42,7 @@ public class PanelResult extends JPanel
 
 			get(scrollPane(textPaneResult = get(new JTextPane(), c -> {
 				c.setEditable(false);
-				c.setOpaque(false);
+				c.setBackground(Color.white);
 			})), c -> {
 				c.setBorder(null);
 				c.setOpaque(false);
@@ -46,6 +56,17 @@ public class PanelResult extends JPanel
 			})
 
 		));
+
+		timer = new Timer(10, e -> {
+			if (opaque > 0) {
+				textPaneResult.setBackground(new Color(UtilsColor.getARGBRatio(opaque / 256.0, 0xFFFFFF, color.getRGB())));
+				opaque -= 10;
+			} else {
+				timer.stop();
+			}
+		});
+		timer.setRepeats(true);
+
 	}
 
 	public JTextPane getTextPaneResult()
@@ -55,10 +76,10 @@ public class PanelResult extends JPanel
 
 	public void setException(Exception e)
 	{
-		setText(e.getClass().getSimpleName() + ": " + e.getMessage(), UtilsString.getStackTrace(e));
+		setText(e.getClass().getSimpleName() + ": " + e.getMessage(), UtilsString.getStackTrace(e), ERROR);
 	}
 
-	public void setText(String string, String detail)
+	public void setText(String string, String detail, Color color)
 	{
 		try {
 			textPaneResult.getStyledDocument().remove(0, textPaneResult.getStyledDocument().getLength());
@@ -69,6 +90,10 @@ public class PanelResult extends JPanel
 			e.printStackTrace();
 		}
 		this.detail = detail;
+
+		this.color = color;
+		opaque = 255;
+		timer.start();
 	}
 
 }
