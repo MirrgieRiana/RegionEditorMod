@@ -26,6 +26,7 @@ public class GuiData extends GuiBase
 
 	private IDialogDataListener listener;
 
+	private ActionButton actionClear;
 	private ActionButton actionExport;
 	private ActionButton actionImport;
 	private ActionButton actionClose;
@@ -42,6 +43,13 @@ public class GuiData extends GuiBase
 	protected void initComponenets()
 	{
 
+		actionClear = new ActionBuilder<>(new ActionButton(e -> {
+			textArea.setText("");
+		}))
+			.value(Action.NAME, localize("GuiData.actionClear") + "(C)")
+			.value(Action.MNEMONIC_KEY, KeyEvent.VK_C)
+			.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK))
+			.register(windowWrapper.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW), windowWrapper.getRootPane().getActionMap());
 		actionExport = new ActionBuilder<>(new ActionButton(e -> {
 			textArea.setText(listener.onExport());
 		}))
