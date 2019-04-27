@@ -4,6 +4,7 @@ import static mirrg.minecraft.regioneditor.util.gui.SwingUtils.*;
 
 import java.awt.CardLayout;
 import java.awt.Dialog.ModalityType;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
@@ -14,10 +15,15 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.Action;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 
 import mirrg.boron.util.i18n.I18n;
 import mirrg.boron.util.struct.ImmutableArray;
@@ -26,6 +32,9 @@ import mirrg.boron.util.suppliterator.ISuppliterator;
 import mirrg.minecraft.regioneditor.IChatMessageProvider;
 import mirrg.minecraft.regioneditor.data.objects.Area;
 import mirrg.minecraft.regioneditor.data.objects.RegionIdentifier;
+import mirrg.minecraft.regioneditor.util.gui.ActionBuilder;
+import mirrg.minecraft.regioneditor.util.gui.ActionButton;
+import mirrg.minecraft.regioneditor.util.gui.MenuItem;
 import mirrg.minecraft.regioneditor.util.gui.WindowWrapper;
 
 public class GuiCommand extends GuiBase
@@ -34,6 +43,8 @@ public class GuiCommand extends GuiBase
 	private ImmutableArray<Area> areas;
 	private Optional<Consumer<List<String>>> oSender;
 	private Optional<IChatMessageProvider> oChatMessageProvider;
+
+	private ActionButton actionClose;
 
 	public GuiCommand(WindowWrapper owner, I18n i18n, ImmutableArray<Area> areas, Optional<Consumer<List<String>>> oSender, Optional<IChatMessageProvider> oChatMessageProvider)
 	{
@@ -111,8 +122,26 @@ public class GuiCommand extends GuiBase
 	@Override
 	protected void initComponenets()
 	{
-		windowWrapper.getWindow().setLayout(new CardLayout());
 
+		// アクション
+		actionClose = new ActionBuilder<>(new ActionButton(e -> {
+			windowWrapper.getWindow().dispose();
+		}))
+			.value(Action.NAME, localize("GuiCommand.actionClose") + "(Q)")
+			.value(Action.MNEMONIC_KEY, KeyEvent.VK_Q)
+			.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0))
+			.register(windowWrapper.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW), windowWrapper.getRootPane().getActionMap());
+
+		// メニュー
+		windowWrapper.setJMenuBar(get(new JMenuBar(), menuBar2 -> {
+			menuBar2.add(get(new JMenu(localize("GuiCommand.menuData") + "(D)"), menu -> {
+				menu.setMnemonic(KeyEvent.VK_D);
+				menu.add(new MenuItem(actionClose));
+			}));
+		}));
+
+		// コンポーネント
+		windowWrapper.getWindow().setLayout(new CardLayout());
 		windowWrapper.getWindow().add(borderPanelDown(
 
 			scrollPane(textAreaCommand = new JTextArea(), 600, 600),
@@ -176,6 +205,7 @@ public class GuiCommand extends GuiBase
 			)
 
 		));
+
 	}
 
 }
