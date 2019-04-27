@@ -17,7 +17,6 @@ import java.util.Optional;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JTextArea;
-import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 
 import mirrg.boron.util.i18n.I18n;
@@ -33,7 +32,7 @@ public class GuiUrl extends GuiBase
 	private ActionButton actionCancel;
 
 	private JTextArea textArea;
-	private JTextPane textPaneResult;
+	private PanelResult panelResult;
 
 	public static class GuiUrlResult
 	{
@@ -86,13 +85,7 @@ public class GuiUrl extends GuiBase
 					c.setLineWrap(true);
 				}), 400, 80),
 
-				get(scrollPane(textPaneResult = get(new JTextPane(), c -> {
-					c.setEditable(false);
-					c.setOpaque(false);
-				}), 400, 40), c -> {
-					c.setBorder(null);
-					c.setOpaque(false);
-				})
+				panelResult = new PanelResult(windowWrapper, i18n)
 
 			),
 
@@ -105,6 +98,7 @@ public class GuiUrl extends GuiBase
 			)
 
 		));
+
 	}
 
 }
