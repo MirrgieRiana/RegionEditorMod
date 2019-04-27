@@ -498,7 +498,7 @@ public class GuiRegionEditor extends GuiBase
 
 			}
 
-			JMenuBar menuBar = get(new JMenuBar(), menuBar2 -> {
+			windowWrapper.setJMenuBar(get(new JMenuBar(), menuBar2 -> {
 				menuBar2.add(get(new Menu(localize("GuiRegionEditor.menuData") + "(D)"), menu -> {
 					menu.setMnemonic(KeyEvent.VK_D);
 					menu.add(new MenuItem(actionOpenGuiData));
@@ -550,12 +550,7 @@ public class GuiRegionEditor extends GuiBase
 					menu.addSeparator();
 					menu.add(new MenuItem(actionScrollToRegion));
 				}));
-			});
-			if (windowWrapper.frame != null) {
-				windowWrapper.frame.setJMenuBar(menuBar);
-			} else if (windowWrapper.dialog != null) {
-				windowWrapper.dialog.setJMenuBar(menuBar);
-			}
+			}));
 		}
 
 		// コンポーネントの設定

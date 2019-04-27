@@ -6,6 +6,7 @@ import java.awt.Window;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JMenuBar;
 import javax.swing.JRootPane;
 import javax.swing.WindowConstants;
 
@@ -54,6 +55,15 @@ public final class WindowWrapper
 			frame.setContentPane(contentPane);
 		} else {
 			dialog.setContentPane(contentPane);
+		}
+	}
+
+	public void setJMenuBar(JMenuBar menuBar)
+	{
+		if (frame != null) {
+			frame.setJMenuBar(menuBar);
+		} else if (dialog != null) {
+			dialog.setJMenuBar(menuBar);
 		}
 	}
 
