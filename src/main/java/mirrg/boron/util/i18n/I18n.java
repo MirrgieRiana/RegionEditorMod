@@ -45,6 +45,7 @@ public class I18n
 				return localizer.localize(unlocalizedString);
 			}
 		}
+		System.err.println("[Warn] Unknown i18n key: " + unlocalizedString);
 		return unlocalizedString;
 	}
 
