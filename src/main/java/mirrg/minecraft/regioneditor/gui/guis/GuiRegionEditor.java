@@ -76,6 +76,10 @@ import mirrg.minecraft.regioneditor.gui.tools.ToolFill;
 import mirrg.minecraft.regioneditor.gui.tools.ToolLine;
 import mirrg.minecraft.regioneditor.gui.tools.ToolNothing;
 import mirrg.minecraft.regioneditor.gui.tools.ToolPencil;
+import mirrg.minecraft.regioneditor.util.gui.ActionBuilder;
+import mirrg.minecraft.regioneditor.util.gui.ActionButton;
+import mirrg.minecraft.regioneditor.util.gui.ActionRadio;
+import mirrg.minecraft.regioneditor.util.gui.ActionToggle;
 import mirrg.minecraft.regioneditor.util.gui.BitMapFont;
 import mirrg.minecraft.regioneditor.util.gui.FontRenderer;
 import mirrg.minecraft.regioneditor.util.gui.WindowWrapper;
@@ -957,145 +961,6 @@ public class GuiRegionEditor extends GuiBase
 			}
 			i++;
 		}
-	}
-
-	private class ActionBuilder<A extends ActionBase>
-	{
-
-		private final A action;
-
-		public ActionBuilder(A action)
-		{
-			this.action = action;
-		}
-
-		public ActionBuilder<A> value(String key, Object value)
-		{
-			action.putValue(key, value);
-			return this;
-		}
-
-		public ActionBuilder<A> keyStroke(KeyStroke keyStrokeMain, KeyStroke... keyStrokes)
-		{
-			action.putValue(Action.ACCELERATOR_KEY, keyStrokeMain);
-			inputMap.put(keyStrokeMain, action);
-			for (KeyStroke keyStroke : keyStrokes) {
-				inputMap.put(keyStroke, action);
-			}
-			return this;
-		}
-
-		public A register()
-		{
-			actionMap.put(action, action);
-			action.register();
-			return action;
-		}
-
-	}
-
-	private abstract class ActionBase extends AbstractAction
-	{
-
-		public void register()
-		{
-
-		}
-
-	}
-
-	private class ActionButton extends ActionBase
-	{
-
-		private Consumer<ActionEvent> listener;
-
-		public ActionButton(Consumer<ActionEvent> listener)
-		{
-			this.listener = listener;
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			listener.accept(e);
-		}
-
-	}
-
-	private abstract class ActionToggleBase extends ActionBase
-	{
-
-		public ActionToggleBase()
-		{
-			setSelected(false);
-		}
-
-		public boolean isSelected()
-		{
-			return (Boolean) getValue(SELECTED_KEY);
-		}
-
-		public void setSelected(boolean selected)
-		{
-			putValue(SELECTED_KEY, selected);
-		}
-
-	}
-
-	private class ActionToggle extends ActionToggleBase
-	{
-
-		public ActionToggle(Consumer<Boolean> listener)
-		{
-			addPropertyChangeListener(e -> {
-				if (e.getPropertyName().equals(SELECTED_KEY)) {
-					listener.accept((Boolean) e.getNewValue());
-				}
-			});
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			setSelected(!isSelected());
-		}
-
-	}
-
-	private class ActionRadio extends ActionToggleBase
-	{
-
-		private List<ActionRadio> group;
-
-		public ActionRadio(List<ActionRadio> group, Consumer<Boolean> listener)
-		{
-			this.group = group;
-			addPropertyChangeListener(e -> {
-				if (e.getPropertyName().equals(SELECTED_KEY)) {
-					listener.accept((Boolean) e.getNewValue());
-				}
-			});
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			if (!isSelected()) {
-				for (ActionRadio actionRadio : group) {
-					if (actionRadio.isSelected()) {
-						actionRadio.setSelected(false);
-					}
-				}
-				setSelected(true);
-			}
-		}
-
-		@Override
-		public void register()
-		{
-			group.add(this);
-		}
-
 	}
 
 	private void loadMapFromLocal()
