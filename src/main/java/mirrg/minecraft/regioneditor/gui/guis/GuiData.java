@@ -63,6 +63,7 @@ public class GuiData extends GuiBase
 		actionImport = new ActionBuilder<>(new ActionButton(e -> {
 			try {
 				listener.onImport(textArea.getText());
+				panelResult.setText(localize("GuiData.text.success"), "", PanelResult.SUCCESS);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 				panelResult.setException(e1);
