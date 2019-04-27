@@ -13,6 +13,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import javax.swing.InputMap;
 import javax.swing.JComponent;
@@ -48,6 +49,8 @@ public class GuiUrl extends GuiBase
 
 	}
 
+	public Optional<Predicate<GuiUrlResult>> oValidator = Optional.empty();
+
 	public Optional<GuiUrlResult> oResult = Optional.empty();
 
 	public GuiUrl(WindowWrapper owner, I18n i18n)
@@ -60,12 +63,22 @@ public class GuiUrl extends GuiBase
 	{
 
 		actionOk = new ActionBuilder<>(new ActionButton(e -> {
+
+			GuiUrlResult result;
 			try {
-				oResult = Optional.of(new GuiUrlResult(new URI(textArea.getText()), new URL(textArea.getText())));
+				result = new GuiUrlResult(new URI(textArea.getText()), new URL(textArea.getText()));
 			} catch (URISyntaxException | MalformedURLException e1) {
+				e1.printStackTrace();
 				panelResult.setException(e1);
 				return;
 			}
+
+			if (oValidator.isPresent() && !oValidator.get().test(result)) {
+				return;
+			}
+
+			oResult = Optional.of(result);
+
 			windowWrapper.getWindow().setVisible(false);
 		}))
 			.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0))
@@ -136,6 +149,11 @@ public class GuiUrl extends GuiBase
 
 		));
 
+	}
+
+	public void setException(Exception e)
+	{
+		panelResult.setException(e);
 	}
 
 }
