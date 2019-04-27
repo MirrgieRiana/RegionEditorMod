@@ -84,9 +84,9 @@ import mirrg.minecraft.regioneditor.util.gui.WindowWrapper;
 public class GuiRegionEditor extends GuiBase
 {
 
-	private Optional<Consumer<List<String>>> oSender;
-	private Optional<IChatMessageProvider> oChatMessageProvider;
-	private FontRenderer fontRenderer = new FontRenderer(new BitMapFont(Objects.requireNonNull(GuiRegionEditor.class.getResource("font.png")), 5, 7, 4));
+	private final Optional<Consumer<List<String>>> oSender;
+	private final Optional<IChatMessageProvider> oChatMessageProvider;
+	private final FontRenderer fontRenderer;
 
 	private InputMap inputMap;
 	private ActionMap actionMap;
@@ -143,6 +143,7 @@ public class GuiRegionEditor extends GuiBase
 		super(owner, i18n, i18n.localize("GuiRegionEditor.title"), ModalityType.MODELESS);
 		this.oSender = oSender;
 		this.oChatMessageProvider = oChatMessageProvider;
+		this.fontRenderer = new FontRenderer(new BitMapFont(Objects.requireNonNull(GuiRegionEditor.class.getResource("font.png")), 5, 7, 4));
 	}
 
 	@Override
@@ -150,6 +151,7 @@ public class GuiRegionEditor extends GuiBase
 	{
 		ArrayList<Runnable> listenersPreInit = new ArrayList<>();
 
+		// アイコンの設定
 		try (InputStream in = GuiRegionEditor.class.getResourceAsStream("icon2.png")) {
 			if (in != null) {
 				windowWrapper.getWindow().setIconImage(ImageIO.read(in));
@@ -158,6 +160,7 @@ public class GuiRegionEditor extends GuiBase
 			e1.printStackTrace();
 		}
 
+		// アクションの設定
 		{
 			inputMap = new InputMap();
 			actionMap = new ActionMap();
@@ -418,6 +421,7 @@ public class GuiRegionEditor extends GuiBase
 				.register(inputMap, actionMap);
 		}
 
+		// メニューの設定
 		{
 			class Menu extends JMenu
 			{
@@ -552,6 +556,7 @@ public class GuiRegionEditor extends GuiBase
 			}
 		}
 
+		// コンポーネントの設定
 		windowWrapper.setContentPane(get(splitPaneHorizontal(0.7,
 
 			borderPanelDown(
@@ -820,9 +825,11 @@ public class GuiRegionEditor extends GuiBase
 			c.getActionMap().setParent(actionMap);
 		}));
 
+		// 初期化
 		listenersPreInit.forEach(Runnable::run);
 		setPosition(0, 0);
 		canvasMap.init();
+
 	}
 
 	private void plusBrushSize(int dBrushSize)
