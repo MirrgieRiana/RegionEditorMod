@@ -62,6 +62,7 @@ public class PanelResult extends JPanel
 				textPaneResult.setBackground(new Color(UtilsColor.getARGBRatio(opaque / 256.0, 0xFFFFFF, color.getRGB())));
 				opaque -= 10;
 			} else {
+				textPaneResult.setBackground(Color.white);
 				timer.stop();
 			}
 		});
