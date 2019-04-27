@@ -101,6 +101,7 @@ public class GuiData extends GuiBase
 
 				scrollPane(textArea = get(new JTextArea(), c -> {
 					c.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+					c.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK), actionImport);
 				}), 800, 800),
 
 				panelResult = new PanelResult(windowWrapper, i18n)
