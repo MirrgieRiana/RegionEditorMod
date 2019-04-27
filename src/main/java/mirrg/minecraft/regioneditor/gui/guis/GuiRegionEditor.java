@@ -52,7 +52,6 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
-import mirrg.boron.util.UtilsString;
 import mirrg.boron.util.i18n.I18n;
 import mirrg.minecraft.regioneditor.IChatMessageProvider;
 import mirrg.minecraft.regioneditor.data.AreaExtractor;
@@ -165,18 +164,9 @@ public class GuiRegionEditor extends GuiBase
 
 			actionOpenGuiData = new ActionBuilder<>(new ActionButton(e -> new GuiData(windowWrapper, i18n, new IDialogDataListener() {
 				@Override
-				public void onImport(String string)
+				public void onImport(String string) throws Exception
 				{
-					try {
-						canvasMap.setExpression(string);
-					} catch (Exception e) {
-						e.printStackTrace();
-						JOptionPane.showMessageDialog(
-							windowWrapper.frame,
-							UtilsString.getStackTrace(e),
-							"Error",
-							JOptionPane.ERROR_MESSAGE);
-					}
+					canvasMap.setExpression(string);
 				}
 
 				@Override

@@ -16,6 +16,7 @@ import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 
 import mirrg.boron.util.i18n.I18n;
+import mirrg.minecraft.regioneditor.gui.PanelResult;
 import mirrg.minecraft.regioneditor.util.gui.ActionBuilder;
 import mirrg.minecraft.regioneditor.util.gui.ActionButton;
 import mirrg.minecraft.regioneditor.util.gui.MenuItem;
@@ -32,6 +33,7 @@ public class GuiData extends GuiBase
 	private ActionButton actionClose;
 
 	private JTextArea textArea;
+	private PanelResult panelResult;
 
 	public GuiData(WindowWrapper owner, I18n i18n, IDialogDataListener listener)
 	{
@@ -59,7 +61,12 @@ public class GuiData extends GuiBase
 			.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_DOWN_MASK))
 			.register(windowWrapper.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW), windowWrapper.getRootPane().getActionMap());
 		actionImport = new ActionBuilder<>(new ActionButton(e -> {
-			listener.onImport(textArea.getText());
+			try {
+				listener.onImport(textArea.getText());
+			} catch (Exception e1) {
+				e1.printStackTrace();
+				panelResult.setException(e1);
+			}
 		}))
 			.value(Action.NAME, localize("GuiData.actionImport") + "(I)")
 			.value(Action.MNEMONIC_KEY, KeyEvent.VK_I)
@@ -89,9 +96,15 @@ public class GuiData extends GuiBase
 		windowWrapper.getWindow().setLayout(new CardLayout());
 		windowWrapper.getWindow().add(borderPanelDown(
 
-			scrollPane(textArea = get(new JTextArea(), c -> {
-				c.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-			}), 800, 800),
+			splitPaneVertical(1,
+
+				scrollPane(textArea = get(new JTextArea(), c -> {
+					c.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+				}), 800, 800),
+
+				panelResult = new PanelResult(windowWrapper, i18n)
+
+			),
 
 			flowPanel(
 
@@ -108,7 +121,7 @@ public class GuiData extends GuiBase
 	public static interface IDialogDataListener
 	{
 
-		public void onImport(String string);
+		public void onImport(String string) throws Exception;
 
 		public String onExport();
 
