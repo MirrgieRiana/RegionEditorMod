@@ -43,6 +43,7 @@ public class GuiData extends GuiBase
 	protected void initComponenets()
 	{
 
+		// アクション
 		actionClear = new ActionBuilder<>(new ActionButton(e -> {
 			textArea.setText("");
 		}))
@@ -72,6 +73,7 @@ public class GuiData extends GuiBase
 			.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0))
 			.register(windowWrapper.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW), windowWrapper.getRootPane().getActionMap());
 
+		// メニュー
 		windowWrapper.setJMenuBar(get(new JMenuBar(), menuBar2 -> {
 			menuBar2.add(get(new JMenu(localize("GuiData.menuData") + "(D)"), menu -> {
 				menu.setMnemonic(KeyEvent.VK_D);
@@ -83,6 +85,7 @@ public class GuiData extends GuiBase
 			}));
 		}));
 
+		// コンポーネント
 		windowWrapper.getWindow().setLayout(new CardLayout());
 		windowWrapper.getWindow().add(borderPanelDown(
 
