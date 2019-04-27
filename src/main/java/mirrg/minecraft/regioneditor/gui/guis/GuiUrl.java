@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Optional;
 
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
@@ -26,9 +27,21 @@ public class GuiUrl extends GuiBase
 	private JTextArea textArea;
 	private JTextPane textPaneResult;
 
-	public boolean ok = false;
-	public URI uri = null;
-	public URL url = null;
+	public static class GuiUrlResult
+	{
+
+		public final URI uri;
+		public final URL url;
+
+		public GuiUrlResult(URI uri, URL url)
+		{
+			this.uri = uri;
+			this.url = url;
+		}
+
+	}
+
+	public Optional<GuiUrlResult> oResult = Optional.empty();
 
 	@Override
 	protected void initComponenets()
@@ -57,12 +70,10 @@ public class GuiUrl extends GuiBase
 
 				button(localize("GuiUrl.buttonOk"), e -> {
 					try {
-						uri = new URI(textArea.getText());
-						url = new URL(textArea.getText());
-						ok = true;
+						oResult = Optional.of(new GuiUrlResult(new URI(textArea.getText()), new URL(textArea.getText())));
 						windowWrapper.getWindow().setVisible(false);
 					} catch (URISyntaxException | MalformedURLException e1) {
-						textPaneResult.setText(e1.getClass().getSimpleName() + "\n" + e1.getMessage());
+						textPaneResult.setText(e1.getClass().getSimpleName() + ": " + e1.getMessage());
 					}
 				}),
 

@@ -208,9 +208,9 @@ public class GuiRegionEditor extends GuiBase
 			actionLoadMapFromUrl = new ActionBuilder<>(new ActionButton(e -> {
 				GuiUrl guiUrl = new GuiUrl(windowWrapper, i18n);
 				guiUrl.show();
-				if (guiUrl.ok) {
-					try (InputStream in = guiUrl.url.openStream()) {
-						loadMapFrom(in, new File(guiUrl.uri.getPath()).getName());
+				if (guiUrl.oResult.isPresent()) {
+					try (InputStream in = guiUrl.oResult.get().url.openStream()) {
+						loadMapFrom(in, new File(guiUrl.oResult.get().uri.getPath()).getName());
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
