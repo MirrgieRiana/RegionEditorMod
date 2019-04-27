@@ -83,6 +83,43 @@ public class GuiUrl extends GuiBase
 
 				scrollPane(textArea = get(new JTextArea(), c -> {
 					c.setLineWrap(true);
+
+					// タブでフォーカス移動
+					c.addKeyListener(new KeyAdapter() {
+						@Override
+						public void keyPressed(KeyEvent e)
+						{
+							if (e.getKeyCode() == KeyEvent.VK_TAB) {
+								System.out.println(e.getModifiers());
+								if ((e.getModifiers() & Event.SHIFT_MASK) != 0) {
+									c.transferFocusBackward();
+								} else {
+									c.transferFocus();
+								}
+								e.consume();
+							}
+						}
+					});
+
+					// エンターで改行を入力する機能の不活性化
+					{
+						final Object CANCEL = "CANCEL_54632095834680215631809";
+						InputMap inputMap;
+						inputMap = new InputMap() {
+							@Override
+							public Object get(KeyStroke keyStroke)
+							{
+								Object object = super.get(keyStroke);
+								return CANCEL.equals(object) ? null : object;
+							}
+						};
+						inputMap.setParent(c.getInputMap(JComponent.WHEN_FOCUSED));
+						inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), CANCEL);
+						inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), CANCEL);
+						inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK), actionOk);
+						c.setInputMap(JComponent.WHEN_FOCUSED, inputMap);
+					}
+
 				}), 400, 80),
 
 				panelResult = new PanelResult(windowWrapper, i18n)
