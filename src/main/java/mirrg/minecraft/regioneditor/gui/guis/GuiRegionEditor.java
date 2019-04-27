@@ -9,7 +9,6 @@ import java.awt.Dimension;
 import java.awt.FileDialog;
 import java.awt.Graphics2D;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -35,7 +34,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.DefaultListModel;
@@ -195,20 +193,20 @@ public class GuiRegionEditor extends GuiBase
 				.value(Action.NAME, localize("GuiRegionEditor.actionOpenGuiData") + "(I)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_I)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK))
-				.register();
+				.register(inputMap, actionMap);
 			actionOpenGuiCommand = new ActionBuilder<>(new ActionButton(e -> {
 				new GuiCommand(windowWrapper, i18n, new AreaExtractor(canvasMap.layerController.model).getAreas(), oSender, oChatMessageProvider).show();
 			}))
 				.value(Action.NAME, localize("GuiRegionEditor.actionOpenGuiCommand") + "(D)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_DOWN_MASK))
-				.register();
+				.register(inputMap, actionMap);
 
 			actionLoadMapFromLocalFile = new ActionBuilder<>(new ActionButton(e -> loadMapFromLocal()))
 				.value(Action.NAME, localize("GuiRegionEditor.actionLoadMapFromLocalFile") + "(F)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_F)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK))
-				.register();
+				.register(inputMap, actionMap);
 			actionLoadMapFromUrl = new ActionBuilder<>(new ActionButton(e -> {
 				GuiUrl guiUrl = new GuiUrl(windowWrapper, i18n);
 				guiUrl.show();
@@ -223,34 +221,34 @@ public class GuiRegionEditor extends GuiBase
 				.value(Action.NAME, localize("GuiRegionEditor.actionLoadMapFromUrl") + "(U)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_U)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK))
-				.register();
+				.register(inputMap, actionMap);
 
 			actionScrollLeft = new ActionBuilder<>(new ActionButton(e -> scroll(-4, 0)))
 				.value(Action.NAME, localize("GuiRegionEditor.actionScrollLeft") + "(L)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_L)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_A, 0), KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0))
-				.register();
+				.register(inputMap, actionMap);
 			actionScrollRight = new ActionBuilder<>(new ActionButton(e -> scroll(4, 0)))
 				.value(Action.NAME, localize("GuiRegionEditor.actionScrollRight") + "(R)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_R)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_D, 0), KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0))
-				.register();
+				.register(inputMap, actionMap);
 			actionScrollUp = new ActionBuilder<>(new ActionButton(e -> scroll(0, -4)))
 				.value(Action.NAME, localize("GuiRegionEditor.actionScrollUp") + "(U)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_U)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_W, 0), KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0))
-				.register();
+				.register(inputMap, actionMap);
 			actionScrollDown = new ActionBuilder<>(new ActionButton(e -> scroll(0, 4)))
 				.value(Action.NAME, localize("GuiRegionEditor.actionScrollDown") + "(D)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_S, 0), KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0))
-				.register();
+				.register(inputMap, actionMap);
 			{
 				ActionToggle action = actionToggleShowMap = new ActionBuilder<>(new ActionToggle(v -> canvasMap.setShowMap(v)))
 					.value(Action.NAME, localize("GuiRegionEditor.actionToggleShowMap") + "(M)")
 					.value(Action.MNEMONIC_KEY, KeyEvent.VK_M)
 					.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0))
-					.register();
+					.register(inputMap, actionMap);
 				listenersPreInit.add(() -> action.setSelected(true));
 			}
 			{
@@ -258,7 +256,7 @@ public class GuiRegionEditor extends GuiBase
 					.value(Action.NAME, localize("GuiRegionEditor.actionToggleShowTile") + "(T)")
 					.value(Action.MNEMONIC_KEY, KeyEvent.VK_T)
 					.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0))
-					.register();
+					.register(inputMap, actionMap);
 				listenersPreInit.add(() -> action.setSelected(true));
 			}
 			{
@@ -266,7 +264,7 @@ public class GuiRegionEditor extends GuiBase
 					.value(Action.NAME, localize("GuiRegionEditor.actionToggleShowTooltip") + "(T)")
 					.value(Action.MNEMONIC_KEY, KeyEvent.VK_T)
 					.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0))
-					.register();
+					.register(inputMap, actionMap);
 				listenersPreInit.add(() -> action.setSelected(true));
 			}
 			{
@@ -274,7 +272,7 @@ public class GuiRegionEditor extends GuiBase
 					.value(Action.NAME, localize("GuiRegionEditor.actionToggleShowArea") + "(A)")
 					.value(Action.MNEMONIC_KEY, KeyEvent.VK_A)
 					.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0))
-					.register();
+					.register(inputMap, actionMap);
 				listenersPreInit.add(() -> action.setSelected(true));
 			}
 			{
@@ -282,7 +280,7 @@ public class GuiRegionEditor extends GuiBase
 					.value(Action.NAME, localize("GuiRegionEditor.actionToggleShowBorder") + "(B)")
 					.value(Action.MNEMONIC_KEY, KeyEvent.VK_B)
 					.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0))
-					.register();
+					.register(inputMap, actionMap);
 				listenersPreInit.add(() -> action.setSelected(true));
 			}
 			{
@@ -290,7 +288,7 @@ public class GuiRegionEditor extends GuiBase
 					.value(Action.NAME, localize("GuiRegionEditor.actionToggleShowIdentifier") + "(I)")
 					.value(Action.MNEMONIC_KEY, KeyEvent.VK_I)
 					.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0))
-					.register();
+					.register(inputMap, actionMap);
 				listenersPreInit.add(() -> action.setSelected(true));
 			}
 			{
@@ -298,7 +296,7 @@ public class GuiRegionEditor extends GuiBase
 					.value(Action.NAME, localize("GuiRegionEditor.actionToggleShowGrid") + "(G)")
 					.value(Action.MNEMONIC_KEY, KeyEvent.VK_G)
 					.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0))
-					.register();
+					.register(inputMap, actionMap);
 				listenersPreInit.add(() -> action.setSelected(true));
 			}
 
@@ -309,35 +307,35 @@ public class GuiRegionEditor extends GuiBase
 				.value(Action.NAME, localize("GuiRegionEditor.actionToolNothing") + "(N)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_N)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0))
-				.register();
+				.register(inputMap, actionMap);
 			actionToolPencil = new ActionBuilder<>(new ActionRadio(groupTool, v -> {
 				canvasMap.setTool(Optional.of(new ToolPencil(canvasMap.getToolContext())));
 			}))
 				.value(Action.NAME, localize("GuiRegionEditor.actionToolPencil") + "(P)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_P)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_P, 0))
-				.register();
+				.register(inputMap, actionMap);
 			actionToolBrush = new ActionBuilder<>(new ActionRadio(groupTool, v -> {
 				canvasMap.setTool(Optional.of(new ToolBrush(canvasMap.getToolContext())));
 			}))
 				.value(Action.NAME, localize("GuiRegionEditor.actionToolBrush") + "(B)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_B)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_B, 0))
-				.register();
+				.register(inputMap, actionMap);
 			actionToolFill = new ActionBuilder<>(new ActionRadio(groupTool, v -> {
 				canvasMap.setTool(Optional.of(new ToolFill(canvasMap.getToolContext())));
 			}))
 				.value(Action.NAME, localize("GuiRegionEditor.actionToolFill") + "(F)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_F)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_F, 0))
-				.register();
+				.register(inputMap, actionMap);
 			actionToolLine = new ActionBuilder<>(new ActionRadio(groupTool, v -> {
 				canvasMap.setTool(Optional.of(new ToolLine(canvasMap.getToolContext())));
 			}))
 				.value(Action.NAME, localize("GuiRegionEditor.actionToolLine") + "(L)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_L)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_L, 0))
-				.register();
+				.register(inputMap, actionMap);
 			actionToolSpuit = new ActionBuilder<>(new ActionRadio(groupTool, v -> {
 				canvasMap.setTool(Optional.of(new ITool() { // TODO
 					@Override
@@ -356,18 +354,18 @@ public class GuiRegionEditor extends GuiBase
 				.value(Action.NAME, localize("GuiRegionEditor.actionToolSpuit") + "(K)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_K)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_K, 0))
-				.register();
+				.register(inputMap, actionMap);
 			listenersPreInit.add(() -> actionToolBrush.setSelected(true));
 			actionIncrementBrushSize = new ActionBuilder<>(new ActionButton(e -> plusBrushSize(1)))
 				.value(Action.NAME, localize("GuiRegionEditor.actionIncrementBrushSize") + "(I)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_I)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, 0))
-				.register();
+				.register(inputMap, actionMap);
 			actionDecrementBrushSize = new ActionBuilder<>(new ActionButton(e -> plusBrushSize(-1)))
 				.value(Action.NAME, localize("GuiRegionEditor.actionDecrementBrushSize") + "(D)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, 0))
-				.register();
+				.register(inputMap, actionMap);
 
 			actionClearMap = new ActionBuilder<>(new ActionButton(e -> {
 				if (JOptionPane.showConfirmDialog(
@@ -386,7 +384,7 @@ public class GuiRegionEditor extends GuiBase
 			}))
 				.value(Action.NAME, localize("GuiRegionEditor.actionClearMap") + "(C)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_C)
-				.register();
+				.register(inputMap, actionMap);
 
 			actionCreateRegion = new ActionBuilder<>(new ActionButton(e -> {
 				System.out.println("A"); // TODO
@@ -394,14 +392,14 @@ public class GuiRegionEditor extends GuiBase
 				.value(Action.NAME, localize("GuiRegionEditor.actionCreateRegion") + "(N)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_N)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK))
-				.register();
+				.register(inputMap, actionMap);
 			actionEditRegion = new ActionBuilder<>(new ActionButton(e -> {
 				System.out.println("B"); // TODO
 			}))
 				.value(Action.NAME, localize("GuiRegionEditor.actionEditRegion") + "(E)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_E)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.SHIFT_DOWN_MASK))
-				.register();
+				.register(inputMap, actionMap);
 			actionDeleteRegion = new ActionBuilder<>(new ActionButton(e -> {
 				Optional<RegionIdentifier> tileCurrent = canvasMap.getTileCurrent();
 				if (tileCurrent.isPresent()) {
@@ -412,14 +410,14 @@ public class GuiRegionEditor extends GuiBase
 				.value(Action.NAME, localize("GuiRegionEditor.actionDeleteRegion") + "(D)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK | InputEvent.ALT_DOWN_MASK))
-				.register();
+				.register(inputMap, actionMap);
 			actionChangeRegionIdentifier = new ActionBuilder<>(new ActionButton(e -> {
 				System.out.println("D"); // TODO
 			}))
 				.value(Action.NAME, localize("GuiRegionEditor.actionChangeRegionIdentifier") + "(I)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_I)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK))
-				.register();
+				.register(inputMap, actionMap);
 			actionScrollToRegion = new ActionBuilder<>(new ActionButton(e -> {
 				Optional<RegionIdentifier> tileCurrent = canvasMap.getTileCurrent();
 				if (tileCurrent.isPresent()) {
@@ -428,7 +426,7 @@ public class GuiRegionEditor extends GuiBase
 			}))
 				.value(Action.NAME, localize("GuiRegionEditor.actionScrollToRegion") + "(S)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_S)
-				.register();
+				.register(inputMap, actionMap);
 		}
 
 		{
