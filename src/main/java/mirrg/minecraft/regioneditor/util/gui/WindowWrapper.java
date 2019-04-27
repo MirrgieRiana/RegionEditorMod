@@ -6,6 +6,7 @@ import java.awt.Window;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JRootPane;
 import javax.swing.WindowConstants;
 
 public final class WindowWrapper
@@ -40,6 +41,11 @@ public final class WindowWrapper
 	public Container getContentPane()
 	{
 		return frame != null ? frame.getContentPane() : dialog.getContentPane();
+	}
+
+	public JRootPane getRootPane()
+	{
+		return frame != null ? frame.getRootPane() : dialog.getRootPane();
 	}
 
 	public void setContentPane(Container contentPane)
