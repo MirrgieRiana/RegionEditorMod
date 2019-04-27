@@ -460,6 +460,7 @@ public class GuiRegionEditor extends GuiBase
 					super(action);
 				}
 
+				// コンテントペイン側との競合を無くすため
 				@Override
 				protected boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed)
 				{
@@ -476,6 +477,7 @@ public class GuiRegionEditor extends GuiBase
 					super(action);
 				}
 
+				// コンテントペイン側との競合を無くすため
 				@Override
 				protected boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed)
 				{
