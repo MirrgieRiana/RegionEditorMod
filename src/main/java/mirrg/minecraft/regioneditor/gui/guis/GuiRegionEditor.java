@@ -149,7 +149,7 @@ public class GuiRegionEditor extends GuiBase
 	{
 		ArrayList<Runnable> listenersPreInit = new ArrayList<>();
 
-		// アイコンの設定
+		// アイコン
 		try (InputStream in = GuiRegionEditor.class.getResourceAsStream("icon2.png")) {
 			if (in != null) {
 				windowWrapper.getWindow().setIconImage(ImageIO.read(in));
@@ -158,7 +158,7 @@ public class GuiRegionEditor extends GuiBase
 			e1.printStackTrace();
 		}
 
-		// アクションの設定
+		// アクション
 		{
 			inputMap = new InputMap();
 			actionMap = new ActionMap();
@@ -419,7 +419,7 @@ public class GuiRegionEditor extends GuiBase
 				.register(inputMap, actionMap);
 		}
 
-		// メニューの設定
+		// メニュー
 		{
 			class Menu extends JMenu
 			{
@@ -505,7 +505,7 @@ public class GuiRegionEditor extends GuiBase
 			}));
 		}
 
-		// コンポーネントの設定
+		// コンポーネント
 		windowWrapper.setContentPane(get(splitPaneHorizontal(0.7,
 
 			borderPanelDown(
