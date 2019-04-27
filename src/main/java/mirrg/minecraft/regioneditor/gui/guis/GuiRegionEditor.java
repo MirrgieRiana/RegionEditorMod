@@ -10,8 +10,6 @@ import java.awt.FileDialog;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.event.InputEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -38,14 +36,12 @@ import javax.swing.ActionMap;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
@@ -78,7 +74,9 @@ import mirrg.minecraft.regioneditor.util.gui.ActionButton;
 import mirrg.minecraft.regioneditor.util.gui.ActionRadio;
 import mirrg.minecraft.regioneditor.util.gui.ActionToggle;
 import mirrg.minecraft.regioneditor.util.gui.BitMapFont;
+import mirrg.minecraft.regioneditor.util.gui.CheckBoxMenuItem;
 import mirrg.minecraft.regioneditor.util.gui.FontRenderer;
+import mirrg.minecraft.regioneditor.util.gui.MenuItem;
 import mirrg.minecraft.regioneditor.util.gui.WindowWrapper;
 
 public class GuiRegionEditor extends GuiBase
@@ -448,52 +446,6 @@ public class GuiRegionEditor extends GuiBase
 
 						}
 					});
-				}
-
-			}
-
-			class MenuItem extends JMenuItem
-			{
-
-				public MenuItem(Action action)
-				{
-					super(action);
-				}
-
-				// コンテントペイン側との競合を無くすため
-				@Override
-				protected boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed)
-				{
-					return false;
-				}
-
-			}
-
-			class CheckBoxMenuItem extends JCheckBoxMenuItem
-			{
-
-				public CheckBoxMenuItem(Action action)
-				{
-					super(action);
-				}
-
-				// コンテントペイン側との競合を無くすため
-				@Override
-				protected boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition, boolean pressed)
-				{
-					return false;
-				}
-
-				@Override
-				protected ItemListener createItemListener()
-				{
-					return new ItemListener() {
-						@Override
-						public void itemStateChanged(ItemEvent event)
-						{
-							fireItemStateChanged(event);
-						}
-					};
 				}
 
 			}
