@@ -79,12 +79,12 @@ public class GuiUrl extends GuiBase
 
 			oResult = Optional.of(result);
 
-			windowWrapper.getWindow().setVisible(false);
+			windowWrapper.getWindow().dispose();
 		}))
 			.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0))
 			.register(windowWrapper.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW), windowWrapper.getRootPane().getActionMap());
 		actionCancel = new ActionBuilder<>(new ActionButton(e -> {
-			windowWrapper.getWindow().setVisible(false);
+			windowWrapper.getWindow().dispose();
 		}))
 			.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0))
 			.register(windowWrapper.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW), windowWrapper.getRootPane().getActionMap());
