@@ -22,7 +22,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.NumberFormat;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -693,227 +692,122 @@ public class GuiRegionEditor extends GuiBase
 
 				borderPanelDown(
 
-					borderPanelDown(
+					// 領地一覧
+					scrollPane(tableRegion = get(new JList<>(modelTableRegion = new DefaultListModel<>()), c -> {
+						c.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+						c.addMouseListener(new MouseAdapter() {
+							@Override
+							public void mouseReleased(MouseEvent e)
+							{
+								if (e.getButton() == MouseEvent.BUTTON1) {
+									canvasMap.setTileCurrent(getSelectedItem());
+								} else if (e.getButton() == MouseEvent.BUTTON3) {
 
-						// 領地一覧
-						scrollPane(tableRegion = get(new JList<>(modelTableRegion = new DefaultListModel<>()), c -> {
-							c.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-							c.addMouseListener(new MouseAdapter() {
-								@Override
-								public void mouseReleased(MouseEvent e)
-								{
-									if (e.getButton() == MouseEvent.BUTTON1) {
-										canvasMap.setTileCurrent(getSelectedItem());
-									} else if (e.getButton() == MouseEvent.BUTTON3) {
+									int index = c.locationToIndex(e.getPoint());
+									if (index < 0) return;
+									if (index >= c.getModel().getSize()) return;
+									Optional<RegionIdentifier> tile = c.getModel().getElementAt(index);
+									if (!tile.isPresent()) return;
 
-										int index = c.locationToIndex(e.getPoint());
-										if (index < 0) return;
-										if (index >= c.getModel().getSize()) return;
-										Optional<RegionIdentifier> tile = c.getModel().getElementAt(index);
-										if (!tile.isPresent()) return;
+									scrollToRegion(tile.get());
 
-										scrollToRegion(tile.get());
+								}
+							}
 
-									}
+							private Optional<RegionIdentifier> getSelectedItem()
+							{
+								int index = tableRegion.getSelectedIndex();
+								if (index < 0) return Optional.empty();
+								if (index >= tableRegion.getModel().getSize()) return Optional.empty();
+								return tableRegion.getModel().getElementAt(index);
+							}
+						});
+						c.setCellRenderer(new ListCellRenderer<Optional<RegionIdentifier>>() {
+							private BufferedImage image = new BufferedImage(17, 17, BufferedImage.TYPE_INT_RGB);
+							private Graphics2D graphics = image.createGraphics();
+
+							private JLabel label = new JLabel();
+							{
+								label.setOpaque(true);
+							}
+
+							public Component getListCellRendererComponent(
+								JList<? extends Optional<RegionIdentifier>> list,
+								Optional<RegionIdentifier> value,
+								int index,
+								boolean isSelected,
+								boolean cellHasFocus)
+							{
+								if (value.isPresent()) {
+									RegionIdentifier regionIdentifier = value.get();
+									RegionEntry regionEntry = new RegionEntry(
+										regionIdentifier,
+										canvasMap.layerController.regionTableController.model.get(regionIdentifier));
+
+									label.setText(regionEntry.toString());
+								} else {
+									label.setText(localize("GuiRegionEditor.tableRegion.empty"));
 								}
 
-								private Optional<RegionIdentifier> getSelectedItem()
-								{
-									int index = tableRegion.getSelectedIndex();
-									if (index < 0) return Optional.empty();
-									if (index >= tableRegion.getModel().getSize()) return Optional.empty();
-									return tableRegion.getModel().getElementAt(index);
+								graphics.setBackground(Color.gray);
+								graphics.clearRect(0, 0, 17, 17);
+								if (value.isPresent()) {
+									RegionIdentifier regionIdentifier = value.get();
+									RegionEntry regionEntry = new RegionEntry(
+										regionIdentifier,
+										canvasMap.layerController.regionTableController.model.get(regionIdentifier));
+
+									ImageLayerTile.drawArea(graphics, regionEntry, 0, 0, 16);
+									ImageLayerTile.drawBorder(graphics, regionEntry, 0, 0, 16, true, true, true, true);
+									ImageLayerTile.drawIdentifier(image, regionEntry, 0, 0, 16, fontRenderer);
+									ImageLayerTile.drawGrid(graphics, 0, 0, 16);
 								}
-							});
-							c.setCellRenderer(new ListCellRenderer<Optional<RegionIdentifier>>() {
-								private BufferedImage image = new BufferedImage(17, 17, BufferedImage.TYPE_INT_RGB);
-								private Graphics2D graphics = image.createGraphics();
+								label.setIcon(new ImageIcon(image));
 
-								private JLabel label = new JLabel();
-								{
-									label.setOpaque(true);
-								}
+								Color background;
+								Color foreground;
 
-								public Component getListCellRendererComponent(
-									JList<? extends Optional<RegionIdentifier>> list,
-									Optional<RegionIdentifier> value,
-									int index,
-									boolean isSelected,
-									boolean cellHasFocus)
-								{
-									if (value.isPresent()) {
-										RegionIdentifier regionIdentifier = value.get();
-										RegionEntry regionEntry = new RegionEntry(
-											regionIdentifier,
-											canvasMap.layerController.regionTableController.model.get(regionIdentifier));
-
-										label.setText(regionEntry.toString());
-									} else {
-										label.setText(localize("GuiRegionEditor.tableRegion.empty"));
-									}
-
-									graphics.setBackground(Color.gray);
-									graphics.clearRect(0, 0, 17, 17);
-									if (value.isPresent()) {
-										RegionIdentifier regionIdentifier = value.get();
-										RegionEntry regionEntry = new RegionEntry(
-											regionIdentifier,
-											canvasMap.layerController.regionTableController.model.get(regionIdentifier));
-
-										ImageLayerTile.drawArea(graphics, regionEntry, 0, 0, 16);
-										ImageLayerTile.drawBorder(graphics, regionEntry, 0, 0, 16, true, true, true, true);
-										ImageLayerTile.drawIdentifier(image, regionEntry, 0, 0, 16, fontRenderer);
-										ImageLayerTile.drawGrid(graphics, 0, 0, 16);
-									}
-									label.setIcon(new ImageIcon(image));
-
-									Color background;
-									Color foreground;
-
-									JList.DropLocation dropLocation = list.getDropLocation();
-									if (dropLocation != null
-										&& !dropLocation.isInsert()
-										&& dropLocation.getIndex() == index) {
-										background = Color.BLUE;
-										foreground = Color.WHITE;
-									} else if (isSelected) {
-										background = list.getSelectionBackground();
-										foreground = list.getSelectionForeground();
-									} else {
-										background = list.getBackground();
-										foreground = list.getForeground();
-									}
-
-									label.setBackground(background);
-									label.setForeground(foreground);
-
-									return label;
-								}
-							});
-							canvasMap.layerController.regionTableController.epChangedState.register(() -> {
-								modelTableRegion.clear();
-								modelTableRegion.addElement(Optional.empty());
-								for (RegionIdentifier regionIdentifier : canvasMap.layerController.regionTableController.model.getKeys()) {
-									modelTableRegion.addElement(Optional.of(regionIdentifier));
+								JList.DropLocation dropLocation = list.getDropLocation();
+								if (dropLocation != null
+									&& !dropLocation.isInsert()
+									&& dropLocation.getIndex() == index) {
+									background = Color.BLUE;
+									foreground = Color.WHITE;
+								} else if (isSelected) {
+									background = list.getSelectionBackground();
+									foreground = list.getSelectionForeground();
+								} else {
+									background = list.getBackground();
+									foreground = list.getForeground();
 								}
 
-								updateSelection(canvasMap.getTileCurrent());
-							});
-						}), 300, 600),
+								label.setBackground(background);
+								label.setForeground(foreground);
 
-						// 操作ボタン
-						flowPanel(
+								return label;
+							}
+						});
+						canvasMap.layerController.regionTableController.epChangedState.register(() -> {
+							modelTableRegion.clear();
+							modelTableRegion.addElement(Optional.empty());
+							for (RegionIdentifier regionIdentifier : canvasMap.layerController.regionTableController.model.getKeys()) {
+								modelTableRegion.addElement(Optional.of(regionIdentifier));
+							}
 
-							button(localize("GuiRegionEditor.button.actionCreateRegion"), actionCreateRegion),
-
-							button(localize("GuiRegionEditor.button.actionEditRegion"), actionEditRegion),
-
-							button(localize("GuiRegionEditor.button.actionDeleteRegion"), actionDeleteRegion),
-
-							button(localize("GuiRegionEditor.button.actionChangeRegionIdentifier"), actionChangeRegionIdentifier)
-
-						)
-
-					),
+							updateSelection(canvasMap.getTileCurrent());
+						});
+					}), 300, 600),
 
 					// 操作ボタン
 					flowPanel(
 
-						button("B", e -> {
-							try {
-								String[] input = {
-									"1111111",
-									"1000001",
-									"1011101",
-									"1010101",
-									"1011101",
-									"1000001",
-									"1111111",
-								};
-								//処理待ちキュー
-								ArrayDeque<Point> wait = new ArrayDeque<Point>();
-								//Char[]データ配列
-								List<char[]> dispos = new ArrayList<char[]>();
-								//inputのStringをchar[]に変換
-								for (int i = 0; i < input.length; i++)
-									dispos.add(input[i].toCharArray());
-								//1の座標を記録する["x,y"]
-								List<String> results = new ArrayList<String>();
-								//
-								for (int y = 0; y < dispos.size(); y++) {
-									//yの行を取得
-									char[] chars = dispos.get(y);
-									//y行を一文字ずつ調査
-									for (int x = 0; x < chars.length; x++) {
-										//その文字が1ならば
-										if (chars[x] == '1') {
-											//処理待ちキューに追加
-											wait.addFirst(new Point(x, y));
-											dispos.get(y)[x] = '0'; //処理待ちキューに入れた座標を0にする
-											//幅優先探索の開始
-											while (!wait.isEmpty()) {
-												//処理待ちの取り出して削除
-												Point pos = wait.removeLast();
-												//結果に座標を記録する
-												results.add(pos.X + "," + pos.Y);
+						button(localize("GuiRegionEditor.button.actionCreateRegion"), actionCreateRegion),
 
-												//上下左右の調査の開始
-												if (pos.X + 1 < dispos.size())
-													if (dispos.get(pos.X + 1)[pos.Y] == '1') {
-													wait.addFirst(new Point(pos.Y, pos.X + 1)); //もしも右が1なら処理待ちキューに追加
-													dispos.get(pos.X + 1)[pos.Y] = '0'; //処理待ちキューに入れた座標を0にする
-												}
+						button(localize("GuiRegionEditor.button.actionEditRegion"), actionEditRegion),
 
-												if (pos.X - 1 >= 0)
-													if (dispos.get(pos.X - 1)[pos.Y] == '1') {
-													wait.addFirst(new Point(pos.Y, pos.X - 1)); //もしも左が1なら   "
-													dispos.get(pos.X - 1)[pos.Y] = '0'; // "
-												}
+						button(localize("GuiRegionEditor.button.actionDeleteRegion"), actionDeleteRegion),
 
-												if (pos.Y + 1 < dispos.get(pos.X).length)
-													if (dispos.get(pos.X)[pos.Y + 1] == '1') {
-													wait.addFirst(new Point(pos.Y + 1, pos.X)); //もしも下が1なら
-													dispos.get(pos.X)[pos.Y + 1] = '0'; // "
-												}
-
-												if (pos.Y - 1 >= 0)
-													if (dispos.get(pos.X)[pos.Y - 1] == '1') {
-													wait.addFirst(new Point(pos.Y + 1, pos.X)); //もしも上が1なら   "
-													dispos.get(pos.X)[pos.Y - 1] = '0'; // "
-												}
-												//上下左右の調査の終了
-												//もしもまだ処理待ちのキューが存在するならこのループは抜けられない
-											}
-										}
-									}
-								}
-								for (int i = 0; i < results.size(); i++)
-									System.out.println(results.get(i));
-							} catch (Exception er) {
-								er.printStackTrace();
-							}
-
-						}),
-
-						button("C", e -> {
-
-						}),
-
-						button("D", e -> {
-							String[] input = {
-								"001110",
-								"011010",
-								"010110",
-								"011100",
-							};
-
-							for (int i = 0; i < input.length; i++) {
-								for (int j = 0; j < input[i].length(); j++) {
-									if (input[i].toCharArray()[j] == '1') System.out.println(i + "," + j);
-								}
-							}
-
-						})
+						button(localize("GuiRegionEditor.button.actionChangeRegionIdentifier"), actionChangeRegionIdentifier)
 
 					)
 
@@ -1039,40 +933,6 @@ public class GuiRegionEditor extends GuiBase
 				.mapToInt(cp -> cp.z)
 				.average()
 				.getAsDouble()));
-	}
-
-}
-
-class Point
-{
-	int X;
-	int Y;
-
-	public Point(int x, int y)
-	{
-		X = x;
-		Y = y;
-
-	}
-}
-
-class Side extends Object
-{
-
-	Point Point1;
-	Point Point2;
-
-	public Side(Point p1, Point p2)
-	{
-		Point1 = p1;
-		Point2 = p2;
-	}
-
-	@Override
-	public boolean equals(Object obj)
-	{
-		//実装中
-		return false;
 	}
 
 }
