@@ -3,6 +3,7 @@ package mirrg.minecraft.regioneditor.gui.guis;
 import java.awt.CardLayout;
 import java.awt.Dialog.ModalityType;
 
+import mirrg.boron.util.UtilsString;
 import mirrg.boron.util.i18n.I18n;
 import mirrg.minecraft.regioneditor.gui.PanelMessage;
 import mirrg.minecraft.regioneditor.util.gui.WindowWrapper;
@@ -28,6 +29,13 @@ public class GuiMessage extends GuiBase
 	public void setMessage(String message)
 	{
 		panelMessage.setText(message);
+	}
+
+	public static void showException(Exception e)
+	{
+		GuiMessage gui = new GuiMessage(WindowWrapper.createFrame("Exception"), new I18n(), ModalityType.MODELESS);
+		gui.show();
+		gui.setMessage(UtilsString.getStackTrace(e));
 	}
 
 }
