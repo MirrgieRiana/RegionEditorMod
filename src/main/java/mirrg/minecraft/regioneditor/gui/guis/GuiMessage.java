@@ -12,9 +12,9 @@ public class GuiMessage extends GuiBase
 
 	private PanelMessage panelMessage;
 
-	public GuiMessage(WindowWrapper owner, I18n i18n)
+	public GuiMessage(WindowWrapper owner, I18n i18n, ModalityType modalityType)
 	{
-		super(owner, i18n, i18n.localize("GuiMessage.title"), ModalityType.MODELESS);
+		super(owner, i18n, i18n.localize("GuiMessage.title"), modalityType);
 	}
 
 	@Override

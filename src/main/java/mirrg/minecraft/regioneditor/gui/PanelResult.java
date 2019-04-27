@@ -3,6 +3,7 @@ package mirrg.minecraft.regioneditor.gui;
 import static mirrg.minecraft.regioneditor.util.gui.SwingUtils.*;
 
 import java.awt.CardLayout;
+import java.awt.Dialog.ModalityType;
 import java.awt.Dimension;
 
 import javax.swing.JPanel;
@@ -39,7 +40,7 @@ public class PanelResult extends JPanel
 			}),
 
 			button(i18n.localize("ResultPane.detail"), e -> {
-				GuiMessage gui = new GuiMessage(owner, i18n);
+				GuiMessage gui = new GuiMessage(owner, i18n, ModalityType.MODELESS);
 				gui.show();
 				gui.setMessage(detail);
 			})
