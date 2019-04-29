@@ -889,7 +889,7 @@ public class GuiRegionEditor extends GuiBase
 
 		// 選択チェック
 		if (!tileCurrent.isPresent()) {
-			panelResult.setText(localize("GuiRegionEditor.actionChangeRegionIdentifier.messageNoTile"), "", PanelResult.EXCEPTION);
+			panelResult.setText(localize("GuiRegionEditor.actionChangeRegionIdentifier.messageNoRegion"), "", PanelResult.EXCEPTION);
 			return;
 		}
 
