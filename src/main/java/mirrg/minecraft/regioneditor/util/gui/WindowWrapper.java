@@ -13,25 +13,27 @@ import javax.swing.WindowConstants;
 public final class WindowWrapper
 {
 
+	public final WindowWrapper parent;
 	public final JFrame frame;
 	public final JDialog dialog;
 
-	private WindowWrapper(JFrame frame, JDialog dialog)
+	private WindowWrapper(WindowWrapper parent, JFrame frame, JDialog dialog)
 	{
+		this.parent = parent;
 		this.frame = frame;
 		this.dialog = dialog;
 	}
 
 	//
 
-	public static WindowWrapper fromFrame(JFrame frame)
+	public static WindowWrapper fromFrame(WindowWrapper parent, JFrame frame)
 	{
-		return new WindowWrapper(frame, null);
+		return new WindowWrapper(parent, frame, null);
 	}
 
-	public static WindowWrapper fromDialog(JDialog dialog)
+	public static WindowWrapper fromDialog(WindowWrapper parent, JDialog dialog)
 	{
-		return new WindowWrapper(null, dialog);
+		return new WindowWrapper(parent, null, dialog);
 	}
 
 	public Window getWindow()
@@ -74,7 +76,7 @@ public final class WindowWrapper
 		JFrame frame = new JFrame(title);
 		frame.setLocationByPlatform(true);
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		return fromFrame(frame);
+		return fromFrame(null, frame);
 	}
 
 	public static WindowWrapper createWindow(WindowWrapper owner, String title, ModalityType modalityType)
@@ -85,12 +87,12 @@ public final class WindowWrapper
 			JDialog dialog = new JDialog(owner.frame, title, modalityType);
 			dialog.setLocationByPlatform(true);
 			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-			return fromDialog(dialog);
+			return fromDialog(owner, dialog);
 		} else {
 			JDialog dialog = new JDialog(owner.dialog, title, modalityType);
 			dialog.setLocationByPlatform(true);
 			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-			return fromDialog(dialog);
+			return fromDialog(owner, dialog);
 		}
 	}
 
