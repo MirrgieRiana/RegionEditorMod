@@ -39,6 +39,7 @@ public class ModRegionEditor
 	private static Logger logger;
 
 	private String lookAndFeel;
+	private String languageOverride;
 
 	private Locale locale;
 	private LocalizerEngine localizerEngine = new LocalizerEngine();
@@ -51,6 +52,7 @@ public class ModRegionEditor
 		{
 			Configuration configuration = new Configuration(event.getSuggestedConfigurationFile());
 			lookAndFeel = configuration.getString("lookAndFeel", "general", "system", "If 'system', use system default. If 'default', do nothing.");
+			languageOverride = configuration.getString("languageOverride", "general", "", "If '', do not override language. Example: `ja-JP`");
 			configuration.save();
 		}
 
@@ -79,6 +81,13 @@ public class ModRegionEditor
 			MainRegionEditor.i18n.registerLocalizer(LocalizerResourceBundle.create(MainRegionEditor.I18N_BASENAME, Locale.getDefault()));
 		} catch (IOException e) {
 			logger.warn("Could not load the language file: " + Locale.getDefault().toLanguageTag());
+		}
+		if (!languageOverride.isEmpty()) {
+			try {
+				MainRegionEditor.i18n.registerLocalizer(LocalizerResourceBundle.create(MainRegionEditor.I18N_BASENAME, Locale.forLanguageTag(languageOverride)));
+			} catch (IOException e) {
+				logger.warn("Could not load the language file: " + Locale.getDefault().toLanguageTag());
+			}
 		}
 
 		MainRegionEditor.i18n.registerLocalizerEngine(localizerEngine);
