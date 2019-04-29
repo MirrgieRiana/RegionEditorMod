@@ -53,6 +53,7 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
 import mirrg.boron.util.i18n.I18n;
+import mirrg.boron.util.struct.Struct1;
 import mirrg.minecraft.regioneditor.IChatMessageProvider;
 import mirrg.minecraft.regioneditor.data.AreaExtractor;
 import mirrg.minecraft.regioneditor.data.ModelException;
@@ -859,15 +860,15 @@ public class GuiRegionEditor extends GuiBase
 			"");
 		gui.oValidator = Optional.of(ri -> {
 			if (!ri.countryId.matches("[a-zA-Z0-9]{1,4}")) {
-				gui.setText(localize("GuiRegionEditor.createRegion.messageInvalidCountryId"), "", PanelResult.EXCEPTION);
+				gui.setText(localize("GuiRegionEditor.actionCreateRegion.messageInvalidCountryId"), "", PanelResult.EXCEPTION);
 				return false;
 			}
 			if (!ri.stateId.matches("[a-zA-Z0-9]{1,4}")) {
-				gui.setText(localize("GuiRegionEditor.createRegion.messageInvalidStateId"), "", PanelResult.EXCEPTION);
+				gui.setText(localize("GuiRegionEditor.actionCreateRegion.messageInvalidStateId"), "", PanelResult.EXCEPTION);
 				return false;
 			}
 			if (canvasMap.layerController.regionTableController.model.containsKey(ri)) {
-				gui.setText(localize("GuiRegionEditor.createRegion.messageAlreadyExists"), "", PanelResult.EXCEPTION);
+				gui.setText(localize("GuiRegionEditor.actionCreateRegion.messageAlreadyExists"), "", PanelResult.EXCEPTION);
 				return false;
 			}
 			return true;
@@ -882,45 +883,93 @@ public class GuiRegionEditor extends GuiBase
 
 	private void changeRegionIdentifier()
 	{
-		if (!canvasMap.getTileCurrent().isPresent()) {
-			panelResult.setText(localize("GuiRegionEditor.changeRegionIdentifier.messageNoTile"), "", PanelResult.EXCEPTION);
+
+		// 古い領域
+		Optional<RegionIdentifier> tileCurrent = canvasMap.getTileCurrent();
+
+		// 選択チェック
+		if (!tileCurrent.isPresent()) {
+			panelResult.setText(localize("GuiRegionEditor.actionChangeRegionIdentifier.messageNoTile"), "", PanelResult.EXCEPTION);
 			return;
 		}
-		RegionIdentifier regionIdentifierCurrent = canvasMap.getTileCurrent().get();
 
-		GuiRegionIdentifier gui = new GuiRegionIdentifier(
-			windowWrapper,
-			i18n,
-			regionIdentifierCurrent.countryId,
-			regionIdentifierCurrent.stateId);
-		gui.oValidator = Optional.of(ri -> {
-			if (!ri.countryId.matches("[a-zA-Z0-9]{1,4}")) {
-				gui.setText(localize("GuiRegionEditor.changeRegionIdentifier.messageInvalidCountryId"), "", PanelResult.EXCEPTION);
-				return false;
-			}
-			if (!ri.stateId.matches("[a-zA-Z0-9]{1,4}")) {
-				gui.setText(localize("GuiRegionEditor.changeRegionIdentifier.messageInvalidStateId"), "", PanelResult.EXCEPTION);
-				return false;
-			}
-			if (canvasMap.layerController.regionTableController.model.containsKey(ri)) {
-				gui.setText(localize("GuiRegionEditor.changeRegionIdentifier.messageAlreadyExists"), "", PanelResult.EXCEPTION);
-				return false;
-			}
-			return true;
-		});
-		gui.show();
-		if (gui.oResult.isPresent()) {
-			try {
-				canvasMap.layerController.regionTableController.model.replaceKey(regionIdentifierCurrent, gui.oResult.get());
-			} catch (ModelException e) {
-				e.printStackTrace();
-				GuiMessage.showException(e);
+		// ダイアログ表示
+		Optional<RegionIdentifier> tileNew;
+		Struct1<Boolean> sUpdateMap = new Struct1<>();
+		{
+			GuiRegionIdentifier gui = new GuiRegionIdentifier(
+				windowWrapper,
+				i18n,
+				tileCurrent.get().countryId,
+				tileCurrent.get().stateId);
+			gui.oValidator = Optional.of(ri -> {
+
+				// 構文チェック
+				if (!ri.countryId.matches("[a-zA-Z0-9]{1,4}")) {
+					gui.setText(localize("GuiRegionEditor.actionChangeRegionIdentifier.messageInvalidCountryId"), "", PanelResult.EXCEPTION);
+					return false;
+				}
+				if (!ri.stateId.matches("[a-zA-Z0-9]{1,4}")) {
+					gui.setText(localize("GuiRegionEditor.actionChangeRegionIdentifier.messageInvalidStateId"), "", PanelResult.EXCEPTION);
+					return false;
+				}
+
+				// 既に存在しないか
+				if (canvasMap.layerController.regionTableController.model.containsKey(ri)) {
+					gui.setText(localize("GuiRegionEditor.actionChangeRegionIdentifier.messageAlreadyExists"), "", PanelResult.EXCEPTION);
+					return false;
+				}
+
+				// 地図も更新しますか
+				{
+					int result = JOptionPane.showConfirmDialog(
+						windowWrapper.getWindow(),
+						localize("GuiRegionEditor.actionChangeRegionIdentifier.confirmation.message"),
+						localize("GuiRegionEditor.actionChangeRegionIdentifier.confirmation.title"),
+						JOptionPane.YES_NO_CANCEL_OPTION,
+						JOptionPane.WARNING_MESSAGE);
+					if (result == JOptionPane.YES_OPTION) {
+						sUpdateMap.x = true;
+					} else if (result == JOptionPane.NO_OPTION) {
+						sUpdateMap.x = false;
+					} else {
+						gui.setText(localize("GuiRegionEditor.actionChangeRegionIdentifier.messageCanceled"), "", PanelResult.WARNING);
+						return false;
+					}
+				}
+
+				return true;
+			});
+			gui.show();
+			if (gui.oResult.isPresent()) {
+				tileNew = gui.oResult;
+			} else {
 				return;
 			}
-			canvasMap.layerController.regionTableController.epChangedState.trigger().run();
-			canvasMap.setTileCurrent(Optional.of(gui.oResult.get()));
-			canvasMap.update();
 		}
+
+		// 地域表の更新
+		try {
+			canvasMap.layerController.regionTableController.model.replaceKey(tileCurrent.get(), tileNew.get());
+		} catch (ModelException e) {
+			e.printStackTrace();
+			GuiMessage.showException(e);
+			return;
+		}
+		canvasMap.layerController.regionTableController.epChangedState.trigger().run();
+		canvasMap.setTileCurrent(tileNew);
+
+		// 地図の更新
+		if (sUpdateMap.x) {
+			canvasMap.layerController.tileMapController.model.getEntries()
+				.filter(e -> e.y.equals(tileCurrent.get()))
+				.forEach(e -> {
+					canvasMap.layerController.tileMapController.model.setTile(e.x, tileNew);
+				});
+			canvasMap.layerController.tileMapController.epChangedState.trigger().run();
+		}
+
+		canvasMap.update();
 	}
 
 	private void setPosition(int x, int z)
