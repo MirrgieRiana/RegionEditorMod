@@ -55,6 +55,7 @@ import javax.swing.event.MenuListener;
 import mirrg.boron.util.i18n.I18n;
 import mirrg.minecraft.regioneditor.IChatMessageProvider;
 import mirrg.minecraft.regioneditor.data.AreaExtractor;
+import mirrg.minecraft.regioneditor.data.ModelException;
 import mirrg.minecraft.regioneditor.data.objects.RegionEntry;
 import mirrg.minecraft.regioneditor.data.objects.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.objects.RegionInfo;
@@ -383,7 +384,13 @@ public class GuiRegionEditor extends GuiBase
 			actionDeleteRegion = new ActionBuilder<>(new ActionButton(e -> {
 				Optional<RegionIdentifier> tileCurrent = canvasMap.getTileCurrent();
 				if (tileCurrent.isPresent()) {
-					canvasMap.layerController.regionTableController.model.remove(tileCurrent.get());
+					try {
+						canvasMap.layerController.regionTableController.model.remove(tileCurrent.get());
+					} catch (ModelException e1) {
+						e1.printStackTrace();
+						GuiMessage.showException(e1);
+						return;
+					}
 					canvasMap.update();
 				}
 			}))

@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import mirrg.boron.util.suppliterator.ISuppliterator;
 import mirrg.boron.util.suppliterator.ISuppliterator.IndexedObject;
+import mirrg.minecraft.regioneditor.data.ModelException;
 import mirrg.minecraft.regioneditor.data.objects.RegionEntry;
 import mirrg.minecraft.regioneditor.data.objects.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.objects.RegionInfo;
@@ -68,11 +69,13 @@ public class RegionTableModel
 		}
 	}
 
-	public void remove(RegionIdentifier regionIdentifier)
+	public void remove(RegionIdentifier regionIdentifier) throws ModelException
 	{
 		if (containsKey(regionIdentifier)) {
 			map.remove(regionIdentifier);
 			list.remove(getIndex(regionIdentifier));
+		} else {
+			throw new ModelException();
 		}
 	}
 
