@@ -5,8 +5,7 @@ import java.io.UncheckedIOException;
 import java.util.Locale;
 import java.util.Optional;
 
-import javax.swing.UIManager;
-
+import mirrg.boron.swing.UtilsSwing;
 import mirrg.boron.util.i18n.I18n;
 import mirrg.boron.util.i18n.localizers.LocalizerResourceBundle;
 import mirrg.minecraft.regioneditor.gui.guis.GuiRegionEditor;
@@ -21,7 +20,7 @@ public class MainRegionEditor
 	{
 
 		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			UtilsSwing.setSystemLookAndFeel();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

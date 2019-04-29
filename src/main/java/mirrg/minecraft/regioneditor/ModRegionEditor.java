@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import org.apache.logging.log4j.Logger;
 
+import mirrg.boron.swing.UtilsSwing;
 import mirrg.boron.util.i18n.LocalizerEngine;
 import mirrg.boron.util.i18n.localizers.LocalizerResourceBundle;
 import mirrg.boron.util.struct.ImmutableArray;
@@ -18,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -36,6 +38,8 @@ public class ModRegionEditor
 
 	private static Logger logger;
 
+	private String lookAndFeel;
+
 	private Locale locale;
 	private LocalizerEngine localizerEngine = new LocalizerEngine();
 
@@ -43,6 +47,28 @@ public class ModRegionEditor
 	public void preInit(FMLPreInitializationEvent event)
 	{
 		logger = event.getModLog();
+
+		{
+			Configuration configuration = new Configuration(event.getSuggestedConfigurationFile());
+			lookAndFeel = configuration.getString("lookAndFeel", "general", "system", "If 'system', system default. If 'default', do nothing.");
+			configuration.save();
+		}
+
+		if (lookAndFeel.equals("default")) {
+
+		} else if (lookAndFeel.equals("system")) {
+			try {
+				UtilsSwing.setSystemLookAndFeel();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else if (lookAndFeel.equals("system")) {
+			try {
+				UtilsSwing.setSystemLookAndFeel();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 
 		try {
 			MainRegionEditor.i18n.registerLocalizer(LocalizerResourceBundle.create(MainRegionEditor.I18N_BASENAME, Locale.ENGLISH));
