@@ -57,9 +57,11 @@ import mirrg.minecraft.regioneditor.IChatMessageProvider;
 import mirrg.minecraft.regioneditor.data.AreaExtractor;
 import mirrg.minecraft.regioneditor.data.objects.RegionEntry;
 import mirrg.minecraft.regioneditor.data.objects.RegionIdentifier;
+import mirrg.minecraft.regioneditor.data.objects.RegionInfo;
 import mirrg.minecraft.regioneditor.data.objects.TileCoordinate;
 import mirrg.minecraft.regioneditor.gui.CanvasMap;
 import mirrg.minecraft.regioneditor.gui.CanvasMap.ICanvasMapListener;
+import mirrg.minecraft.regioneditor.gui.PanelResult;
 import mirrg.minecraft.regioneditor.gui.guis.GuiData.IDialogDataListener;
 import mirrg.minecraft.regioneditor.gui.imagelayers.ImageLayerTile;
 import mirrg.minecraft.regioneditor.gui.tool.ITool;
@@ -366,9 +368,7 @@ public class GuiRegionEditor extends GuiBase
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_C)
 				.register(inputMap, actionMap);
 
-			actionCreateRegion = new ActionBuilder<>(new ActionButton(e -> {
-				System.out.println("A"); // TODO
-			}))
+			actionCreateRegion = new ActionBuilder<>(new ActionButton(e -> createRegion()))
 				.value(Action.NAME, localize("GuiRegionEditor.actionCreateRegion") + "(N)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_N)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK))
@@ -835,6 +835,35 @@ public class GuiRegionEditor extends GuiBase
 		}
 
 		canvasMap.setMap(image, mapOrigin);
+	}
+
+	private void createRegion()
+	{
+		GuiRegionIdentifier gui = new GuiRegionIdentifier(
+			windowWrapper,
+			i18n,
+			canvasMap.getTileCurrent().map(t -> t.countryId).orElse(""),
+			"");
+		gui.oValidator = Optional.of(ri -> {
+			if (!ri.countryId.matches("[a-zA-Z0-9]{1,4}")) {
+				gui.setText(localize("GuiRegionEditor.createRegion.messageInvalidCountryId"), "", PanelResult.EXCEPTION);
+				return false;
+			}
+			if (!ri.stateId.matches("[a-zA-Z0-9]{1,4}")) {
+				gui.setText(localize("GuiRegionEditor.createRegion.messageInvalidStateId"), "", PanelResult.EXCEPTION);
+				return false;
+			}
+			if (canvasMap.layerController.regionTableController.model.containsKey(ri)) {
+				gui.setText(localize("GuiRegionEditor.createRegion.messageAlreadyExists"), "", PanelResult.EXCEPTION);
+				return false;
+			}
+			return true;
+		});
+		gui.show();
+		if (gui.oResult.isPresent()) {
+			canvasMap.layerController.regionTableController.model.set(gui.oResult.get(), RegionInfo.DEFAULT);
+			canvasMap.layerController.regionTableController.epChangedState.trigger().run();
+		}
 	}
 
 	private void setPosition(int x, int z)
