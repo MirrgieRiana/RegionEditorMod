@@ -893,6 +893,12 @@ public class GuiRegionEditor extends GuiBase
 			return;
 		}
 
+		// リストアップされていない領域を選択しているなら中止
+		if (!canvasMap.layerController.regionTableController.model.containsKey(tileCurrent.get())) {
+			panelResult.setText(localize("GuiRegionEditor.actionChangeRegionIdentifier.messageInvalidSelection"), "", PanelResult.EXCEPTION);
+			return;
+		}
+
 		// ダイアログ表示
 		Optional<RegionIdentifier> tileNew;
 		Struct1<Boolean> sUpdateMap = new Struct1<>();
