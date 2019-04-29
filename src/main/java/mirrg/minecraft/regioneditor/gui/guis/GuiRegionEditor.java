@@ -883,7 +883,7 @@ public class GuiRegionEditor extends GuiBase
 	private void changeRegionIdentifier()
 	{
 		if (!canvasMap.getTileCurrent().isPresent()) {
-			// TODO
+			panelResult.setText(localize("GuiRegionIdentifier.changeRegionIdentifier.messageNoTile"), "", PanelResult.EXCEPTION);
 			return;
 		}
 		RegionIdentifier regionIdentifierCurrent = canvasMap.getTileCurrent().get();
