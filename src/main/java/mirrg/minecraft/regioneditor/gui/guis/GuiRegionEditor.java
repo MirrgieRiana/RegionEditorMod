@@ -841,12 +841,16 @@ public class GuiRegionEditor extends GuiBase
 
 	private void createRegion()
 	{
+
+		// ダイアログ表示
 		GuiRegionIdentifier gui = new GuiRegionIdentifier(
 			windowWrapper,
 			i18n,
 			canvasMap.getTileCurrent().map(t -> t.countryId).orElse(""),
 			"");
 		gui.oValidator = Optional.of(ri -> {
+
+			// 構文チェック
 			if (!ri.countryId.matches("[a-zA-Z0-9]{1,4}")) {
 				gui.setText(localize("GuiRegionEditor.actionCreateRegion.messageInvalidCountryId"), "", PanelResult.EXCEPTION);
 				return false;
@@ -855,17 +859,49 @@ public class GuiRegionEditor extends GuiBase
 				gui.setText(localize("GuiRegionEditor.actionCreateRegion.messageInvalidStateId"), "", PanelResult.EXCEPTION);
 				return false;
 			}
+
+			// 既に存在しないか
 			if (canvasMap.layerController.regionTableController.model.containsKey(ri)) {
 				gui.setText(localize("GuiRegionEditor.actionCreateRegion.messageAlreadyExists"), "", PanelResult.EXCEPTION);
 				return false;
 			}
+
 			return true;
 		});
 		gui.show();
 		if (gui.oResult.isPresent()) {
-			canvasMap.layerController.regionTableController.model.set(gui.oResult.get(), RegionInfo.DEFAULT);
-			canvasMap.layerController.regionTableController.epChangedState.trigger().run();
-			canvasMap.update();
+
+			// 地域表の更新
+			Optional<RegionIdentifier> tileCurrent = canvasMap.getTileCurrent();
+			RegionInfo regionInfo = tileCurrent.isPresent() ? canvasMap.layerController.regionTableController.model.get(tileCurrent.get()) : RegionInfo.DEFAULT;
+			if (tileCurrent.isPresent() && canvasMap.layerController.regionTableController.model.containsKey(tileCurrent.get())) {
+
+				// 古い領域が既にある場合はその1個下に作成
+				try {
+					canvasMap.layerController.regionTableController.model.insert(tileCurrent.get(), gui.oResult.get(), regionInfo);
+				} catch (ModelException e) {
+					e.printStackTrace();
+					GuiMessage.showException(e);
+					return;
+				}
+				canvasMap.layerController.regionTableController.epChangedState.trigger().run();
+				canvasMap.update();
+
+			} else {
+
+				// 一番上に作成
+				try {
+					canvasMap.layerController.regionTableController.model.insertFirst(gui.oResult.get(), regionInfo);
+				} catch (ModelException e) {
+					e.printStackTrace();
+					GuiMessage.showException(e);
+					return;
+				}
+				canvasMap.layerController.regionTableController.epChangedState.trigger().run();
+				canvasMap.update();
+
+			}
+
 		}
 	}
 
