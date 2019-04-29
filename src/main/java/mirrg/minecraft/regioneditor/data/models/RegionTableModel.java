@@ -69,6 +69,18 @@ public class RegionTableModel
 		}
 	}
 
+	public void replaceKey(RegionIdentifier regionIdentifierOld, RegionIdentifier regionIdentifierNew) throws ModelException
+	{
+		if (!containsKey(regionIdentifierOld)) throw new ModelException();
+		if (containsKey(regionIdentifierNew)) throw new ModelException();
+
+		RegionInfo regionInfo = get(regionIdentifierOld);
+		map.remove(regionIdentifierOld);
+		map.put(regionIdentifierNew, regionInfo);
+		list.set(getIndex(regionIdentifierOld), new RegionEntry(regionIdentifierNew, regionInfo));
+		return;
+	}
+
 	public void remove(RegionIdentifier regionIdentifier) throws ModelException
 	{
 		if (containsKey(regionIdentifier)) {
