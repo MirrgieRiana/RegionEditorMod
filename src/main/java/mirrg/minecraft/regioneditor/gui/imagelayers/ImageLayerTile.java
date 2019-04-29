@@ -35,7 +35,18 @@ public class ImageLayerTile extends ImageLayer
 	 */
 	public void update(Image imageBackground, LayerController layerController, int tileXCenter, int tileZCenter)
 	{
+		// 範囲を描画
+		update(
+			imageBackground,
+			layerController,
+			tileXCenter,
+			tileZCenter,
+			getVisibleArea(tileXCenter, tileZCenter));
 
+	}
+
+	public TileRectangle getVisibleArea(int tileXCenter, int tileZCenter)
+	{
 		// 表示矩形範囲の「半径」の算出
 		// width = 255, maptipWidth = 16 -> xRadius = (254 / 2 / 16 + 1) = (127 / 16 + 1) = (7 + 1) = 8
 		// width = 256, maptipWidth = 16 -> xRadius = (255 / 2 / 16 + 1) = (127 / 16 + 1) = (7 + 1) = 8
@@ -44,18 +55,16 @@ public class ImageLayerTile extends ImageLayer
 		int xRadius = ((width - 1) / 2 / 16 + 1);
 		int zRadius = ((height - 1) / 2 / 16 + 1);
 
-		// 範囲を描画
-		update(
-			imageBackground,
-			layerController,
-			tileXCenter,
-			tileZCenter,
-			new TileRectangle(
-				tileXCenter - xRadius,
-				tileZCenter - zRadius,
-				tileXCenter + xRadius,
-				tileZCenter + zRadius));
+		return new TileRectangle(
+			tileXCenter - xRadius,
+			tileZCenter - zRadius,
+			tileXCenter + xRadius,
+			tileZCenter + zRadius);
+	}
 
+	public boolean isVisible(int tileXCenter, int tileZCenter, TileCoordinate tileCoordinate)
+	{
+		return getVisibleArea(tileXCenter, tileZCenter).contains(tileCoordinate);
 	}
 
 	/**

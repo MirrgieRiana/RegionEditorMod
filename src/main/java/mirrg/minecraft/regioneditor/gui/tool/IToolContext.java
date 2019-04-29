@@ -7,6 +7,7 @@ import java.util.Optional;
 import mirrg.minecraft.regioneditor.data.controller.LayerController;
 import mirrg.minecraft.regioneditor.data.objects.RegionIdentifier;
 import mirrg.minecraft.regioneditor.data.objects.TileCoordinate;
+import mirrg.minecraft.regioneditor.data.objects.TileRectangle;
 
 public interface IToolContext
 {
@@ -41,6 +42,16 @@ public interface IToolContext
 	 * タイルの描画上の1辺の大きさです。
 	 */
 	public int getTileSize();
+
+	/**
+	 * 描画領域に収まっている領域です。
+	 */
+	public TileRectangle getVisibleArea();
+
+	/**
+	 * 指定のタイル座標が描画領域に含まれるか否かを返します。
+	 */
+	public boolean isVisible(TileCoordinate tileCoordinate);
 
 	public Optional<RegionIdentifier> getTileCurrent();
 

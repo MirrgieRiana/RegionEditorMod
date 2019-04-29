@@ -123,6 +123,18 @@ public class CanvasMap extends Canvas
 		}
 
 		@Override
+		public TileRectangle getVisibleArea()
+		{
+			return imageLayerTile.getVisibleArea(positionX, positionZ);
+		}
+
+		@Override
+		public boolean isVisible(TileCoordinate tileCoordinate)
+		{
+			return imageLayerTile.isVisible(positionX, positionZ, tileCoordinate);
+		}
+
+		@Override
 		public Optional<RegionIdentifier> getTileCurrent()
 		{
 			return CanvasMap.this.tileCurrent;
