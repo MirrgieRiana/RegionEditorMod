@@ -986,6 +986,8 @@ public class GuiRegionEditor extends GuiBase
 		if (sUpdateMap.x) {
 			canvasMap.layerController.tileMapController.model.getEntries()
 				.filter(e -> e.y.equals(tileCurrent.get()))
+				.toImmutableArray()
+				.suppliterator()
 				.forEach(e -> {
 					canvasMap.layerController.tileMapController.model.setTile(e.x, tileNew);
 				});
