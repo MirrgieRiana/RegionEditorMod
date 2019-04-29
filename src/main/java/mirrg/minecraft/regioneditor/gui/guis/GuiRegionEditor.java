@@ -871,6 +871,8 @@ public class GuiRegionEditor extends GuiBase
 
 	private void deleteRegion()
 	{
+
+		// 古い領域
 		Optional<RegionIdentifier> tileCurrent = canvasMap.getTileCurrent();
 
 		// 選択チェック
@@ -885,6 +887,25 @@ public class GuiRegionEditor extends GuiBase
 			return;
 		}
 
+		// 地図も更新しますか
+		boolean updateMap;
+		{
+			int result = JOptionPane.showConfirmDialog(
+				windowWrapper.getWindow(),
+				localize("GuiRegionEditor.actionDeleteRegion.confirmation.message"),
+				localize("GuiRegionEditor.actionDeleteRegion.confirmation.title"),
+				JOptionPane.YES_NO_CANCEL_OPTION,
+				JOptionPane.WARNING_MESSAGE);
+			if (result == JOptionPane.YES_OPTION) {
+				updateMap = true;
+			} else if (result == JOptionPane.NO_OPTION) {
+				updateMap = false;
+			} else {
+				panelResult.setText(localize("GuiRegionEditor.actionDeleteRegion.messageCanceled"), "", PanelResult.WARNING);
+				return;
+			}
+		}
+
 		// 地域表の更新
 		try {
 			canvasMap.layerController.regionTableController.model.remove(tileCurrent.get());
@@ -894,6 +915,20 @@ public class GuiRegionEditor extends GuiBase
 			return;
 		}
 		canvasMap.layerController.regionTableController.epChangedState.trigger().run();
+		canvasMap.setTileCurrent(Optional.empty());
+
+		// 地図の更新
+		if (updateMap) {
+			canvasMap.layerController.tileMapController.model.getEntries()
+				.filter(e -> e.y.equals(tileCurrent.get()))
+				.toImmutableArray()
+				.suppliterator()
+				.forEach(e -> {
+					canvasMap.layerController.tileMapController.model.setTile(e.x, Optional.empty());
+				});
+			canvasMap.layerController.tileMapController.epChangedTileUnspecified.trigger().run();
+			canvasMap.layerController.tileMapController.epChangedState.trigger().run();
+		}
 
 		canvasMap.update();
 	}
