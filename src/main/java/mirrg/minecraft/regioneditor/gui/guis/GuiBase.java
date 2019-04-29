@@ -23,6 +23,9 @@ public abstract class GuiBase
 	{
 		initComponenets();
 		windowWrapper.getWindow().pack();
+		if (windowWrapper.parent != null) {
+			windowWrapper.getWindow().setLocationRelativeTo(windowWrapper.parent.getWindow());
+		}
 		windowWrapper.getWindow().setVisible(true);
 	}
 
