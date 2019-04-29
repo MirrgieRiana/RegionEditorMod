@@ -1,6 +1,6 @@
 package mirrg.minecraft.regioneditor.gui.guis;
 
-import static mirrg.minecraft.regioneditor.util.gui.SwingUtils.*;
+import static mirrg.boron.swing.UtilsComponent.*;
 
 import java.awt.CardLayout;
 import java.awt.Dialog.ModalityType;
@@ -95,11 +95,11 @@ public class GuiData extends GuiBase
 
 		// コンポーネント
 		windowWrapper.getWindow().setLayout(new CardLayout());
-		windowWrapper.getWindow().add(borderPanelDown(
+		windowWrapper.getWindow().add(createPanelBorderDown(0,
 
-			splitPaneVertical(1,
+			createSplitPaneVertical(1,
 
-				scrollPane(textArea = get(new JTextArea(), c -> {
+				createScrollPane(textArea = get(new JTextArea(), c -> {
 					c.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
 					c.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK), actionImport);
 				}), 800, 800),
@@ -108,11 +108,11 @@ public class GuiData extends GuiBase
 
 			),
 
-			flowPanel(
+			createPanelFlow(
 
-				button(localize("GuiData.buttonExport"), actionExport),
+				createButton(localize("GuiData.buttonExport"), actionExport),
 
-				button(localize("GuiData.buttonImport"), actionImport)
+				createButton(localize("GuiData.buttonImport"), actionImport)
 
 			)
 

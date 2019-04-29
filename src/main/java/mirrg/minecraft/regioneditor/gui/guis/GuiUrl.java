@@ -1,6 +1,6 @@
 package mirrg.minecraft.regioneditor.gui.guis;
 
-import static mirrg.minecraft.regioneditor.util.gui.SwingUtils.*;
+import static mirrg.boron.swing.UtilsComponent.*;
 
 import java.awt.CardLayout;
 import java.awt.Dialog.ModalityType;
@@ -90,11 +90,11 @@ public class GuiUrl extends GuiBase
 			.register(windowWrapper.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW), windowWrapper.getRootPane().getActionMap());
 
 		windowWrapper.getWindow().setLayout(new CardLayout());
-		windowWrapper.getWindow().add(borderPanelDown(
+		windowWrapper.getWindow().add(createPanelBorderDown(0,
 
-			splitPaneVertical(1,
+			createSplitPaneVertical(1,
 
-				scrollPane(textArea = get(new JTextArea(), c -> {
+				createScrollPane(textArea = get(new JTextArea(), c -> {
 					c.setLineWrap(true);
 
 					// タブでフォーカス移動
@@ -139,11 +139,11 @@ public class GuiUrl extends GuiBase
 
 			),
 
-			flowPanel(
+			createPanelFlow(
 
-				button(localize("GuiUrl.buttonOk"), actionOk),
+				createButton(localize("GuiUrl.buttonOk"), actionOk),
 
-				button(localize("GuiUrl.buttonCancel"), actionCancel)
+				createButton(localize("GuiUrl.buttonCancel"), actionCancel)
 
 			)
 

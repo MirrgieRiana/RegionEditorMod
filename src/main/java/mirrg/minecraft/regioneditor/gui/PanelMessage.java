@@ -1,6 +1,6 @@
 package mirrg.minecraft.regioneditor.gui;
 
-import static mirrg.minecraft.regioneditor.util.gui.SwingUtils.*;
+import static mirrg.boron.swing.UtilsComponent.*;
 
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -21,9 +21,8 @@ public class PanelMessage extends JPanel
 	{
 		setLayout(new CardLayout());
 
-		add(get(scrollPane = scrollPane(textPane = get(new JTextPane(), c -> {
+		add(get(scrollPane = createScrollPane(textPane = get(new JTextPane(), c -> {
 			c.setEditable(false);
-			c.setOpaque(false);
 		})), c -> {
 			c.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 			c.setBorder(null);

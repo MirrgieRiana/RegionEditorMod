@@ -1,6 +1,6 @@
 package mirrg.minecraft.regioneditor.gui;
 
-import static mirrg.minecraft.regioneditor.util.gui.SwingUtils.*;
+import static mirrg.boron.swing.UtilsComponent.*;
 
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -38,18 +38,19 @@ public class PanelResult extends JPanel
 	{
 		setLayout(new CardLayout());
 
-		add(borderPanelRight(
+		add(createPanelBorderRight(0,
 
-			get(scrollPane(textPaneResult = get(new JTextPane(), c -> {
+			get(createScrollPane(textPaneResult = get(new JTextPane(), c -> {
 				c.setEditable(false);
-				c.setBackground(Color.white);
+				c.setOpaque(false);
 			})), c -> {
 				c.setBorder(null);
+				c.getViewport().setOpaque(false);
 				c.setOpaque(false);
 				c.setPreferredSize(new Dimension(400, textPaneResult.getFontMetrics(textPaneResult.getFont()).getHeight()));
 			}),
 
-			button(i18n.localize("ResultPane.detail"), e -> {
+			createButton(i18n.localize("ResultPane.detail"), e -> {
 				GuiMessage gui = new GuiMessage(owner, i18n, ModalityType.MODELESS);
 				gui.show();
 				gui.setMessage(detail);
@@ -57,12 +58,14 @@ public class PanelResult extends JPanel
 
 		));
 
+		setBackground(Color.white);
+
 		timer = new Timer(10, e -> {
 			if (opaque > 0) {
-				textPaneResult.setBackground(new Color(UtilsColor.getARGBRatio(opaque / 256.0, 0xFFFFFF, color.getRGB())));
+				setBackground(new Color(UtilsColor.ratio(opaque / 256.0, 0xFFFFFF, color.getRGB())));
 				opaque -= 10;
 			} else {
-				textPaneResult.setBackground(Color.white);
+				setBackground(Color.white);
 				timer.stop();
 			}
 		});
@@ -85,7 +88,7 @@ public class PanelResult extends JPanel
 		try {
 			textPaneResult.getStyledDocument().remove(0, textPaneResult.getStyledDocument().getLength());
 			SimpleAttributeSet attributeSet = new SimpleAttributeSet();
-			StyleConstants.setForeground(attributeSet, UtilsColor.createColorRandomDark());
+			StyleConstants.setForeground(attributeSet, UtilsColor.toColorRGB(UtilsColor.randomRGBDark()));
 			textPaneResult.getStyledDocument().insertString(0, string, attributeSet);
 		} catch (BadLocationException e) {
 			e.printStackTrace();

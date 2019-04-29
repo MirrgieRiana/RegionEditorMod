@@ -1,6 +1,6 @@
 package mirrg.minecraft.regioneditor.gui.guis;
 
-import static mirrg.minecraft.regioneditor.util.gui.SwingUtils.*;
+import static mirrg.boron.swing.UtilsComponent.*;
 
 import java.awt.CardLayout;
 import java.awt.Dialog.ModalityType;
@@ -142,65 +142,61 @@ public class GuiCommand extends GuiBase
 
 		// コンポーネント
 		windowWrapper.getWindow().setLayout(new CardLayout());
-		windowWrapper.getWindow().add(borderPanelDown(
+		windowWrapper.getWindow().add(createPanelBorderDown(0,
 
-			scrollPane(textAreaCommand = new JTextArea(), 600, 600),
+			// コマンド欄
+			createScrollPane(textAreaCommand = new JTextArea(), 600, 600),
 
-			borderPanelDown(
+			// セット欄
+			createPanelFlow(
 
-				flowPanel(
+				new JLabel(localize("GuiCommand.labelSet")),
 
-					new JLabel(localize("GuiCommand.labelSet")),
+				textAreaSet = new JTextField("markers", 10)
 
-					textAreaSet = new JTextField("markers", 10)
+			),
 
-				),
+			// 生成ボタン
+			createPanelFlow(
 
-				borderPanelDown(
+				createButton(localize("GuiCommand.buttonGenerateCommandAdd"), e -> {
+					textAreaCommand.setText(getCommandAdd(areas, textAreaSet.getText()));
+				}),
 
-					flowPanel(
-
-						button(localize("GuiCommand.buttonGenerateCommandAdd"), e -> {
-							textAreaCommand.setText(getCommandAdd(areas, textAreaSet.getText()));
-						}),
-
-						get(new JButton(localize("GuiCommand.buttonGenerateCommandDelete")), c -> {
-							c.setEnabled(oChatMessageProvider.isPresent());
-							if (oChatMessageProvider.isPresent()) {
-								c.addMouseListener(new MouseAdapter() {
-									@Override
-									public void mousePressed(MouseEvent e)
-									{
-										textAreaCommand.setText("");
-										oChatMessageProvider.get().startCapture("/dmarker listareas set:\"" + textAreaSet.getText() + "\"");
-									}
-
-									@Override
-									public void mouseReleased(MouseEvent e)
-									{
-										textAreaCommand.setText(getCommandDeleteAreas(
-											oChatMessageProvider.get().stopCapture(),
-											textAreaSet.getText()));
-									}
-								});
+				get(new JButton(localize("GuiCommand.buttonGenerateCommandDelete")), c -> {
+					c.setEnabled(oChatMessageProvider.isPresent());
+					if (oChatMessageProvider.isPresent()) {
+						c.addMouseListener(new MouseAdapter() {
+							@Override
+							public void mousePressed(MouseEvent e)
+							{
+								textAreaCommand.setText("");
+								oChatMessageProvider.get().startCapture("/dmarker listareas set:\"" + textAreaSet.getText() + "\"");
 							}
-						})
 
-					),
-
-					flowPanel(
-
-						get(button(localize("GuiCommand.buttonSend"), e -> {
-							if (oSender.isPresent()) {
-								oSender.get().accept(ISuppliterator.of(textAreaCommand.getText().trim().split("\\n")).toList());
+							@Override
+							public void mouseReleased(MouseEvent e)
+							{
+								textAreaCommand.setText(getCommandDeleteAreas(
+									oChatMessageProvider.get().stopCapture(),
+									textAreaSet.getText()));
 							}
-						}), c -> {
-							c.setEnabled(oSender.isPresent());
-						})
+						});
+					}
+				})
 
-					)
+			),
 
-				)
+			// 送信ボタン
+			createPanelFlow(
+
+				get(createButton(localize("GuiCommand.buttonSend"), e -> {
+					if (oSender.isPresent()) {
+						oSender.get().accept(ISuppliterator.of(textAreaCommand.getText().trim().split("\\n")).toList());
+					}
+				}), c -> {
+					c.setEnabled(oSender.isPresent());
+				})
 
 			)
 

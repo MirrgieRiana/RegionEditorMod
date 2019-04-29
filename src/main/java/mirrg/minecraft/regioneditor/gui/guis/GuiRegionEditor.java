@@ -1,6 +1,6 @@
 package mirrg.minecraft.regioneditor.gui.guis;
 
-import static mirrg.minecraft.regioneditor.util.gui.SwingUtils.*;
+import static mirrg.boron.swing.UtilsComponent.*;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -496,90 +496,78 @@ public class GuiRegionEditor extends GuiBase
 		}
 
 		// コンポーネント
-		windowWrapper.setContentPane(get(splitPaneHorizontal(0.7,
+		windowWrapper.setContentPane(get(createSplitPaneHorizontal(0.7,
 
-			borderPanelDown(
+			createPanelBorderDown(0,
 
-				borderPanelDown(
+				// 左ペイン：地図側
+				createPanelBorderVertical(0,
 
-					// 左ペイン：地図側
-					borderPanelUp(
+					get(createButton(localize("GuiRegionEditor.buttonScrollUp"), actionScrollUp), c -> {
+						c.setMargin(new Insets(0, 0, 0, 0));
+						c.setPreferredSize(new Dimension(32, 32));
+					}),
 
-						get(button(localize("GuiRegionEditor.buttonScrollUp"), actionScrollUp), c -> {
+					createPanelBorderHorizontal(0,
+
+						get(createButton(localize("GuiRegionEditor.buttonScrollLeft"), actionScrollLeft), c -> {
 							c.setMargin(new Insets(0, 0, 0, 0));
 							c.setPreferredSize(new Dimension(32, 32));
 						}),
 
-						borderPanelDown(
+						// 地図
+						canvasMap = get(new CanvasMap(fontRenderer, i18n, new ICanvasMapListener() {
+							@Override
+							public void onChangeTileCurrent(Optional<RegionIdentifier> tileCurrent)
+							{
+								updateSelection(tileCurrent);
+							}
 
-							borderPanelLeft(
+							@Override
+							public void onBrushSizeChange(int brushSize)
+							{
+								modelSpinnerBrushSize.setValue(brushSize);
+							}
+						}), c -> {
+							c.setMinimumSize(new Dimension(100, 100));
+							c.setPreferredSize(new Dimension(600, 600));
+						}),
 
-								get(button(localize("GuiRegionEditor.buttonScrollLeft"), actionScrollLeft), c -> {
-									c.setMargin(new Insets(0, 0, 0, 0));
-									c.setPreferredSize(new Dimension(32, 32));
-								}),
-
-								borderPanelRight(
-
-									// 地図
-									canvasMap = get(new CanvasMap(fontRenderer, i18n, new ICanvasMapListener() {
-										@Override
-										public void onChangeTileCurrent(Optional<RegionIdentifier> tileCurrent)
-										{
-											updateSelection(tileCurrent);
-										}
-
-										@Override
-										public void onBrushSizeChange(int brushSize)
-										{
-											modelSpinnerBrushSize.setValue(brushSize);
-										}
-									}), c -> {
-										c.setMinimumSize(new Dimension(100, 100));
-										c.setPreferredSize(new Dimension(600, 600));
-									}),
-
-									get(button(localize("GuiRegionEditor.buttonScrollRight"), actionScrollRight), c -> {
-										c.setMargin(new Insets(0, 0, 0, 0));
-										c.setPreferredSize(new Dimension(32, 32));
-									})
-
-								)
-
-							),
-
-							get(button(localize("GuiRegionEditor.buttonScrollDown"), actionScrollDown), c -> {
-								c.setMargin(new Insets(0, 0, 0, 0));
-								c.setPreferredSize(new Dimension(32, 32));
-							})
-
-						)
+						get(createButton(localize("GuiRegionEditor.buttonScrollRight"), actionScrollRight), c -> {
+							c.setMargin(new Insets(0, 0, 0, 0));
+							c.setPreferredSize(new Dimension(32, 32));
+						})
 
 					),
 
-					flowPanel(
-
-						new JLabel(localize("GuiRegionEditor.labelBlockCoordinate") + ":"),
-
-						labelCoordX = new JLabel("???"),
-
-						new JLabel(","),
-
-						labelCoordZ = new JLabel("???"),
-
-						new JLabel(localize("GuiRegionEditor.labelTileCoordinate") + ":"),
-
-						labelTileX = new JLabel("???"),
-
-						new JLabel(","),
-
-						labelTileZ = new JLabel("???")
-
-					)
+					get(createButton(localize("GuiRegionEditor.buttonScrollDown"), actionScrollDown), c -> {
+						c.setMargin(new Insets(0, 0, 0, 0));
+						c.setPreferredSize(new Dimension(32, 32));
+					})
 
 				),
 
-				flowPanel(
+				createPanelFlow(
+
+					new JLabel(localize("GuiRegionEditor.labelBlockCoordinate") + ":"),
+
+					labelCoordX = new JLabel("???"),
+
+					new JLabel(","),
+
+					labelCoordZ = new JLabel("???"),
+
+					new JLabel(localize("GuiRegionEditor.labelTileCoordinate") + ":"),
+
+					labelTileX = new JLabel("???"),
+
+					new JLabel(","),
+
+					labelTileZ = new JLabel("???")
+
+				),
+
+				createPanelFlow(
 
 					new JLabel(localize("GuiRegionEditor.labelX") + ":"),
 
@@ -597,13 +585,13 @@ public class GuiRegionEditor extends GuiBase
 						c.setHorizontalAlignment(JTextField.RIGHT);
 					}),
 
-					button(localize("GuiRegionEditor.buttonJumpToBlockCoordinate"), e -> {
+					createButton(localize("GuiRegionEditor.buttonJumpToBlockCoordinate"), e -> {
 						setPosition(
 							((Number) textFieldX.getValue()).intValue() / 16,
 							((Number) textFieldZ.getValue()).intValue() / 16);
 					}),
 
-					button(localize("GuiRegionEditor.buttonJumpToTileCoordinate"), e -> {
+					createButton(localize("GuiRegionEditor.buttonJumpToTileCoordinate"), e -> {
 						setPosition(
 							((Number) textFieldX.getValue()).intValue(),
 							((Number) textFieldZ.getValue()).intValue());
@@ -614,10 +602,10 @@ public class GuiRegionEditor extends GuiBase
 			),
 
 			// 右ペイン：領地リストとか操作ボタンとか
-			borderPanelUp(
+			createPanelBorderUp(0,
 
 				// ブラシサイズ
-				flowPanel(
+				createPanelFlow(
 
 					new JLabel(localize("GuiRegionEditor.labelBrushSize") + ":"),
 
@@ -634,10 +622,10 @@ public class GuiRegionEditor extends GuiBase
 
 				),
 
-				borderPanelDown(
+				createPanelBorderDown(0,
 
 					// 領地一覧
-					scrollPane(tableRegion = get(new JList<>(modelTableRegion = new DefaultListModel<>()), c -> {
+					createScrollPane(tableRegion = get(new JList<>(modelTableRegion = new DefaultListModel<>()), c -> {
 						c.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 						c.addMouseListener(new MouseAdapter() {
 							@Override
@@ -743,15 +731,15 @@ public class GuiRegionEditor extends GuiBase
 					}), 300, 600),
 
 					// 操作ボタン
-					flowPanel(
+					createPanelFlow(
 
-						button(localize("GuiRegionEditor.button.actionCreateRegion"), actionCreateRegion),
+						createButton(localize("GuiRegionEditor.button.actionCreateRegion"), actionCreateRegion),
 
-						button(localize("GuiRegionEditor.button.actionEditRegion"), actionEditRegion),
+						createButton(localize("GuiRegionEditor.button.actionEditRegion"), actionEditRegion),
 
-						button(localize("GuiRegionEditor.button.actionDeleteRegion"), actionDeleteRegion),
+						createButton(localize("GuiRegionEditor.button.actionDeleteRegion"), actionDeleteRegion),
 
-						button(localize("GuiRegionEditor.button.actionChangeRegionIdentifier"), actionChangeRegionIdentifier)
+						createButton(localize("GuiRegionEditor.button.actionChangeRegionIdentifier"), actionChangeRegionIdentifier)
 
 					)
 
