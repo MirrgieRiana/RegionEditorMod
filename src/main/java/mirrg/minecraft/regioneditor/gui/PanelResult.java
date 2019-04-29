@@ -24,7 +24,7 @@ public class PanelResult extends JPanel
 {
 
 	public static Color SUCCESS = Color.decode("#88ff88");
-
+	public static Color EXCEPTION = Color.decode("#ffaa88");
 	public static Color ERROR = Color.decode("#ff8888");
 
 	private JTextPane textPaneResult;
