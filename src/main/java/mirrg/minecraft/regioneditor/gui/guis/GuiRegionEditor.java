@@ -991,6 +991,7 @@ public class GuiRegionEditor extends GuiBase
 				.forEach(e -> {
 					canvasMap.layerController.tileMapController.model.setTile(e.x, tileNew);
 				});
+			canvasMap.layerController.tileMapController.epChangedTileUnspecified.trigger().run();
 			canvasMap.layerController.tileMapController.epChangedState.trigger().run();
 		}
 
