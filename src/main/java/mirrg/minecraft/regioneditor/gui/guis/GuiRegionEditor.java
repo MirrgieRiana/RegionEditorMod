@@ -137,6 +137,7 @@ public class GuiRegionEditor extends GuiBase
 	private SpinnerNumberModel modelSpinnerBrushSize;
 	private JList<Optional<RegionIdentifier>> tableRegion;
 	private DefaultListModel<Optional<RegionIdentifier>> modelTableRegion;
+	private PanelResult panelResult;
 
 	public GuiRegionEditor(WindowWrapper owner, I18n i18n, Optional<Consumer<List<String>>> oSender, Optional<IChatMessageProvider> oChatMessageProvider) throws IOException
 	{
@@ -501,258 +502,265 @@ public class GuiRegionEditor extends GuiBase
 		}
 
 		// コンポーネント
-		windowWrapper.setContentPane(get(createSplitPaneHorizontal(0.7,
+		JComponent component = createSplitPaneVertical(0,
 
-			createPanelBorderDown(0,
+			createSplitPaneHorizontal(0.7,
 
-				// 左ペイン：地図側
-				createPanelBorderVertical(0,
+				createPanelBorderDown(0,
 
-					get(createButton(localize("GuiRegionEditor.buttonScrollUp"), actionScrollUp), c -> {
-						c.setMargin(new Insets(0, 0, 0, 0));
-						c.setPreferredSize(new Dimension(32, 32));
-					}),
+					// 左ペイン：地図側
+					createPanelBorderVertical(0,
 
-					createPanelBorderHorizontal(0,
-
-						get(createButton(localize("GuiRegionEditor.buttonScrollLeft"), actionScrollLeft), c -> {
+						get(createButton(localize("GuiRegionEditor.buttonScrollUp"), actionScrollUp), c -> {
 							c.setMargin(new Insets(0, 0, 0, 0));
 							c.setPreferredSize(new Dimension(32, 32));
 						}),
 
-						// 地図
-						canvasMap = get(new CanvasMap(fontRenderer, i18n, new ICanvasMapListener() {
-							@Override
-							public void onChangeTileCurrent(Optional<RegionIdentifier> tileCurrent)
-							{
-								updateSelection(tileCurrent);
-							}
+						createPanelBorderHorizontal(0,
 
-							@Override
-							public void onBrushSizeChange(int brushSize)
-							{
-								modelSpinnerBrushSize.setValue(brushSize);
-							}
-						}), c -> {
-							c.setMinimumSize(new Dimension(100, 100));
-							c.setPreferredSize(new Dimension(600, 600));
-						}),
+							get(createButton(localize("GuiRegionEditor.buttonScrollLeft"), actionScrollLeft), c -> {
+								c.setMargin(new Insets(0, 0, 0, 0));
+								c.setPreferredSize(new Dimension(32, 32));
+							}),
 
-						get(createButton(localize("GuiRegionEditor.buttonScrollRight"), actionScrollRight), c -> {
+							// 地図
+							canvasMap = get(new CanvasMap(fontRenderer, i18n, new ICanvasMapListener() {
+								@Override
+								public void onChangeTileCurrent(Optional<RegionIdentifier> tileCurrent)
+								{
+									updateSelection(tileCurrent);
+								}
+
+								@Override
+								public void onBrushSizeChange(int brushSize)
+								{
+									modelSpinnerBrushSize.setValue(brushSize);
+								}
+							}), c -> {
+								c.setMinimumSize(new Dimension(100, 100));
+								c.setPreferredSize(new Dimension(600, 600));
+							}),
+
+							get(createButton(localize("GuiRegionEditor.buttonScrollRight"), actionScrollRight), c -> {
+								c.setMargin(new Insets(0, 0, 0, 0));
+								c.setPreferredSize(new Dimension(32, 32));
+							})
+
+						),
+
+						get(createButton(localize("GuiRegionEditor.buttonScrollDown"), actionScrollDown), c -> {
 							c.setMargin(new Insets(0, 0, 0, 0));
 							c.setPreferredSize(new Dimension(32, 32));
 						})
 
 					),
 
-					get(createButton(localize("GuiRegionEditor.buttonScrollDown"), actionScrollDown), c -> {
-						c.setMargin(new Insets(0, 0, 0, 0));
-						c.setPreferredSize(new Dimension(32, 32));
-					})
-
-				),
-
-				createPanelFlow(
-
-					new JLabel(localize("GuiRegionEditor.labelBlockCoordinate") + ":"),
-
-					labelCoordX = new JLabel("???"),
-
-					new JLabel(","),
-
-					labelCoordZ = new JLabel("???"),
-
-					new JLabel(localize("GuiRegionEditor.labelTileCoordinate") + ":"),
-
-					labelTileX = new JLabel("???"),
-
-					new JLabel(","),
-
-					labelTileZ = new JLabel("???")
-
-				),
-
-				createPanelFlow(
-
-					new JLabel(localize("GuiRegionEditor.labelX") + ":"),
-
-					textFieldX = get(new JFormattedTextField(NumberFormat.getIntegerInstance()), c -> {
-						c.setValue(0);
-						c.setColumns(8);
-						c.setHorizontalAlignment(JTextField.RIGHT);
-					}),
-
-					new JLabel(localize("GuiRegionEditor.labelZ") + ":"),
-
-					textFieldZ = get(new JFormattedTextField(NumberFormat.getIntegerInstance()), c -> {
-						c.setValue(0);
-						c.setColumns(8);
-						c.setHorizontalAlignment(JTextField.RIGHT);
-					}),
-
-					createButton(localize("GuiRegionEditor.buttonJumpToBlockCoordinate"), e -> {
-						setPosition(
-							((Number) textFieldX.getValue()).intValue() / 16,
-							((Number) textFieldZ.getValue()).intValue() / 16);
-					}),
-
-					createButton(localize("GuiRegionEditor.buttonJumpToTileCoordinate"), e -> {
-						setPosition(
-							((Number) textFieldX.getValue()).intValue(),
-							((Number) textFieldZ.getValue()).intValue());
-					})
-
-				)
-
-			),
-
-			// 右ペイン：領地リストとか操作ボタンとか
-			createPanelBorderUp(0,
-
-				// ブラシサイズ
-				createPanelFlow(
-
-					new JLabel(localize("GuiRegionEditor.labelBrushSize") + ":"),
-
-					spinnerBrushSize = get(new JSpinner(modelSpinnerBrushSize = get(new SpinnerNumberModel(7, 0, 100, 1), c -> {
-						c.addChangeListener(e -> {
-							canvasMap.setBrushSize(c.getNumber().intValue());
-						});
-						listenersPreInit.add(() -> canvasMap.setBrushSize(modelSpinnerBrushSize.getNumber().intValue()));
-					})), c -> {
-						c.addMouseWheelListener(e -> {
-							plusBrushSize(-(int) e.getPreciseWheelRotation());
-						});
-					})
-
-				),
-
-				createPanelBorderDown(0,
-
-					// 領地一覧
-					createScrollPane(tableRegion = get(new JList<>(modelTableRegion = new DefaultListModel<>()), c -> {
-						c.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-						c.addMouseListener(new MouseAdapter() {
-							@Override
-							public void mouseReleased(MouseEvent e)
-							{
-								if (e.getButton() == MouseEvent.BUTTON1) {
-									canvasMap.setTileCurrent(getSelectedItem());
-								} else if (e.getButton() == MouseEvent.BUTTON3) {
-
-									int index = c.locationToIndex(e.getPoint());
-									if (index < 0) return;
-									if (index >= c.getModel().getSize()) return;
-									Optional<RegionIdentifier> tile = c.getModel().getElementAt(index);
-									if (!tile.isPresent()) return;
-
-									scrollToRegion(tile.get());
-
-								}
-							}
-
-							private Optional<RegionIdentifier> getSelectedItem()
-							{
-								int index = tableRegion.getSelectedIndex();
-								if (index < 0) return Optional.empty();
-								if (index >= tableRegion.getModel().getSize()) return Optional.empty();
-								return tableRegion.getModel().getElementAt(index);
-							}
-						});
-						c.setCellRenderer(new ListCellRenderer<Optional<RegionIdentifier>>() {
-							private BufferedImage image = new BufferedImage(17, 17, BufferedImage.TYPE_INT_RGB);
-							private Graphics2D graphics = image.createGraphics();
-
-							private JLabel label = new JLabel();
-							{
-								label.setOpaque(true);
-							}
-
-							public Component getListCellRendererComponent(
-								JList<? extends Optional<RegionIdentifier>> list,
-								Optional<RegionIdentifier> value,
-								int index,
-								boolean isSelected,
-								boolean cellHasFocus)
-							{
-								if (value.isPresent()) {
-									RegionIdentifier regionIdentifier = value.get();
-									RegionEntry regionEntry = new RegionEntry(
-										regionIdentifier,
-										canvasMap.layerController.regionTableController.model.get(regionIdentifier));
-
-									label.setText(regionEntry.toString());
-								} else {
-									label.setText(localize("GuiRegionEditor.tableRegion.empty"));
-								}
-
-								graphics.setBackground(Color.gray);
-								graphics.clearRect(0, 0, 17, 17);
-								if (value.isPresent()) {
-									RegionIdentifier regionIdentifier = value.get();
-									RegionEntry regionEntry = new RegionEntry(
-										regionIdentifier,
-										canvasMap.layerController.regionTableController.model.get(regionIdentifier));
-
-									ImageLayerTile.drawArea(graphics, regionEntry, 0, 0, 16);
-									ImageLayerTile.drawBorder(graphics, regionEntry, 0, 0, 16, true, true, true, true);
-									ImageLayerTile.drawIdentifier(image, regionEntry, 0, 0, 16, fontRenderer);
-									ImageLayerTile.drawGrid(graphics, 0, 0, 16);
-								}
-								label.setIcon(new ImageIcon(image));
-
-								Color background;
-								Color foreground;
-
-								JList.DropLocation dropLocation = list.getDropLocation();
-								if (dropLocation != null
-									&& !dropLocation.isInsert()
-									&& dropLocation.getIndex() == index) {
-									background = Color.BLUE;
-									foreground = Color.WHITE;
-								} else if (isSelected) {
-									background = list.getSelectionBackground();
-									foreground = list.getSelectionForeground();
-								} else {
-									background = list.getBackground();
-									foreground = list.getForeground();
-								}
-
-								label.setBackground(background);
-								label.setForeground(foreground);
-
-								return label;
-							}
-						});
-						canvasMap.layerController.regionTableController.epChangedState.register(() -> {
-							modelTableRegion.clear();
-							modelTableRegion.addElement(Optional.empty());
-							for (RegionIdentifier regionIdentifier : canvasMap.layerController.regionTableController.model.getKeys()) {
-								modelTableRegion.addElement(Optional.of(regionIdentifier));
-							}
-
-							updateSelection(canvasMap.getTileCurrent());
-						});
-					}), 300, 600),
-
-					// 操作ボタン
 					createPanelFlow(
 
-						createButton(localize("GuiRegionEditor.button.actionCreateRegion"), actionCreateRegion),
+						new JLabel(localize("GuiRegionEditor.labelBlockCoordinate") + ":"),
 
-						createButton(localize("GuiRegionEditor.button.actionEditRegion"), actionEditRegion),
+						labelCoordX = new JLabel("???"),
 
-						createButton(localize("GuiRegionEditor.button.actionDeleteRegion"), actionDeleteRegion),
+						new JLabel(","),
 
-						createButton(localize("GuiRegionEditor.button.actionChangeRegionIdentifier"), actionChangeRegionIdentifier)
+						labelCoordZ = new JLabel("???"),
+
+						new JLabel(localize("GuiRegionEditor.labelTileCoordinate") + ":"),
+
+						labelTileX = new JLabel("???"),
+
+						new JLabel(","),
+
+						labelTileZ = new JLabel("???")
+
+					),
+
+					createPanelFlow(
+
+						new JLabel(localize("GuiRegionEditor.labelX") + ":"),
+
+						textFieldX = get(new JFormattedTextField(NumberFormat.getIntegerInstance()), c -> {
+							c.setValue(0);
+							c.setColumns(8);
+							c.setHorizontalAlignment(JTextField.RIGHT);
+						}),
+
+						new JLabel(localize("GuiRegionEditor.labelZ") + ":"),
+
+						textFieldZ = get(new JFormattedTextField(NumberFormat.getIntegerInstance()), c -> {
+							c.setValue(0);
+							c.setColumns(8);
+							c.setHorizontalAlignment(JTextField.RIGHT);
+						}),
+
+						createButton(localize("GuiRegionEditor.buttonJumpToBlockCoordinate"), e -> {
+							setPosition(
+								((Number) textFieldX.getValue()).intValue() / 16,
+								((Number) textFieldZ.getValue()).intValue() / 16);
+						}),
+
+						createButton(localize("GuiRegionEditor.buttonJumpToTileCoordinate"), e -> {
+							setPosition(
+								((Number) textFieldX.getValue()).intValue(),
+								((Number) textFieldZ.getValue()).intValue());
+						})
+
+					)
+
+				),
+
+				// 右ペイン：領地リストとか操作ボタンとか
+				createPanelBorderUp(0,
+
+					// ブラシサイズ
+					createPanelFlow(
+
+						new JLabel(localize("GuiRegionEditor.labelBrushSize") + ":"),
+
+						spinnerBrushSize = get(new JSpinner(modelSpinnerBrushSize = get(new SpinnerNumberModel(7, 0, 100, 1), c -> {
+							c.addChangeListener(e -> {
+								canvasMap.setBrushSize(c.getNumber().intValue());
+							});
+							listenersPreInit.add(() -> canvasMap.setBrushSize(modelSpinnerBrushSize.getNumber().intValue()));
+						})), c -> {
+							c.addMouseWheelListener(e -> {
+								plusBrushSize(-(int) e.getPreciseWheelRotation());
+							});
+						})
+
+					),
+
+					createPanelBorderDown(0,
+
+						// 領地一覧
+						createScrollPane(tableRegion = get(new JList<>(modelTableRegion = new DefaultListModel<>()), c -> {
+							c.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+							c.addMouseListener(new MouseAdapter() {
+								@Override
+								public void mouseReleased(MouseEvent e)
+								{
+									if (e.getButton() == MouseEvent.BUTTON1) {
+										canvasMap.setTileCurrent(getSelectedItem());
+									} else if (e.getButton() == MouseEvent.BUTTON3) {
+
+										int index = c.locationToIndex(e.getPoint());
+										if (index < 0) return;
+										if (index >= c.getModel().getSize()) return;
+										Optional<RegionIdentifier> tile = c.getModel().getElementAt(index);
+										if (!tile.isPresent()) return;
+
+										scrollToRegion(tile.get());
+
+									}
+								}
+
+								private Optional<RegionIdentifier> getSelectedItem()
+								{
+									int index = tableRegion.getSelectedIndex();
+									if (index < 0) return Optional.empty();
+									if (index >= tableRegion.getModel().getSize()) return Optional.empty();
+									return tableRegion.getModel().getElementAt(index);
+								}
+							});
+							c.setCellRenderer(new ListCellRenderer<Optional<RegionIdentifier>>() {
+								private BufferedImage image = new BufferedImage(17, 17, BufferedImage.TYPE_INT_RGB);
+								private Graphics2D graphics = image.createGraphics();
+
+								private JLabel label = new JLabel();
+								{
+									label.setOpaque(true);
+								}
+
+								public Component getListCellRendererComponent(
+									JList<? extends Optional<RegionIdentifier>> list,
+									Optional<RegionIdentifier> value,
+									int index,
+									boolean isSelected,
+									boolean cellHasFocus)
+								{
+									if (value.isPresent()) {
+										RegionIdentifier regionIdentifier = value.get();
+										RegionEntry regionEntry = new RegionEntry(
+											regionIdentifier,
+											canvasMap.layerController.regionTableController.model.get(regionIdentifier));
+
+										label.setText(regionEntry.toString());
+									} else {
+										label.setText(localize("GuiRegionEditor.tableRegion.empty"));
+									}
+
+									graphics.setBackground(Color.gray);
+									graphics.clearRect(0, 0, 17, 17);
+									if (value.isPresent()) {
+										RegionIdentifier regionIdentifier = value.get();
+										RegionEntry regionEntry = new RegionEntry(
+											regionIdentifier,
+											canvasMap.layerController.regionTableController.model.get(regionIdentifier));
+
+										ImageLayerTile.drawArea(graphics, regionEntry, 0, 0, 16);
+										ImageLayerTile.drawBorder(graphics, regionEntry, 0, 0, 16, true, true, true, true);
+										ImageLayerTile.drawIdentifier(image, regionEntry, 0, 0, 16, fontRenderer);
+										ImageLayerTile.drawGrid(graphics, 0, 0, 16);
+									}
+									label.setIcon(new ImageIcon(image));
+
+									Color background;
+									Color foreground;
+
+									JList.DropLocation dropLocation = list.getDropLocation();
+									if (dropLocation != null
+										&& !dropLocation.isInsert()
+										&& dropLocation.getIndex() == index) {
+										background = Color.BLUE;
+										foreground = Color.WHITE;
+									} else if (isSelected) {
+										background = list.getSelectionBackground();
+										foreground = list.getSelectionForeground();
+									} else {
+										background = list.getBackground();
+										foreground = list.getForeground();
+									}
+
+									label.setBackground(background);
+									label.setForeground(foreground);
+
+									return label;
+								}
+							});
+							canvasMap.layerController.regionTableController.epChangedState.register(() -> {
+								modelTableRegion.clear();
+								modelTableRegion.addElement(Optional.empty());
+								for (RegionIdentifier regionIdentifier : canvasMap.layerController.regionTableController.model.getKeys()) {
+									modelTableRegion.addElement(Optional.of(regionIdentifier));
+								}
+
+								updateSelection(canvasMap.getTileCurrent());
+							});
+						}), 300, 600),
+
+						// 操作ボタン
+						createPanelFlow(
+
+							createButton(localize("GuiRegionEditor.button.actionCreateRegion"), actionCreateRegion),
+
+							createButton(localize("GuiRegionEditor.button.actionEditRegion"), actionEditRegion),
+
+							createButton(localize("GuiRegionEditor.button.actionDeleteRegion"), actionDeleteRegion),
+
+							createButton(localize("GuiRegionEditor.button.actionChangeRegionIdentifier"), actionChangeRegionIdentifier)
+
+						)
 
 					)
 
 				)
 
-			)
+			),
 
-		), c -> {
+			panelResult = new PanelResult(windowWrapper, i18n)
+
+		);
+		windowWrapper.setContentPane(get(component, c -> {
 			c.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).setParent(inputMap);
 			c.getActionMap().setParent(actionMap);
 		}));
