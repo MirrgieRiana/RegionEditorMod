@@ -383,19 +383,7 @@ public class GuiRegionEditor extends GuiBase
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_E)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.SHIFT_DOWN_MASK))
 				.register(inputMap, actionMap);
-			actionDeleteRegion = new ActionBuilder<>(new ActionButton(e -> {
-				Optional<RegionIdentifier> tileCurrent = canvasMap.getTileCurrent();
-				if (tileCurrent.isPresent()) {
-					try {
-						canvasMap.layerController.regionTableController.model.remove(tileCurrent.get());
-					} catch (ModelException e1) {
-						e1.printStackTrace();
-						GuiMessage.showException(e1);
-						return;
-					}
-					canvasMap.update();
-				}
-			}))
+			actionDeleteRegion = new ActionBuilder<>(new ActionButton(e -> deleteRegion()))
 				.value(Action.NAME, localize("GuiRegionEditor.actionDeleteRegion") + "(D)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK | InputEvent.ALT_DOWN_MASK))
@@ -879,6 +867,23 @@ public class GuiRegionEditor extends GuiBase
 			canvasMap.layerController.regionTableController.epChangedState.trigger().run();
 			canvasMap.update();
 		}
+	}
+
+	private void deleteRegion()
+	{
+		Optional<RegionIdentifier> tileCurrent = canvasMap.getTileCurrent();
+
+		// 地域表の更新
+		try {
+			canvasMap.layerController.regionTableController.model.remove(tileCurrent.get());
+		} catch (ModelException e1) {
+			e1.printStackTrace();
+			GuiMessage.showException(e1);
+			return;
+		}
+		canvasMap.layerController.regionTableController.epChangedState.trigger().run();
+
+		canvasMap.update();
 	}
 
 	private void changeRegionIdentifier()
