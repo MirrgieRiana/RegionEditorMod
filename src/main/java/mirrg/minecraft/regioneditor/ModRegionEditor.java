@@ -64,12 +64,6 @@ public class ModRegionEditor
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		} else if (lookAndFeel.equals("system")) {
-			try {
-				UtilsSwing.setSystemLookAndFeel();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 		}
 
 		try {
