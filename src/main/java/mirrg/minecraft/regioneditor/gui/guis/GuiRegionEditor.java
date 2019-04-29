@@ -398,9 +398,7 @@ public class GuiRegionEditor extends GuiBase
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK | InputEvent.ALT_DOWN_MASK))
 				.register(inputMap, actionMap);
-			actionChangeRegionIdentifier = new ActionBuilder<>(new ActionButton(e -> {
-				System.out.println("D"); // TODO
-			}))
+			actionChangeRegionIdentifier = new ActionBuilder<>(new ActionButton(e -> changeRegionIdentifier()))
 				.value(Action.NAME, localize("GuiRegionEditor.actionChangeRegionIdentifier") + "(I)")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_I)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK))
@@ -870,6 +868,50 @@ public class GuiRegionEditor extends GuiBase
 		if (gui.oResult.isPresent()) {
 			canvasMap.layerController.regionTableController.model.set(gui.oResult.get(), RegionInfo.DEFAULT);
 			canvasMap.layerController.regionTableController.epChangedState.trigger().run();
+			canvasMap.update();
+		}
+	}
+
+	private void changeRegionIdentifier()
+	{
+		if (!canvasMap.getTileCurrent().isPresent()) {
+			// TODO
+			return;
+		}
+		RegionIdentifier regionIdentifierCurrent = canvasMap.getTileCurrent().get();
+
+		GuiRegionIdentifier gui = new GuiRegionIdentifier(
+			windowWrapper,
+			i18n,
+			regionIdentifierCurrent.countryId,
+			regionIdentifierCurrent.stateId);
+		gui.oValidator = Optional.of(ri -> {
+			if (!ri.countryId.matches("[a-zA-Z0-9]{1,4}")) {
+				gui.setText(localize("GuiRegionEditor.changeRegionIdentifier.messageInvalidCountryId"), "", PanelResult.EXCEPTION);
+				return false;
+			}
+			if (!ri.stateId.matches("[a-zA-Z0-9]{1,4}")) {
+				gui.setText(localize("GuiRegionEditor.changeRegionIdentifier.messageInvalidStateId"), "", PanelResult.EXCEPTION);
+				return false;
+			}
+			if (canvasMap.layerController.regionTableController.model.containsKey(ri)) {
+				gui.setText(localize("GuiRegionEditor.changeRegionIdentifier.messageAlreadyExists"), "", PanelResult.EXCEPTION);
+				return false;
+			}
+			return true;
+		});
+		gui.show();
+		if (gui.oResult.isPresent()) {
+			try {
+				canvasMap.layerController.regionTableController.model.replaceKey(regionIdentifierCurrent, gui.oResult.get());
+			} catch (ModelException e) {
+				e.printStackTrace();
+				GuiMessage.showException(e);
+				return;
+			}
+			canvasMap.layerController.regionTableController.epChangedState.trigger().run();
+			canvasMap.setTileCurrent(Optional.of(gui.oResult.get()));
+			canvasMap.update();
 		}
 	}
 
