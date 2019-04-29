@@ -50,7 +50,7 @@ public class ModRegionEditor
 
 		{
 			Configuration configuration = new Configuration(event.getSuggestedConfigurationFile());
-			lookAndFeel = configuration.getString("lookAndFeel", "general", "system", "If 'system', system default. If 'default', do nothing.");
+			lookAndFeel = configuration.getString("lookAndFeel", "general", "system", "If 'system', use system default. If 'default', do nothing.");
 			configuration.save();
 		}
 
