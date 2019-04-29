@@ -69,6 +69,16 @@ public class RegionTableModel
 		}
 	}
 
+	public void insert(RegionIdentifier regionIdentifier, RegionIdentifier regionIdentifierNew, RegionInfo regionInfo) throws ModelException
+	{
+		if (!containsKey(regionIdentifier)) throw new ModelException();
+		if (containsKey(regionIdentifierNew)) throw new ModelException();
+
+		int index = getIndex(regionIdentifier);
+		map.put(regionIdentifierNew, regionInfo);
+		list.add(index + 1, new RegionEntry(regionIdentifierNew, regionInfo));
+	}
+
 	public void replaceKey(RegionIdentifier regionIdentifierOld, RegionIdentifier regionIdentifierNew) throws ModelException
 	{
 		if (!containsKey(regionIdentifierOld)) throw new ModelException();
