@@ -78,7 +78,6 @@ public class RegionTableModel
 		map.remove(regionIdentifierOld);
 		map.put(regionIdentifierNew, regionInfo);
 		list.set(getIndex(regionIdentifierOld), new RegionEntry(regionIdentifierNew, regionInfo));
-		return;
 	}
 
 	public void remove(RegionIdentifier regionIdentifier) throws ModelException
