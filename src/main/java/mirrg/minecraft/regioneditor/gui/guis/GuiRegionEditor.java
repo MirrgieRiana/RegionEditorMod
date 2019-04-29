@@ -873,6 +873,18 @@ public class GuiRegionEditor extends GuiBase
 	{
 		Optional<RegionIdentifier> tileCurrent = canvasMap.getTileCurrent();
 
+		// 選択チェック
+		if (!tileCurrent.isPresent()) {
+			panelResult.setText(localize("GuiRegionEditor.actionDeleteRegion.messageNoRegion"), "", PanelResult.EXCEPTION);
+			return;
+		}
+
+		// リストアップされていない領域を選択しているなら中止
+		if (!canvasMap.layerController.regionTableController.model.containsKey(tileCurrent.get())) {
+			panelResult.setText(localize("GuiRegionEditor.actionDeleteRegion.messageInvalidSelection"), "", PanelResult.EXCEPTION);
+			return;
+		}
+
 		// 地域表の更新
 		try {
 			canvasMap.layerController.regionTableController.model.remove(tileCurrent.get());
