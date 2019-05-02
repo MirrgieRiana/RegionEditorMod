@@ -97,9 +97,9 @@ public class GuiRegionEditor extends GuiBase
 	private ActionButton actionOpenGuiData;
 	private ActionButton actionOpenGuiCommand;
 
-	private ActionButton actionLoadMapFromLocalFile;
-	private ActionButton actionLoadMapFromUrl;
-	private ActionButton actionSetMapImageProviderDynmapImageLoader;
+	private ActionButton actionSetMapImageProviderFromLocalFile;
+	private ActionButton actionSetMapImageProviderFromUrl;
+	private ActionButton actionSetMapImageProviderFromDynmapImageLoader;
 	private ActionButton actionScrollLeft;
 	private ActionButton actionScrollRight;
 	private ActionButton actionScrollUp;
@@ -200,18 +200,18 @@ public class GuiRegionEditor extends GuiBase
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_DOWN_MASK))
 				.register(inputMap, actionMap);
 
-			actionLoadMapFromLocalFile = new ActionBuilder<>(new ActionButton(e -> loadMapFromLocal()))
-				.value(Action.NAME, localize("GuiRegionEditor.actionLoadMapFromLocalFile") + "(F)...")
+			actionSetMapImageProviderFromLocalFile = new ActionBuilder<>(new ActionButton(e -> loadMapFromLocal()))
+				.value(Action.NAME, localize("GuiRegionEditor.actionSetMapImageProviderFromLocalFile") + "(F)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_F)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK))
 				.register(inputMap, actionMap);
-			actionLoadMapFromUrl = new ActionBuilder<>(new ActionButton(e -> loadMapFromURL()))
-				.value(Action.NAME, localize("GuiRegionEditor.actionLoadMapFromUrl") + "(U)...")
+			actionSetMapImageProviderFromUrl = new ActionBuilder<>(new ActionButton(e -> loadMapFromURL()))
+				.value(Action.NAME, localize("GuiRegionEditor.actionSetMapImageProviderFromUrl") + "(U)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_U)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK))
 				.register(inputMap, actionMap);
-			actionSetMapImageProviderDynmapImageLoader = new ActionBuilder<>(new ActionButton(e -> loadMapFromDynmapImageLoader()))
-				.value(Action.NAME, localize("GuiRegionEditor.actionSetMapImageProviderDynmapImageLoader") + "(D)...")
+			actionSetMapImageProviderFromDynmapImageLoader = new ActionBuilder<>(new ActionButton(e -> loadMapFromDynmapImageLoader()))
+				.value(Action.NAME, localize("GuiRegionEditor.actionSetMapImageProviderFromDynmapImageLoader") + "(D)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK))
 				.register(inputMap, actionMap);
@@ -451,9 +451,9 @@ public class GuiRegionEditor extends GuiBase
 				}));
 				menuBar2.add(get(new Menu(localize("GuiRegionEditor.menuView") + "(V)"), menu -> {
 					menu.setMnemonic(KeyEvent.VK_V);
-					menu.add(new MenuItem(actionLoadMapFromLocalFile));
-					menu.add(new MenuItem(actionLoadMapFromUrl));
-					menu.add(new MenuItem(actionSetMapImageProviderDynmapImageLoader));
+					menu.add(new MenuItem(actionSetMapImageProviderFromLocalFile));
+					menu.add(new MenuItem(actionSetMapImageProviderFromUrl));
+					menu.add(new MenuItem(actionSetMapImageProviderFromDynmapImageLoader));
 					menu.addSeparator();
 					menu.add(new MenuItem(actionScrollLeft));
 					menu.add(new MenuItem(actionScrollRight));
