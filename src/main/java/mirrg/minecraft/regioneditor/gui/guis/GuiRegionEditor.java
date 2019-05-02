@@ -67,6 +67,7 @@ import mirrg.minecraft.regioneditor.gui.PanelResult;
 import mirrg.minecraft.regioneditor.gui.guis.GuiData.IDialogDataListener;
 import mirrg.minecraft.regioneditor.gui.imagelayers.ImageLayerTile;
 import mirrg.minecraft.regioneditor.gui.mapimage.MapImageProviderBufferedImage;
+import mirrg.minecraft.regioneditor.gui.mapimage.MapImageProviderDynmapImageLoader;
 import mirrg.minecraft.regioneditor.gui.tool.ITool;
 import mirrg.minecraft.regioneditor.gui.tools.ToolBrush;
 import mirrg.minecraft.regioneditor.gui.tools.ToolFill;
@@ -98,6 +99,7 @@ public class GuiRegionEditor extends GuiBase
 
 	private ActionButton actionLoadMapFromLocalFile;
 	private ActionButton actionLoadMapFromUrl;
+	private ActionButton actionSetMapImageProviderDynmapImageLoader;
 	private ActionButton actionScrollLeft;
 	private ActionButton actionScrollRight;
 	private ActionButton actionScrollUp;
@@ -207,6 +209,11 @@ public class GuiRegionEditor extends GuiBase
 				.value(Action.NAME, localize("GuiRegionEditor.actionLoadMapFromUrl") + "(U)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_U)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK))
+				.register(inputMap, actionMap);
+			actionSetMapImageProviderDynmapImageLoader = new ActionBuilder<>(new ActionButton(e -> loadMapFromDynmapImageLoader()))
+				.value(Action.NAME, localize("GuiRegionEditor.actionSetMapImageProviderDynmapImageLoader") + "(D)...")
+				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)
+				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK))
 				.register(inputMap, actionMap);
 
 			actionScrollLeft = new ActionBuilder<>(new ActionButton(e -> scroll(-4, 0)))
@@ -446,6 +453,7 @@ public class GuiRegionEditor extends GuiBase
 					menu.setMnemonic(KeyEvent.VK_V);
 					menu.add(new MenuItem(actionLoadMapFromLocalFile));
 					menu.add(new MenuItem(actionLoadMapFromUrl));
+					menu.add(new MenuItem(actionSetMapImageProviderDynmapImageLoader));
 					menu.addSeparator();
 					menu.add(new MenuItem(actionScrollLeft));
 					menu.add(new MenuItem(actionScrollRight));
@@ -838,6 +846,19 @@ public class GuiRegionEditor extends GuiBase
 		}
 
 		canvasMap.setMapImageProvider(new MapImageProviderBufferedImage(image, mapOrigin));
+	}
+
+	private void loadMapFromDynmapImageLoader()
+	{
+		GuiInputBox gui = new GuiInputBox(windowWrapper, i18n) {
+			@Override
+			protected void onOk(String string)
+			{
+				close();
+				canvasMap.setMapImageProvider(new MapImageProviderDynmapImageLoader(string));
+			}
+		};
+		gui.show();
 	}
 
 	private void createRegion()
