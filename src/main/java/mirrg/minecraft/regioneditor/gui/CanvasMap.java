@@ -6,7 +6,6 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.image.BufferedImage;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -40,6 +39,7 @@ import mirrg.minecraft.regioneditor.data.objects.TileRectangle;
 import mirrg.minecraft.regioneditor.gui.imagelayers.ImageLayerMap;
 import mirrg.minecraft.regioneditor.gui.imagelayers.ImageLayerOverlay;
 import mirrg.minecraft.regioneditor.gui.imagelayers.ImageLayerTile;
+import mirrg.minecraft.regioneditor.gui.mapimage.IMapImageProvider;
 import mirrg.minecraft.regioneditor.gui.tool.ITool;
 import mirrg.minecraft.regioneditor.gui.tool.IToolContext;
 import mirrg.minecraft.regioneditor.util.gui.FontRenderer;
@@ -52,9 +52,6 @@ public class CanvasMap extends Canvas
 	private final ImageLayerMap imageLayerMap;
 	private final ImageLayerTile imageLayerTile;
 	private final ImageLayerOverlay imageLayerOverlay;
-
-	private BufferedImage imageMap = null;
-	private Point mapOrigin = null;
 
 	private int positionX = 0;
 	private int positionZ = 0;
@@ -270,10 +267,9 @@ public class CanvasMap extends Canvas
 
 	}
 
-	public void setMap(BufferedImage imageMap, Point mapOrigin)
+	public void setMapImageProvider(IMapImageProvider mapImageProvider)
 	{
-		this.imageMap = imageMap;
-		this.mapOrigin = mapOrigin;
+		imageLayerMap.oMapImageProvider = Optional.of(mapImageProvider);
 		updateLayerMap();
 	}
 
