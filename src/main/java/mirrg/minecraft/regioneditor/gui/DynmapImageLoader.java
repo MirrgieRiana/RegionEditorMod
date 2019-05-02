@@ -18,7 +18,7 @@ import mirrg.boron.util.struct.Tuple;
 import mirrg.boron.util.suppliterator.ISuppliterator;
 
 /**
- * 1枚の画像のサイズは128x128。
+ * 1枚の画像のサイズは128x128。8チャンクx8チャンク。
  */
 public class DynmapImageLoader
 {
