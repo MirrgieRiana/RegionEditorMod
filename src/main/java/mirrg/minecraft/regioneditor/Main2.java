@@ -5,11 +5,7 @@ import java.awt.Dialog.ModalityType;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
@@ -18,6 +14,7 @@ import mirrg.boron.util.i18n.I18n;
 import mirrg.boron.util.struct.ImmutableArray;
 import mirrg.boron.util.struct.Tuple;
 import mirrg.boron.util.suppliterator.ISuppliterator;
+import mirrg.minecraft.regioneditor.gui.DynmapImageLoader;
 import mirrg.minecraft.regioneditor.gui.guis.GuiBase;
 
 public class Main2
@@ -91,28 +88,11 @@ public class Main2
 
 	}
 
-	private static Map<Tuple<Integer, Integer>, BufferedImage> map = new HashMap<>();
+	private static DynmapImageLoader dynmapImageLoader = new DynmapImageLoader("http://mimi2.f5.si:17026/tiles/world/flat/${x1}_${z1}/zz_${x2}_${z2}.png?1556325681500");
 
 	private static BufferedImage load(Tuple<Integer, Integer> pos) throws Exception
 	{
-		BufferedImage image = map.get(pos);
-		if (image != null) {
-			return image;
-		}
-
-		image = load(pos.x, pos.y);
-
-		map.put(pos, image);
-
-		return image;
-	}
-
-	private static BufferedImage load(int x, int z) throws Exception
-	{
-		int x2 = x * 4;
-		int z2 = z * -4;
-		URL url = new URL("http://mimi2.f5.si:17026/tiles/world/flat/" + Math.floorDiv(x2, 32) + "_" + Math.floorDiv(z2, 32) + "/zz_" + x2 + "_" + z2 + ".png?1556325681500");
-		return ImageIO.read(url.openStream());
+		return dynmapImageLoader.get(pos.x, pos.y);
 	}
 
 }
