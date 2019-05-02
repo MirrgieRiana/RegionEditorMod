@@ -30,6 +30,10 @@ public class DynmapImageLoader
 	private final String templateUrl;
 	private final File dirCache;
 
+	/**
+	 * @param templateUrl
+	 *            <code>"http://domain:port/tiles/world/flat/${x1}_${z1}/zz_${x2}_${z2}.png"</code>のような文字列を指定します。
+	 */
 	public DynmapImageLoader(String templateUrl)
 	{
 		this.templateUrl = templateUrl;
