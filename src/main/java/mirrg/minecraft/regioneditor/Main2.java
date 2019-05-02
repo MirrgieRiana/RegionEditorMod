@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Dialog.ModalityType;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -12,7 +11,6 @@ import javax.swing.JLabel;
 import mirrg.boron.swing.UtilsComponent;
 import mirrg.boron.util.i18n.I18n;
 import mirrg.boron.util.struct.ImmutableArray;
-import mirrg.boron.util.struct.Tuple;
 import mirrg.boron.util.suppliterator.ISuppliterator;
 import mirrg.minecraft.regioneditor.gui.DynmapImageLoader;
 import mirrg.minecraft.regioneditor.gui.guis.GuiBase;
@@ -20,9 +18,10 @@ import mirrg.minecraft.regioneditor.gui.guis.GuiBase;
 public class Main2
 {
 
-	static int x = 0;
-	static int z = 0;
-	static int size = 5;
+	private static int x = 0;
+	private static int z = 0;
+	private static int size = 5;
+	private static DynmapImageLoader dynmapImageLoader = new DynmapImageLoader("http://mimi2.f5.si:17026/tiles/world/flat/${x1}_${z1}/zz_${x2}_${z2}.png?1556325681500");
 
 	public static void main(String[] args) throws Exception
 	{
@@ -77,7 +76,7 @@ public class Main2
 					.forEach(xi -> ISuppliterator.rangeClosed(-size / 2, size / 2)
 						.forEach(zi -> {
 							try {
-								imageIcons.get(zi + size / 2).get(xi + size / 2).setImage(load(Tuple.of(x + xi, z + zi)));
+								imageIcons.get(zi + size / 2).get(xi + size / 2).setImage(dynmapImageLoader.get(x + xi, z + zi));
 								labels.get(zi + size / 2).get(xi + size / 2).repaint();
 							} catch (Exception e) {
 								throw new RuntimeException(e);
@@ -86,13 +85,6 @@ public class Main2
 			}
 		}.show();
 
-	}
-
-	private static DynmapImageLoader dynmapImageLoader = new DynmapImageLoader("http://mimi2.f5.si:17026/tiles/world/flat/${x1}_${z1}/zz_${x2}_${z2}.png?1556325681500");
-
-	private static BufferedImage load(Tuple<Integer, Integer> pos) throws Exception
-	{
-		return dynmapImageLoader.get(pos.x, pos.y);
 	}
 
 }
