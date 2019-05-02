@@ -1,4 +1,4 @@
-package mirrg.minecraft.regioneditor.gui;
+package mirrg.minecraft.regioneditor.gui.mapimage;
 
 import java.awt.image.BufferedImage;
 import java.io.File;

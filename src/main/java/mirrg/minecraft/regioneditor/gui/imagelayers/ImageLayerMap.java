@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import mirrg.minecraft.regioneditor.data.controller.LayerController;
-import mirrg.minecraft.regioneditor.gui.DynmapImageLoader;
+import mirrg.minecraft.regioneditor.gui.mapimage.IMapImageProvider;
 
 public class ImageLayerMap extends ImageLayer
 {
