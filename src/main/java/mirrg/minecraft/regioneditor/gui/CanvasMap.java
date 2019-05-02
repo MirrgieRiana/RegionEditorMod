@@ -681,7 +681,7 @@ public class CanvasMap extends Canvas
 
 	private void updateLayerMap()
 	{
-		imageLayerMap.update(imageMap, layerController, positionX, positionZ, mapOrigin);
+		imageLayerMap.update(layerController, positionX, positionZ);
 		updateLayerTile();
 	}
 
