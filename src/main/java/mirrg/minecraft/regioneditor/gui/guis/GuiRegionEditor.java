@@ -66,6 +66,7 @@ import mirrg.minecraft.regioneditor.gui.CanvasMap.ICanvasMapListener;
 import mirrg.minecraft.regioneditor.gui.PanelResult;
 import mirrg.minecraft.regioneditor.gui.guis.GuiData.IDialogDataListener;
 import mirrg.minecraft.regioneditor.gui.imagelayers.ImageLayerTile;
+import mirrg.minecraft.regioneditor.gui.mapimage.MapImageProviderBufferedImage;
 import mirrg.minecraft.regioneditor.gui.tool.ITool;
 import mirrg.minecraft.regioneditor.gui.tools.ToolBrush;
 import mirrg.minecraft.regioneditor.gui.tools.ToolFill;
@@ -836,7 +837,7 @@ public class GuiRegionEditor extends GuiBase
 			}
 		}
 
-		canvasMap.setMap(image, mapOrigin);
+		canvasMap.setMapImageProvider(new MapImageProviderBufferedImage(image, mapOrigin));
 	}
 
 	private void createRegion()
