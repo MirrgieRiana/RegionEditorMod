@@ -19,6 +19,7 @@ import mirrg.boron.util.suppliterator.ISuppliterator;
 
 /**
  * 1枚の画像のサイズは128x128。8チャンクx8チャンク。
+ * 更に、そのまま配置すると32ピクセル下にずれて描画される。
  */
 public class DynmapImageLoader
 {
