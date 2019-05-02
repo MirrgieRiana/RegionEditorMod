@@ -200,17 +200,17 @@ public class GuiRegionEditor extends GuiBase
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_DOWN_MASK))
 				.register(inputMap, actionMap);
 
-			actionSetMapImageProviderFromLocalFile = new ActionBuilder<>(new ActionButton(e -> loadMapFromLocal()))
+			actionSetMapImageProviderFromLocalFile = new ActionBuilder<>(new ActionButton(e -> setMapImageProviderFromLocalFile()))
 				.value(Action.NAME, localize("GuiRegionEditor.actionSetMapImageProviderFromLocalFile") + "(F)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_F)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK))
 				.register(inputMap, actionMap);
-			actionSetMapImageProviderFromUrl = new ActionBuilder<>(new ActionButton(e -> loadMapFromURL()))
+			actionSetMapImageProviderFromUrl = new ActionBuilder<>(new ActionButton(e -> setMapImageProviderFromUrl()))
 				.value(Action.NAME, localize("GuiRegionEditor.actionSetMapImageProviderFromUrl") + "(U)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_U)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK))
 				.register(inputMap, actionMap);
-			actionSetMapImageProviderFromDynmapImageLoader = new ActionBuilder<>(new ActionButton(e -> loadMapFromDynmapImageLoader()))
+			actionSetMapImageProviderFromDynmapImageLoader = new ActionBuilder<>(new ActionButton(e -> setMapImageProviderFromDynmapImageLoader()))
 				.value(Action.NAME, localize("GuiRegionEditor.actionSetMapImageProviderFromDynmapImageLoader") + "(D)...")
 				.value(Action.MNEMONIC_KEY, KeyEvent.VK_D)
 				.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK))
@@ -790,7 +790,7 @@ public class GuiRegionEditor extends GuiBase
 		}
 	}
 
-	private void loadMapFromLocal()
+	private void setMapImageProviderFromLocalFile()
 	{
 		FileDialog fileDialog;
 		if (windowWrapper.frame != null) {
@@ -812,7 +812,7 @@ public class GuiRegionEditor extends GuiBase
 		}
 	}
 
-	private void loadMapFromURL() // TODO キャッシュ
+	private void setMapImageProviderFromUrl() // TODO キャッシュ
 	{
 		GuiUrl gui = new GuiUrl(windowWrapper, i18n);
 		gui.oValidator = Optional.of(result -> {
@@ -848,7 +848,7 @@ public class GuiRegionEditor extends GuiBase
 		canvasMap.setMapImageProvider(new MapImageProviderBufferedImage(image, mapOrigin));
 	}
 
-	private void loadMapFromDynmapImageLoader()
+	private void setMapImageProviderFromDynmapImageLoader()
 	{
 		GuiInputBox gui = new GuiInputBox(windowWrapper, i18n) {
 			@Override
