@@ -119,14 +119,21 @@ public abstract class GuiInputBox extends GuiBase
 		}
 	}
 
-	protected boolean parse(String string)
-	{
-		return true;
-	}
-
 	protected void onCancel()
 	{
 		close(false);
+	}
+
+	//
+
+	public String resultString;
+
+	protected boolean parse(String string)
+	{
+
+		resultString = string;
+
+		return true;
 	}
 
 	//

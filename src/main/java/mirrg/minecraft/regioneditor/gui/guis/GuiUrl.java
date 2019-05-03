@@ -11,13 +11,13 @@ import mirrg.minecraft.regioneditor.util.gui.WindowWrapper;
 public class GuiUrl extends GuiInputBox
 {
 
-	public URI resultUri;
-	public URL resultUrl;
-
 	public GuiUrl(WindowWrapper owner, I18n i18n)
 	{
 		super(owner, i18n, "GuiUrl.title");
 	}
+
+	public URI resultUri;
+	public URL resultUrl;
 
 	@Override
 	protected boolean parse(String string)
