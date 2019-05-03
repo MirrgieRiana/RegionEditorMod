@@ -21,7 +21,7 @@ import mirrg.minecraft.regioneditor.util.gui.ActionBuilder;
 import mirrg.minecraft.regioneditor.util.gui.ActionButton;
 import mirrg.minecraft.regioneditor.util.gui.WindowWrapper;
 
-public abstract class GuiInputBox extends GuiBase
+public class GuiInputBox extends GuiBase
 {
 
 	protected ActionButton actionOk;

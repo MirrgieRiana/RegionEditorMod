@@ -868,28 +868,11 @@ public class GuiRegionEditor extends GuiBase
 
 	private void setMapImageProviderFromDynmapImageLoader()
 	{
-		new GuiInputBox(windowWrapper, i18n, "GuiRegionEditor.actionSetMapImageProviderFromDynmapImageLoader.title") {
-			private String resultTemplateUrl;
-
-			@Override
-			protected boolean parse(String string)
-			{
-				if (!super.parse(string)) return false;
-
-				this.resultTemplateUrl = string;
-
-				return true;
-			}
-
-			@Override
-			public void show()
-			{
-				super.show();
-				if (isOk) {
-					canvasMap.setMapImageProvider(new MapImageProviderDynmapImageLoader(resultTemplateUrl));
-				}
-			}
-		}.show();
+		GuiInputBox gui = new GuiInputBox(windowWrapper, i18n, "GuiRegionEditor.actionSetMapImageProviderFromDynmapImageLoader.title");
+		gui.show();
+		if (gui.isOk) {
+			canvasMap.setMapImageProvider(new MapImageProviderDynmapImageLoader(gui.resultString));
+		}
 	}
 
 	private void createRegion()
