@@ -3,13 +3,14 @@ package mirrg.minecraft.regioneditor.gui.mapimage;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 public class MapImageProviderDynmapImageLoader implements IMapImageProvider
 {
 
 	private final DynmapImageLoader dynmapImageLoader;
 
-	public MapImageProviderDynmapImageLoader(String templateUrl)
+	public MapImageProviderDynmapImageLoader(String templateUrl) throws MalformedURLException
 	{
 		this.dynmapImageLoader = new DynmapImageLoader(templateUrl);
 	}

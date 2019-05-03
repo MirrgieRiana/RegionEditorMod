@@ -820,16 +820,12 @@ public class GuiRegionEditor extends GuiBase
 			private MapImageProviderBufferedImage resultMapImageProvider;
 
 			@Override
-			protected boolean parse(String string)
+			protected boolean parse(String string) throws Exception
 			{
 				if (!super.parse(string)) return false;
 
 				try (InputStream in = resultUrl.openStream()) {
 					resultMapImageProvider = loadMap(in, new File(resultUri.getPath()).getName());
-				} catch (IOException e1) {
-					e1.printStackTrace();
-					setException(e1);
-					return false;
 				}
 
 				return true;
@@ -868,11 +864,28 @@ public class GuiRegionEditor extends GuiBase
 
 	private void setMapImageProviderFromDynmapImageLoader()
 	{
-		GuiInputBox gui = new GuiInputBox(windowWrapper, i18n, "GuiRegionEditor.actionSetMapImageProviderFromDynmapImageLoader.title");
-		gui.show();
-		if (gui.isOk) {
-			canvasMap.setMapImageProvider(new MapImageProviderDynmapImageLoader(gui.resultString));
-		}
+		new GuiInputBox(windowWrapper, i18n, "GuiRegionEditor.actionSetMapImageProviderFromDynmapImageLoader.title") {
+			private MapImageProviderDynmapImageLoader mapImageProvider;
+
+			@Override
+			protected boolean parse(String string) throws Exception
+			{
+				if (!super.parse(string)) return false;
+
+				mapImageProvider = new MapImageProviderDynmapImageLoader(resultString);
+
+				return true;
+			}
+
+			@Override
+			public void show()
+			{
+				super.show();
+				if (isOk) {
+					canvasMap.setMapImageProvider(mapImageProvider);
+				}
+			}
+		}.show();
 	}
 
 	private void createRegion()

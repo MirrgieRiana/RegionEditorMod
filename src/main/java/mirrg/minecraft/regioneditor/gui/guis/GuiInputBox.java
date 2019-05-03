@@ -114,9 +114,20 @@ public class GuiInputBox extends GuiBase
 
 	protected void onOk(String string)
 	{
-		if (parse(string)) {
+
+		boolean result;
+		try {
+			result = parse(string);
+		} catch (Exception e) {
+			e.printStackTrace();
+			setException(e);
+			return;
+		}
+
+		if (result) {
 			close(true);
 		}
+
 	}
 
 	protected void onCancel()
@@ -128,7 +139,7 @@ public class GuiInputBox extends GuiBase
 
 	public String resultString;
 
-	protected boolean parse(String string)
+	protected boolean parse(String string) throws Exception
 	{
 
 		resultString = string;

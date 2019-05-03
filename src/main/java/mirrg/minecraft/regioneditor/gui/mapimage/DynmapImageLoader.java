@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
 import java.util.HashMap;
@@ -33,11 +34,13 @@ public class DynmapImageLoader
 	/**
 	 * @param templateUrl
 	 *            <code>"http://domain:port/tiles/world/flat/${x1}_${z1}/zz_${x2}_${z2}.png"</code>のような文字列を指定します。
+	 * @throws MalformedURLException
 	 */
-	public DynmapImageLoader(String templateUrl)
+	public DynmapImageLoader(String templateUrl) throws MalformedURLException
 	{
 		this.templateUrl = templateUrl;
 		this.dirCache = new File("./regioneditor/cache/" + PercentEncoding.encode(templateUrl));
+		getUrl(templateUrl, 0, 0); // assertion
 	}
 
 	private Map<Tuple<Integer, Integer>, Tuple<BufferedImage, Long>> map = new HashMap<>();
@@ -75,6 +78,16 @@ public class DynmapImageLoader
 		File fileCache = new File(dirCache, imageX + "," + imageZ + ".png");
 
 		// 要求URLの算出
+		URL url = getUrl(templateUrl, imageX, imageZ);
+
+		// 要求
+		image = load(url, fileCache);
+
+		return image;
+	}
+
+	private URL getUrl(String templateUrl, int imageX, int imageZ) throws MalformedURLException
+	{
 		int x2 = imageX * 4;
 		int z2 = imageZ * -4;
 		int x1 = Math.floorDiv(x2, 32);
@@ -84,12 +97,7 @@ public class DynmapImageLoader
 		stringUrl = stringUrl.replaceAll("\\$\\{z1\\}", "" + z1);
 		stringUrl = stringUrl.replaceAll("\\$\\{x2\\}", "" + x2);
 		stringUrl = stringUrl.replaceAll("\\$\\{z2\\}", "" + z2);
-		URL url = new URL(stringUrl);
-
-		// 要求
-		image = load(url, fileCache);
-
-		return image;
+		return new URL(stringUrl);
 	}
 
 	private BufferedImage load(URL url, File fileCache) throws IOException
