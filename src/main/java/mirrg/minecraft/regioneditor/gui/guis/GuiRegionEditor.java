@@ -14,11 +14,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -97,6 +99,7 @@ public class GuiRegionEditor extends GuiBase
 	private ActionButton actionOpenGuiCommand;
 
 	private ActionButton actionOpenGuiData;
+	private ActionButton actionLoadDataFromUrl;
 
 	private ActionButton actionSetMapImageProviderFromLocalFile;
 	private ActionButton actionSetMapImageProviderFromUrl;
@@ -208,6 +211,11 @@ public class GuiRegionEditor extends GuiBase
 					.value(Action.NAME, localize("GuiRegionEditor.actionOpenGuiData") + "(I)...")
 					.value(Action.MNEMONIC_KEY, KeyEvent.VK_I)
 					.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK))
+					.register(inputMap, actionMap);
+				actionLoadDataFromUrl = new ActionBuilder<>(new ActionButton(e -> loadDataFromUrl()))
+					.value(Action.NAME, localize("GuiRegionEditor.actionLoadDataFromUrl") + "(U)...")
+					.value(Action.MNEMONIC_KEY, KeyEvent.VK_U)
+					.keyStroke(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK))
 					.register(inputMap, actionMap);
 
 			}
@@ -500,6 +508,7 @@ public class GuiRegionEditor extends GuiBase
 				menuBar2.add(get(new Menu(localize("GuiRegionEditor.menuData") + "(D)"), menu -> {
 					menu.setMnemonic(KeyEvent.VK_D);
 					menu.add(new MenuItem(actionOpenGuiData));
+					menu.add(new MenuItem(actionLoadDataFromUrl));
 				}));
 				menuBar2.add(get(new Menu(localize("GuiRegionEditor.menuView") + "(V)"), menu -> {
 					menu.setMnemonic(KeyEvent.VK_V);
@@ -841,6 +850,46 @@ public class GuiRegionEditor extends GuiBase
 			}
 			i++;
 		}
+	}
+
+	private void loadDataFromUrl()
+	{
+		new GuiUrl(windowWrapper, i18n) {
+			private String resultExpression;
+
+			@Override
+			protected boolean parse(String string) throws Exception
+			{
+				if (!super.parse(string)) return false;
+
+				try (BufferedReader in = new BufferedReader(new InputStreamReader(resultUrl.openStream()))) {
+					StringBuilder sb = new StringBuilder();
+					while (true) {
+						String line = in.readLine();
+						if (line == null) break;
+						sb.append(line);
+						sb.append('\n');
+					}
+					resultExpression = sb.toString();
+				}
+
+				return true;
+			}
+
+			@Override
+			public void show()
+			{
+				super.show();
+				if (isOk) {
+					try {
+						canvasMap.setExpression(resultExpression);
+					} catch (Exception e) {
+						e.printStackTrace();
+						GuiRegionEditor.this.panelResult.setException(e);
+					}
+				}
+			}
+		}.show();
 	}
 
 	private void setMapImageProviderFromLocalFile()
