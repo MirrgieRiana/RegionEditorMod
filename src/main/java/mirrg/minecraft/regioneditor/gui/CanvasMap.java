@@ -1,11 +1,12 @@
 package mirrg.minecraft.regioneditor.gui;
 
-import java.awt.Canvas;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -17,6 +18,8 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
+
+import javax.swing.JPanel;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -44,7 +47,7 @@ import mirrg.minecraft.regioneditor.gui.tool.ITool;
 import mirrg.minecraft.regioneditor.gui.tool.IToolContext;
 import mirrg.minecraft.regioneditor.util.gui.FontRenderer;
 
-public class CanvasMap extends Canvas
+public class CanvasMap extends JPanel
 {
 
 	private final I18n i18n;
@@ -213,6 +216,13 @@ public class CanvasMap extends Canvas
 				updateLayerMap();
 			}
 		});
+		addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e)
+			{
+				requestFocus();
+			}
+		});
 		layerController.regionTableController.epChangedState.register(() -> {
 			updateLayerTile();
 		});
@@ -222,6 +232,8 @@ public class CanvasMap extends Canvas
 		layerController.tileMapController.epChangedTileUnspecified.register(() -> {
 			updateLayerTile();
 		});
+
+		setFocusable(true);
 
 		setSize(1, 1);
 		resizeLayer();

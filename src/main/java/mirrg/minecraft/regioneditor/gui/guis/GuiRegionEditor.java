@@ -537,6 +537,8 @@ public class GuiRegionEditor extends GuiBase
 							}), c -> {
 								c.setMinimumSize(new Dimension(100, 100));
 								c.setPreferredSize(new Dimension(600, 600));
+								c.setInputMap(JComponent.WHEN_FOCUSED, inputMap);
+								c.setActionMap(actionMap);
 							}),
 
 							get(createButton(localize("GuiRegionEditor.buttonScrollRight"), actionScrollRight), c -> {
