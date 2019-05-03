@@ -94,8 +94,9 @@ public class GuiRegionEditor extends GuiBase
 	private InputMap inputMap;
 	private ActionMap actionMap;
 
-	private ActionButton actionOpenGuiData;
 	private ActionButton actionOpenGuiCommand;
+
+	private ActionButton actionOpenGuiData;
 
 	private ActionButton actionSetMapImageProviderFromLocalFile;
 	private ActionButton actionSetMapImageProviderFromUrl;
@@ -492,10 +493,13 @@ public class GuiRegionEditor extends GuiBase
 			}
 
 			windowWrapper.setJMenuBar(get(new JMenuBar(), menuBar2 -> {
+				menuBar2.add(get(new Menu(localize("GuiRegionEditor.menuCommand") + "(C)"), menu -> {
+					menu.setMnemonic(KeyEvent.VK_C);
+					menu.add(new MenuItem(actionOpenGuiCommand));
+				}));
 				menuBar2.add(get(new Menu(localize("GuiRegionEditor.menuData") + "(D)"), menu -> {
 					menu.setMnemonic(KeyEvent.VK_D);
 					menu.add(new MenuItem(actionOpenGuiData));
-					menu.add(new MenuItem(actionOpenGuiCommand));
 				}));
 				menuBar2.add(get(new Menu(localize("GuiRegionEditor.menuView") + "(V)"), menu -> {
 					menu.setMnemonic(KeyEvent.VK_V);
