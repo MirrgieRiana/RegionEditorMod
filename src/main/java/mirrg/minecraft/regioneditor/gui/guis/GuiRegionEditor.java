@@ -500,9 +500,9 @@ public class GuiRegionEditor extends GuiBase
 		}
 
 		// コンポーネント
-		JComponent component = createSplitPaneVertical(0,
+		Component component = createPanelBorderDown(0,
 
-			createSplitPaneHorizontal(0.7,
+			createSplitPaneHorizontal(1,
 
 				createPanelBorderDown(0,
 
@@ -760,7 +760,7 @@ public class GuiRegionEditor extends GuiBase
 			panelResult = new PanelResult(windowWrapper, i18n)
 
 		);
-		windowWrapper.setContentPane(get(component, c -> {
+		windowWrapper.setContentPane(get(createPanelCard(component), c -> {
 			c.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).setParent(inputMap);
 			c.getActionMap().setParent(actionMap);
 		}));
