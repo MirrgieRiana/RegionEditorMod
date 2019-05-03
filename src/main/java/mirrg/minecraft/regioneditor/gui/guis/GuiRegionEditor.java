@@ -816,21 +816,37 @@ public class GuiRegionEditor extends GuiBase
 
 	private void setMapImageProviderFromUrl() // TODO キャッシュ
 	{
-		GuiUrl gui = new GuiUrl(windowWrapper, i18n);
-		gui.oValidator = Optional.of(result -> {
-			try (InputStream in = result.url.openStream()) {
-				loadMap(in, new File(result.uri.getPath()).getName());
+		new GuiUrl(windowWrapper, i18n) {
+			private MapImageProviderBufferedImage mapImageProvider;
+
+			@Override
+			protected boolean parse(String string)
+			{
+				if (!super.parse(string)) return false;
+
+				try (InputStream in = url.openStream()) {
+					mapImageProvider = loadMap(in, new File(uri.getPath()).getName());
+				} catch (IOException e1) {
+					e1.printStackTrace();
+					setException(e1);
+					return false;
+				}
+
 				return true;
-			} catch (IOException e1) {
-				e1.printStackTrace();
-				gui.setException(e1);
-				return false;
 			}
-		});
-		gui.show();
+
+			@Override
+			public void show()
+			{
+				super.show();
+				if (isOk) {
+					canvasMap.setMapImageProvider(mapImageProvider);
+				}
+			}
+		}.show();
 	}
 
-	private void loadMap(InputStream in, String fileName) throws IOException
+	private MapImageProviderBufferedImage loadMap(InputStream in, String fileName) throws IOException
 	{
 		BufferedImage image = ImageIO.read(in);
 
@@ -847,20 +863,33 @@ public class GuiRegionEditor extends GuiBase
 			}
 		}
 
-		canvasMap.setMapImageProvider(new MapImageProviderBufferedImage(image, mapOrigin));
+		return new MapImageProviderBufferedImage(image, mapOrigin);
 	}
 
 	private void setMapImageProviderFromDynmapImageLoader()
 	{
-		GuiInputBox gui = new GuiInputBox(windowWrapper, i18n) {
+		new GuiInputBox(windowWrapper, i18n, "GuiRegionEditor.actionSetMapImageProviderFromDynmapImageLoader.title") {
+			private String templateUrl;
+
 			@Override
-			protected void onOk(String string)
+			protected boolean parse(String string)
 			{
-				close();
-				canvasMap.setMapImageProvider(new MapImageProviderDynmapImageLoader(string));
+				if (!super.parse(string)) return false;
+
+				this.templateUrl = string;
+
+				return true;
 			}
-		};
-		gui.show();
+
+			@Override
+			public void show()
+			{
+				super.show();
+				if (isOk) {
+					canvasMap.setMapImageProvider(new MapImageProviderDynmapImageLoader(templateUrl));
+				}
+			}
+		}.show();
 	}
 
 	private void createRegion()

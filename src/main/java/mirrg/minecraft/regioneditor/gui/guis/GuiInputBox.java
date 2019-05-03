@@ -24,22 +24,34 @@ import mirrg.minecraft.regioneditor.util.gui.WindowWrapper;
 public abstract class GuiInputBox extends GuiBase
 {
 
-	private ActionButton actionOk;
-	private ActionButton actionCancel;
+	protected ActionButton actionOk;
+	protected ActionButton actionCancel;
 
-	private JTextArea textArea;
-	private PanelResult panelResult;
+	protected JTextArea textArea;
+	protected PanelResult panelResult;
 
-	public GuiInputBox(WindowWrapper owner, I18n i18n)
+	public boolean isOk;
+
+	public GuiInputBox(WindowWrapper owner, I18n i18n, String unlocalizedTitle)
 	{
-		super(owner, i18n, i18n.localize("GuiInputBox.title"), ModalityType.DOCUMENT_MODAL);
+		super(owner, i18n, i18n.localize(unlocalizedTitle), ModalityType.DOCUMENT_MODAL);
 	}
 
-	protected abstract void onOk(String string);
+	protected boolean parse(String string)
+	{
+		return true;
+	}
+
+	protected void onOk(String string)
+	{
+		if (parse(string)) {
+			close(true);
+		}
+	}
 
 	protected void onCancel()
 	{
-		close();
+		close(false);
 	}
 
 	public void setText(String string, String detail, Color color)
@@ -52,8 +64,9 @@ public abstract class GuiInputBox extends GuiBase
 		panelResult.setException(e);
 	}
 
-	public void close()
+	public void close(boolean isOk)
 	{
+		this.isOk = isOk;
 		windowWrapper.getWindow().dispose();
 	}
 
