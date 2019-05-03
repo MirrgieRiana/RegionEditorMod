@@ -30,44 +30,9 @@ public abstract class GuiInputBox extends GuiBase
 	protected JTextArea textArea;
 	protected PanelResult panelResult;
 
-	public boolean isOk;
-
 	public GuiInputBox(WindowWrapper owner, I18n i18n, String unlocalizedTitle)
 	{
 		super(owner, i18n, i18n.localize(unlocalizedTitle), ModalityType.DOCUMENT_MODAL);
-	}
-
-	protected boolean parse(String string)
-	{
-		return true;
-	}
-
-	protected void onOk(String string)
-	{
-		if (parse(string)) {
-			close(true);
-		}
-	}
-
-	protected void onCancel()
-	{
-		close(false);
-	}
-
-	public void setText(String string, String detail, Color color)
-	{
-		panelResult.setText(string, detail, color);
-	}
-
-	public void setException(Exception e)
-	{
-		panelResult.setException(e);
-	}
-
-	public void close(boolean isOk)
-	{
-		this.isOk = isOk;
-		windowWrapper.getWindow().dispose();
 	}
 
 	@Override
@@ -141,6 +106,45 @@ public abstract class GuiInputBox extends GuiBase
 
 		));
 
+	}
+
+	//
+
+	public boolean isOk;
+
+	protected void onOk(String string)
+	{
+		if (parse(string)) {
+			close(true);
+		}
+	}
+
+	protected boolean parse(String string)
+	{
+		return true;
+	}
+
+	protected void onCancel()
+	{
+		close(false);
+	}
+
+	//
+
+	public void setText(String string, String detail, Color color)
+	{
+		panelResult.setText(string, detail, color);
+	}
+
+	public void setException(Exception e)
+	{
+		panelResult.setException(e);
+	}
+
+	public void close(boolean isOk)
+	{
+		this.isOk = isOk;
+		windowWrapper.getWindow().dispose();
 	}
 
 }
