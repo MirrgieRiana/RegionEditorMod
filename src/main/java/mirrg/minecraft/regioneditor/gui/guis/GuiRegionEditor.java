@@ -817,15 +817,15 @@ public class GuiRegionEditor extends GuiBase
 	private void setMapImageProviderFromUrl() // TODO キャッシュ
 	{
 		new GuiUrl(windowWrapper, i18n) {
-			private MapImageProviderBufferedImage mapImageProvider;
+			private MapImageProviderBufferedImage resultMapImageProvider;
 
 			@Override
 			protected boolean parse(String string)
 			{
 				if (!super.parse(string)) return false;
 
-				try (InputStream in = url.openStream()) {
-					mapImageProvider = loadMap(in, new File(uri.getPath()).getName());
+				try (InputStream in = resultUrl.openStream()) {
+					resultMapImageProvider = loadMap(in, new File(resultUri.getPath()).getName());
 				} catch (IOException e1) {
 					e1.printStackTrace();
 					setException(e1);
@@ -840,7 +840,7 @@ public class GuiRegionEditor extends GuiBase
 			{
 				super.show();
 				if (isOk) {
-					canvasMap.setMapImageProvider(mapImageProvider);
+					canvasMap.setMapImageProvider(resultMapImageProvider);
 				}
 			}
 		}.show();
@@ -869,14 +869,14 @@ public class GuiRegionEditor extends GuiBase
 	private void setMapImageProviderFromDynmapImageLoader()
 	{
 		new GuiInputBox(windowWrapper, i18n, "GuiRegionEditor.actionSetMapImageProviderFromDynmapImageLoader.title") {
-			private String templateUrl;
+			private String resultTemplateUrl;
 
 			@Override
 			protected boolean parse(String string)
 			{
 				if (!super.parse(string)) return false;
 
-				this.templateUrl = string;
+				this.resultTemplateUrl = string;
 
 				return true;
 			}
@@ -886,7 +886,7 @@ public class GuiRegionEditor extends GuiBase
 			{
 				super.show();
 				if (isOk) {
-					canvasMap.setMapImageProvider(new MapImageProviderDynmapImageLoader(templateUrl));
+					canvasMap.setMapImageProvider(new MapImageProviderDynmapImageLoader(resultTemplateUrl));
 				}
 			}
 		}.show();
